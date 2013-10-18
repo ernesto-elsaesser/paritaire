@@ -1,15 +1,17 @@
 
-var canv, ctx,
-	textbox,
-	bFirst,
-	field,
-	xcanvoffset, ycanvoffset,
-	currentplayer,
-	winner,
-	img,
-	imgPaths, imgCount,
-	fader,faderalpha;
+var canv, // HTML canvas element 
+	ctx, // 2D context of canv
+	bPlaying, bFirst, // control flags
+	field, // model of the playing field
+	xcanv, ycanv, // canvas position on client rectangle
+	currentPlayer,
+	img, // array to store game images: 0 - emtpy field, 1 - player 1, 2 - player 2
+	fader,faderalpha; // globals used for splashText function
+	//imgPaths, imgCount,
+	
+var dirs = [{x:1,y:0},{x:0,y:1},{x:1,y:1},{x:-1,y:0},{x:0,y:-1},{x:-1,y:-1},{x:1,y:-1},{x:-1,y:+1}];
 
+/*
 function preloadImgs() {
 
 	img[imgCount] = new Image();
@@ -20,34 +22,69 @@ function preloadImgs() {
 	img[imgCount].src = imgPaths[imgCount]+ "?" + Math.random(); // no clue why ...
 	imgCount++;
 }
+*/
 
 function init(){
 	
-	img = new Array(3);
-	imgPaths = ['img/boxempty.png', 'img/box1.png', 'img/box2.png'];
-	imgCount = 0;
+	img = [new Image(), new Image(), new Image()];
+	img[0].src = 'img/boxempty.png';
+	img[1].src = 'img/box1.png';
+	img[2].src = 'img/box2.png';
+	// TODO: src path will depend on player colors
+	
+	//imgPaths = ['img/boxempty.png', 'img/box1.png', 'img/box2.png'];
+	//imgCount = 0;
 	
 	canv = document.getElementById('canvas');
 	container = document.getElementById('field');
 	
-	canv.onclick = myclick;
+	canv.onclick = clickHandler;
 	ctx = canv.getContext('2d');
+	ctx.font="20px Georgia";
 	
-	xcanvoffset = canv.offsetLeft + container.offsetLeft;
-	ycanvoffset = canv.offsetTop + container.offsetTop;
+	xcanv = canv.offsetLeft + container.offsetLeft;
+	ycanv = canv.offsetTop + container.offsetTop;
 	
-	field = new class_field(10,10,40);
-	field.init();
+	field = new class_field(10,10,36);
 	
-	winner = 0;
-	currentplayer = 1;
+	var p1 = new class_player(1,"#F00");
+	var p2 = new class_player(2,"#00F");
 	
-	preloadImgs();
+	p1.next = p2;
+	p2.next = p1;
+	
+	// TODO: switch
+	currentPlayer = p1;
+	
+	
+    ctx.fillStyle = "#000";
+	ctx.fillText("Click to play!",140,150);
+	
+	//preloadImgs();
 }
 
-function class_square(column, row, sidelength) {
+function class_player(stoneState, colorString) {
+
+	this.color = colorString;
+	this.stone = stoneState;
+	this.points = 2;
 	
-	this.side = sidelength;
+	// TODO: dynamic field sizes
+	if(stoneState == 1) {
+	
+		this.validTurns = [{x:3,y:5},{x:4,y:6},{x:5,y:3},{x:6,y:4}];
+	}
+	else {
+	
+		this.validTurns = [{x:3,y:4},{x:4,y:3},{x:5,y:6},{x:6,y:5}];
+	
+	}
+	
+}
+
+function class_square(column, row, sideLength) {
+	
+	this.side = sideLength;
 	
 	//position
 	this.x = column * this.side; //float
@@ -63,21 +100,20 @@ function class_square(column, row, sidelength) {
 	return true;
 }
 
-function class_field(x,y,s) 
+function class_field(columnNum,rowNum,sideLength) 
 {	
 	//position
-	this.xsize = x;
-	this.ysize = y;
-	this.side = s;
+	this.xsize = columnNum;
+	this.ysize = rowNum;
+	this.side = sideLength;
 	this.squares = new Array(this.xsize); // 2 dimensional
 
-	this.init = function() {
-		for (var i = 0; i < this.xsize; i++) {
-			this.squares[i] = new Array(this.ysize);
-			for (var j = 0; j < this.ysize; j++)
-				this.squares[i][j] = new class_square(i, j, this.side);
-		}
-	};
+	for (var x = 0; x < this.xsize; x++) {
+		this.squares[x] = new Array(this.ysize);
+		for (var y = 0; y < this.ysize; y++)
+			this.squares[x][y] = new class_square(x, y, this.side);
+			
+	}
 	
 	/*
 	this.add = function(direction) {
@@ -121,17 +157,30 @@ function class_field(x,y,s)
 	
 	*/
 	
-	this.reset = function() {
-		for (var i = 0; i < this.xsize; i++) {
-			for (var j = 0; j < this.ysize; j++)
-				this.squares[i][j].state = 0;
+	this.init = function() {
+	
+		// x and ysize should be even
+	
+		var xhalf = this.xsize/2;
+		var yhalf = this.ysize/2;
+	
+		for (var x = 0; x < this.xsize; x++) {
+			for (var y = 0; y < this.ysize; y++)
+				
+				// generate 2x2 pattern at center
+				if(x == xhalf && y == yhalf || x == xhalf-1 && y == yhalf-1)
+					this.squares[x][y].state = 1;
+				else if (x == xhalf-1 && y == yhalf || x == xhalf && y == yhalf-1)
+					this.squares[x][y].state = 2;
+				else
+					this.squares[x][y].state = 0;
 		}
 	};
 	
 	this.draw = function() {
-		for (var i = 0; i < this.xsize; i++) {
-			for (var j = 0; j < this.ysize; j++)
-				this.squares[i][j].draw(this.side);
+		for (var x = 0; x < this.xsize; x++) {
+			for (var y = 0; y < this.ysize; y++)
+				this.squares[x][y].draw(this.side);
 		}
 	};
 	
@@ -140,14 +189,158 @@ function class_field(x,y,s)
 
 function startGame() {
 	
-	field.reset();
-	winner = 0;
-	
+	field.init();
 	field.draw();
-	
-	bFirst = true;
+
+	bPlaying = true;
 }
 
+function endGame() {
+	
+	bPlaying = false;
+	
+	if(currentPlayer.points > currentPlayer.next.points)
+		winner = currentPlayer;
+	else if (currentPlayer.points < currentPlayer.next.points)
+		winner = currentPlayer.next;
+	else
+		alert("draw"); // TODO: handle
+	
+    ctx.fillStyle = "#666";
+	ctx.drawRect();
+    ctx.fillStyle = "#000";
+	ctx.fillText("Score:",150,100);
+	ctx.fillStyle = winner.color;
+	ctx.fillText(winner.points, 150,150);
+	ctx.fillStyle = winner.next.color;
+	ctx.fillText(winner.next.points, 210,150);
+	// TODO: better
+	
+}
+
+function clickHandler(event) {
+	
+	// mouse position
+	var mx = event.clientX-xcanv+scrollX;
+	var my = event.clientY-ycanv+scrollY;
+	
+	// click inside canvas?
+	if(mx > 0 && mx < field.xsize * field.side && my > 0 && my < field.ysize * field.side) {
+	
+		if(!bPlaying) {
+			startGame();
+			return;
+		}
+			
+		var x = parseInt(mx/field.side);
+		var y = parseInt(my/field.side);
+		
+		/*
+		// check if turn is valid
+		var turn = -1;
+		var turns = currentPlayer.validTurns;
+		
+		for(var t in turns) {
+		
+			if(turns[t].x == x && turns[t].y == y) {
+				turn = t;
+				break;
+			}
+		}
+		
+		if(turn == -1) return; // not a valid turn
+		else turns.splice(turn,1); // remove turn from valid turns
+		*/
+			
+		var stolenStones = 0;
+	
+		// check all directions
+		for(var d in dirs) {
+
+			stolenStones += tryPath(x,y,dirs[d].x,dirs[d].y,[]);
+
+		}
+		
+		if(stolenStones == 0) return; // no turn
+		
+		// put stone
+		field.squares[x][y].state = currentPlayer.stone; 
+		field.draw();
+		
+		// change points
+		currentPlayer.points += stolenStones + 1;
+		currentPlayer.next.points -= stolenStones;
+		
+		currentPlayer = currentPlayer.next;
+		// TODO: update info text
+		
+		// check if next player can make a turn
+		// TODO: this function should run in the background
+		checkTurns();
+		
+	}
+
+}
+
+function tryPath(x,y,deltax,deltay,path) {
+
+	var nextx = x+deltax;
+	var nexty = y+deltay;
+	
+	var stone = field.squares[nextx][nexty].state;
+	
+	// enemy stone
+	if(stone == currentPlayer.next.stone) {
+		path[path.length] = {x:nextx,y:nexty};
+		return tryPath(nextx,nexty,deltax,deltay,path);
+	}
+	// own stone - steal stones in path
+	else if (stone == currentPlayer.stone) {
+	
+		for(var i in path) {
+		
+			field.squares[path[i].x][path[i].y].state = currentPlayer.stone;
+			// TODO: check neighbours for valid turns
+		
+		}
+		
+		return path.length;
+	
+	}
+	
+	// drop path if no stone
+	return 0;
+
+}
+
+function checkTurns() {
+
+	// try all turns
+	for (var x = 0; x < field.xsize; x++) {
+		for (var y = 0; y < field.ysize; y++)
+			
+			if(field.squares[x][y].state == 0) {
+			
+				// check all directions
+				for(var d in dirs) {
+
+					if(tryPath(x,y,dirs[d].x,dirs[d].y,[]) > 0) return;
+
+				}
+			}
+			
+	}
+
+	// no valid turns
+	
+	currentPlayer = currentPlayer.next;
+	// TODO: no turns info, change info text
+	
+	checkTurns();
+
+}
+
+// TODO: use this function
 function splashText(msg) {
     
     faderalpha = 1.0;
@@ -166,113 +359,4 @@ function splashText(msg) {
 	
 }
 
-function checkWin(player,row,column) {
-	
-	for(var i = 0; i < 8; i++) {
-		
-			var r = row;
-			var c = column;
-			for(var j = 0;; j++) {
-
-				if(j == 4) return true;
-				
-				switch(i) {
-				case 0:
-					r++;
-					break;
-				case 1:
-					c++;
-					break;
-				case 2:
-					r--;
-					break;
-				case 3:
-					c--;
-					break;
-				case 4:
-					r++; c++;
-					break;
-				case 5:
-					r++; c--;
-					break;
-				case 6:
-					r--; c++;
-					break;
-				case 7:
-					r--; c--;
-					break;
-				}
-				
-				if(r < 0 || r == field.ysize || c < 0 || c == field.xsize) break;
-				if(field.squares[c][r].state != player) break;
-			}
-	}
-	return false;
-}
-
-function myclick(event) {
-	
-	// mouse position
-	var mx = event.clientX-xcanvoffset+scrollX;
-	var my = event.clientY-ycanvoffset+scrollY;
-	
-	if(mx > 0 && mx < field.xsize * field.side && my > 0 && my < field.ysize * field.side) {
-		if(winner) {
-			startGame();
-			return;
-		}
-			
-		var column = parseInt(mx/field.side);
-		var row = parseInt(my/field.side);
-		if(!bFirst) {
-			if(field.squares[column][row].state)
-				return;
-			
-			/*
-			if(row < 1) {
-				field.add(0);
-				canv.height += field.side;
-				row++; // now the current click is one row down
-			}
-			else if (row > field.ysize-2) {
-				field.add(2);
-				canv.height += field.side;
-			}
-			
-			if(column < 1) {
-				canv.width += field.side;
-				field.add(3);
-				column++; // now the current click is one column left
-			}
-			else if (column > field.xsize-2) {
-				field.add(1);
-				canv.width += field.side;
-			}
-			*/
-			
-			var count = 0;
-			
-			if(column < (field.ysize-1) && field.squares[column+1][row].state) count++;
-			if(row < (field.xsize-1) && field.squares[column][row+1].state) count++;
-			if(column > 0 && field.squares[column-1][row].state) count++;
-			if(row > 0 && field.squares[column][row-1].state) count++; 
-			if(column < (field.ysize-1) && row < (field.xsize-1) && field.squares[column+1][row+1].state) count++;
-			if(column > 0 && row > 0 && field.squares[column-1][row-1].state) count++;
-			if(column < (field.ysize-1) && row > 0 && field.squares[column+1][row-1].state) count++; 
-			if(column > 0 && row < (field.xsize-1) && field.squares[column-1][row+1].state) count++;
-			if(count == 0) return;
-		}
-		else {
-			if(column < 3 || column > 6 || row < 3 || row > 6) return;
-			bFirst = false;
-		}
-		field.squares[column][row].state = currentplayer;
-		field.draw();
-		if(checkWin(currentplayer,row,column))
-			winner = currentplayer;	
-		currentplayer = (currentplayer == 1) ? 2 : 1;
-		//drawText();
-	}
-
-}
-
+init();
