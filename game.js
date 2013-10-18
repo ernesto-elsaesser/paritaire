@@ -7,22 +7,8 @@ var canv, // HTML canvas element
 	currentPlayer,
 	img, // array to store game images: 0 - emtpy field, 1 - player 1, 2 - player 2
 	fader,faderalpha; // globals used for splashText function
-	//imgPaths, imgCount,
 	
-var dirs = [{x:1,y:0},{x:0,y:1},{x:1,y:1},{x:-1,y:0},{x:0,y:-1},{x:-1,y:-1},{x:1,y:-1},{x:-1,y:+1}];
-
-/*
-function preloadImgs() {
-
-	img[imgCount] = new Image();
-	
-	if(imgCount < img.length - 1) img[imgCount].onload = preloadImgs;
-	else img[imgCount].onload = startGame;
-	  
-	img[imgCount].src = imgPaths[imgCount]+ "?" + Math.random(); // no clue why ...
-	imgCount++;
-}
-*/
+var dirs = [{x:0,y:-1},{x:1,y:-1},{x:1,y:0},{x:1,y:1},{x:0,y:1},{x:-1,y:1},{x:-1,y:0},{x:-1,y:-1}];
 
 function init(){
 	
@@ -69,17 +55,6 @@ function class_player(stoneState, colorString) {
 	this.stone = stoneState;
 	this.points = 2;
 	
-	// TODO: dynamic field sizes
-	if(stoneState == 1) {
-	
-		this.validTurns = [{x:3,y:5},{x:4,y:6},{x:5,y:3},{x:6,y:4}];
-	}
-	else {
-	
-		this.validTurns = [{x:3,y:4},{x:4,y:3},{x:5,y:6},{x:6,y:5}];
-	
-	}
-	
 }
 
 function class_square(column, row, sideLength) {
@@ -91,10 +66,10 @@ function class_square(column, row, sideLength) {
 	this.y = row * this.side; //float
 	
 	//states
-	this.state = 0; // 0,1,2
+	this.stone = 0; // 0,1,2
 	
 	this.draw = function() {
-		ctx.drawImage(img[this.state], this.x, this.y, this.side, this.side);
+		ctx.drawImage(img[this.stone], this.x, this.y, this.side, this.side);
 	};
 	
 	return true;
@@ -114,6 +89,10 @@ function class_field(columnNum,rowNum,sideLength)
 			this.squares[x][y] = new class_square(x, y, this.side);
 			
 	}
+	
+	// future turn positions
+	// TODO: dynamic field sizes
+	this.future = [{x:3,y:3},{x:3,y:4},{x:3,y:5},{x:3,y:6},{x:4,y:3},{x:4,y:6},{x:5,y:3},{x:5,y:6},{x:6,y:3},{x:6,y:4},{x:6,y:5},{x:6,y:6}];
 	
 	/*
 	this.add = function(direction) {
@@ -169,11 +148,11 @@ function class_field(columnNum,rowNum,sideLength)
 				
 				// generate 2x2 pattern at center
 				if(x == xhalf && y == yhalf || x == xhalf-1 && y == yhalf-1)
-					this.squares[x][y].state = 1;
+					this.squares[x][y].stone = 1;
 				else if (x == xhalf-1 && y == yhalf || x == xhalf && y == yhalf-1)
-					this.squares[x][y].state = 2;
+					this.squares[x][y].stone = 2;
 				else
-					this.squares[x][y].state = 0;
+					this.squares[x][y].stone = 0;
 		}
 	};
 	
@@ -257,15 +236,16 @@ function clickHandler(event) {
 		// check all directions
 		for(var d in dirs) {
 
-			stolenStones += tryPath(x,y,dirs[d].x,dirs[d].y,[]);
+			stolenStones += tryPath(x,y,dirs[d].x,dirs[d].y,[],false);
 
 		}
 		
 		if(stolenStones == 0) return; // no turn
 		
 		// put stone
-		field.squares[x][y].state = currentPlayer.stone; 
+		field.squares[x][y].stone = currentPlayer.stone; 
 		field.draw();
+		removeFuture(x,y);
 		
 		// change points
 		currentPlayer.points += stolenStones + 1;
@@ -277,56 +257,79 @@ function clickHandler(event) {
 		// check if next player can make a turn
 		// TODO: this function should run in the background
 		checkTurns();
-		
 	}
 
 }
 
-function tryPath(x,y,deltax,deltay,path) {
+function tryPath(x,y,deltax,deltay,path,bCheck) {
 
 	var nextx = x+deltax;
 	var nexty = y+deltay;
+
+	// field borders
+	if(nextx == -1 || nexty == -1 || nextx == field.xsize || nexty == field.ysize) return 0;
 	
-	var stone = field.squares[nextx][nexty].state;
+	var stone = field.squares[nextx][nexty].stone;
 	
 	// enemy stone
 	if(stone == currentPlayer.next.stone) {
 		path[path.length] = {x:nextx,y:nexty};
-		return tryPath(nextx,nexty,deltax,deltay,path);
+		return tryPath(nextx,nexty,deltax,deltay,path,bCheck);
 	}
 	// own stone - steal stones in path
 	else if (stone == currentPlayer.stone) {
 	
+		if(bCheck) return 1;
+	
 		for(var i in path) {
 		
-			field.squares[path[i].x][path[i].y].state = currentPlayer.stone;
-			// TODO: check neighbours for valid turns
+			field.squares[path[i].x][path[i].y].stone = currentPlayer.stone;
 		
 		}
 		
 		return path.length;
 	
 	}
+	// no stone
+	else
+	{
+		// if there is an empty field next to the dropped stone, try to add it to the future turn positions
+		if(path.length == 0) addFuture(nextx,nexty);
 	
-	// drop path if no stone
-	return 0;
+		return 0;
+	}
+
+}
+
+function addFuture(x,y) {
+
+	var f = field.future;
+	for(var i in f) if(f[i].x == x && f[i].y == y) return;
+	f[f.length] = {x:x,y:y};
+
+}
+
+function removeFuture(x,y) {
+
+	var f = field.future;
+	for(var i in f) if(f[i].x == x && f[i].y == y) f.splice(i,1);
 
 }
 
 function checkTurns() {
 
-	// try all turns
-	for (var x = 0; x < field.xsize; x++) {
-		for (var y = 0; y < field.ysize; y++)
-			
-			if(field.squares[x][y].state == 0) {
-			
-				// check all directions
-				for(var d in dirs) {
+	var x,y;
 
-					if(tryPath(x,y,dirs[d].x,dirs[d].y,[]) > 0) return;
+	// try future turns
+	for (var t in field.future) {
+			
+			x = field.future[t].x;
+			y = field.future[t].y;
+			
+			for(var d in dirs) {
 
-				}
+					if(tryPath(x,y,dirs[d].x,dirs[d].y,[],true)) return;
+
 			}
 			
 	}
