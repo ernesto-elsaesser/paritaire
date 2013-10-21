@@ -37,24 +37,40 @@
           </nav>
       </header>
     
-      <div class="row">
-        <div class="col-md-4">
-        
-          <a class="btn btn-primary" href="#">New Session</a>
-          <a class="btn btn-primary" href="#">Rules</a>
-          
-        </div>
-        <div class="col-md-8">
-          
-          <div class="list-group">
-            <span class="list-group-item active">Public Sessions</span>
-            <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-            <a href="#" class="list-group-item">Morbi leo risus</a>
-            <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-            <a href="#" class="list-group-item">Vestibulum at eros</a>
-          </div>
-                  
-        </div>
+      <div class="row">    
+    	<form action="create.php" method="post">
+    	  <table>
+    	    <tr>
+    	      <td>
+    	        Player 1
+    	      </td>
+    	      <td>
+    	        <select name=col1>
+    	          <option value="blue">blue</option>
+    	          <option value="red">red</option>
+    	          <option value="violet">violet</option>
+    	          <option value="green">green</option>
+    	          <option value="orange">orange</option>
+    	          <option value="yellow">yellow</option>
+    	        </select>
+    	      </td>
+    	    </tr>
+    	    <tr>
+    	      <td>Player 2</td>
+    	      <td>
+    	        <select name=col2>
+    	          <option value="blue">blue</option>
+    	          <option value="red">red</option>
+    	          <option value="violet">violet</option>
+    	          <option value="green">green</option>
+    	          <option value="orange">orange</option>
+    	          <option value="yellow">yellow</option>
+    	        </select>
+    	      </td>
+    	    </tr>
+    	  </table>
+    	  <input type="submit" value="Ready!" class="btn btn-primary">
+    	</form>
       </div>
 
       <!-- Site footer -->
