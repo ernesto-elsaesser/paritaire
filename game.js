@@ -1,53 +1,120 @@
 
-var canv, // HTML canvas element 
-	ctx, // 2D context of canv
-	bPlaying, bFirst, // control flags
-	field, // model of the playing field
-	xcanv, ycanv, // canvas position on client rectangle
-	currentPlayer,
-	img, // array to store game images: 0 - emtpy field, 1 - player 1, 2 - player 2
-	fader,faderalpha; // globals used for splashText function
-	
-var dirs = [{x:0,y:-1},{x:1,y:-1},{x:1,y:0},{x:1,y:1},{x:0,y:1},{x:-1,y:1},{x:-1,y:0},{x:-1,y:-1}];
+function class_session(canvasElement,color1,color2) {
 
-function init(){
+	this.canvas = canvasElement;
 	
-	img = [new Image(), new Image(), new Image()];
-	img[0].src = 'img/boxempty.png';
-	img[1].src = 'img/box1.png';
-	img[2].src = 'img/box2.png';
-	// TODO: src path will depend on player colors
+	this.ctx = this.canvas.getContext('2d');
+	this.ctx.font = "20px Georgia";
 	
-	//imgPaths = ['img/boxempty.png', 'img/box1.png', 'img/box2.png'];
-	//imgCount = 0;
+	this.xoffset = this.canvas.offsetLeft + this.canvas.parentElement.offsetLeft;
+	this.yoffset = this.canvas.offsetTop + this.canvas.parentElement.offsetTop;
+
+	this.player1 = new class_player(1,color1);
+	this.player2 = new class_player(2,color2);
 	
-	canv = document.getElementById('canvas');
-	container = document.getElementById('field');
+	// linked loop
+	this.player1.next = this.player2;
+	this.player2.next = this.player1;
 	
-	canv.onclick = clickHandler;
-	ctx = canv.getContext('2d');
-	ctx.font="20px Georgia";
+	this.currentPlayer = {};
+	this.nextStarter = this.player1; // player that will start the next game
 	
-	xcanv = canv.offsetLeft + container.offsetLeft;
-	ycanv = canv.offsetTop + container.offsetTop;
+	this.field = new class_field(this,10,10,36);
+	this.logic = new class_gamelogic(this.field);
 	
-	field = new class_field(10,10,36);
+	this.bPlaying = false;
 	
-	var p1 = new class_player(1,"#F00");
-	var p2 = new class_player(2,"#00F");
+	this.ctx.fillStyle = "#000";
+	this.ctx.fillText("Click to play!",140,150);
 	
-	p1.next = p2;
-	p2.next = p1;
+	this.startGame = function() {
 	
-	// TODO: switch
-	currentPlayer = p1;
+		this.field.init();
+		this.field.draw();
+
+		this.currentPlayer = this.nextStarter;
+		this.nextStarter = this.nextStarter.next;
+		this.bPlaying = true;
+	};
 	
+	this.endGame = function() {
 	
-    ctx.fillStyle = "#000";
-	ctx.fillText("Click to play!",140,150);
+		this.bPlaying = false;
+		
+		// TODO: replace with canvas graphics
+		var msg = "";
+		
+		if(currentPlayer.points > currentPlayer.next.points)
+			msg = "Color " + this.currentPlayer.color + " won! [";
+		else if (currentPlayer.points < currentPlayer.next.points)
+			msg = "Color " + this.currentPlayer.next.color + " won! [";
+		else
+			msg = "Draw! ["
+		
+		msg += this.player1.points + ":" + this.player2.points + "]";
+		alert(msg);
+		
+		/*
+		ctx.fillStyle = "#666";
+		ctx.drawRect();
+		ctx.fillStyle = "#000";
+		ctx.fillText("Score:",150,100);
+		ctx.fillStyle = winner.color;
+		ctx.fillText(winner.points, 150,150);
+		ctx.fillStyle = winner.next.color;
+		ctx.fillText(winner.next.points, 210,150);
+		*/
+		
+		// swap starting player
+		this.nextStarter = this.currentPlayer.next;
 	
-	//preloadImgs();
-}
+	};
+	
+	this.clickHandler = function(event) {
+	
+		// mouse position
+		var mx = event.clientX-this.xoffset+scrollX;
+		var my = event.clientY-this.yoffset+scrollY;
+		
+		// click inside canvas?
+		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
+		
+			if(!this.bPlaying) {
+				this.startGame();
+				return;
+			}
+				
+			var x = parseInt(mx/this.field.side);
+			var y = parseInt(my/this.field.side);
+				
+			var stolenStones = this.logic.makeTurn(this.currentPlayer,x,y);
+			if(stolenStones == 0) return; // no turn
+			
+			// put stone
+			this.field.stones[x][y] = this.currentPlayer.stone; 
+			this.field.draw();
+			
+			// change points
+			this.currentPlayer.points += stolenStones + 1;
+			this.currentPlayer.next.points -= stolenStones;
+			
+			this.currentPlayer = this.currentPlayer.next;
+			// TODO: update info text
+			
+			// check if next player can make a turn
+			// TODO: this function should run in the background
+			if(!this.logic.canTurn(this.currentPlayer)) {
+				this.currentPlayer = this.currentPlayer.next;
+				if(!this.logic.canTurn(this.currentPlayer)) this.endGame(); // TODO: info that no more turns are possible
+			}
+			
+		}
+			
+	};
+	
+	this.canvas.onclick = this.clickHandler.bind(this);
+
+} // end class session
 
 function class_player(stoneState, colorString) {
 
@@ -55,295 +122,183 @@ function class_player(stoneState, colorString) {
 	this.stone = stoneState;
 	this.points = 2;
 	
-}
-
-function class_square(column, row, sideLength) {
-	
-	this.side = sideLength;
-	
-	//position
-	this.x = column * this.side; //float
-	this.y = row * this.side; //float
-	
-	//states
-	this.stone = 0; // 0,1,2
-	
-	this.draw = function() {
-		ctx.drawImage(img[this.stone], this.x, this.y, this.side, this.side);
-	};
+	this.img = new Image();
+	this.img.src = 'img/box' + colorString.substr(1,3) + '.png';
 	
 	return true;
 }
 
-function class_field(columnNum,rowNum,sideLength) 
+function class_field(refSession,columnNum,rowNum,sideLength) 
 {	
-	//position
+	// error handling
+	if(columnNum % 2 || rowNum % 2) {
+		alert("field dimensions should be even");
+		return false;
+	}
+	
+	this.session = refSession;
 	this.xsize = columnNum;
 	this.ysize = rowNum;
 	this.side = sideLength;
-	this.squares = new Array(this.xsize); // 2 dimensional
-
+	this.future = []; // future turn positions
+	
+	this.imgs = [new Image(), this.session.player1.img, this.session.player2.img];
+	this.imgs[0].src = 'img/box.png';
+	
+	this.stones = new Array(this.xsize); // 2 dimensional array representing the field
 	for (var x = 0; x < this.xsize; x++) {
-		this.squares[x] = new Array(this.ysize);
-		for (var y = 0; y < this.ysize; y++)
-			this.squares[x][y] = new class_square(x, y, this.side);
-			
+		this.stones[x] = new Array(this.ysize);
 	}
-	
-	// future turn positions
-	// TODO: dynamic field sizes
-	this.future = [{x:3,y:3},{x:3,y:4},{x:3,y:5},{x:3,y:6},{x:4,y:3},{x:4,y:6},{x:5,y:3},{x:5,y:6},{x:6,y:3},{x:6,y:4},{x:6,y:5},{x:6,y:6}];
-	
-	/*
-	this.add = function(direction) {
-		switch(direction) {
-		case 0: //up
-			for(var i = 0; i < this.xsize; i++) {
-				for (var j = this.ysize; j >0; j--) {
-					this.squares[i][j] = this.squares[i][j-1];
-					this.squares[i][j].y += this.side;
-				}
-
-				this.squares[i][0] = new class_square(i, 0, this.side);
-			}
-			this.ysize++;
-			break;
-		case 1: //right
-			this.squares[this.xsize] = new Array(this.ysize);
-			for(var i = 0; i < this.ysize; i++)
-				this.squares[this.xsize][i] = new class_square(this.xsize, i, this.side);
-			this.xsize++;
-			break;
-		case 2: //down		
-			for(var i = 0; i < this.xsize; i++)
-				this.squares[i][this.ysize] = new class_square(i, this.ysize, this.side);
-			this.ysize++;
-			break;
-		case 3: //left
-			this.squares[this.xsize] = new Array(this.ysize);
-			for(var i = 0; i < this.ysize; i++) {
-				for (var j = this.xsize; j > 0; j--) {
-					this.squares[j][i] = this.squares[j-1][i];
-					this.squares[j][i].x += this.side;
-				}
-
-				this.squares[0][i] = new class_square(0, i, this.side);
-			}
-			this.xsize++;
-			break;
-		}
-	};
-	
-	*/
 	
 	this.init = function() {
 	
-		// x and ysize should be even
-	
-		var xhalf = this.xsize/2;
-		var yhalf = this.ysize/2;
-	
+		// clear field
 		for (var x = 0; x < this.xsize; x++) {
 			for (var y = 0; y < this.ysize; y++)
-				
-				// generate 2x2 pattern at center
-				if(x == xhalf && y == yhalf || x == xhalf-1 && y == yhalf-1)
-					this.squares[x][y].stone = 1;
-				else if (x == xhalf-1 && y == yhalf || x == xhalf && y == yhalf-1)
-					this.squares[x][y].stone = 2;
-				else
-					this.squares[x][y].stone = 0;
+					this.stones[x][y] = 0;
 		}
+		
+		// generate 2x2 pattern at center
+		var hx = (this.xsize/2);
+		var hy = (this.ysize/2);
+		
+		this.stones[hx][hy] = 1;
+		this.stones[hx-1][hy-1] = 1;
+		this.stones[hx][hy-1] = 2;
+		this.stones[hx-1][hy] = 2;
+	
 	};
 	
 	this.draw = function() {
 		for (var x = 0; x < this.xsize; x++) {
 			for (var y = 0; y < this.ysize; y++)
-				this.squares[x][y].draw(this.side);
+				this.session.ctx.drawImage(this.imgs[this.stones[x][y]], x * this.side, y * this.side, this.side, this.side);
 		}
 	};
 	
 	return true;
 }
 
-function startGame() {
-	
-	field.init();
-	field.draw();
+function class_gamelogic(refField) {
 
-	bPlaying = true;
-}
+	this.field = refField;
+	
+	var hx = (this.field.xsize/2);
+	var hy = (this.field.ysize/2);
+		
+	// compute possible next turns
+	
+	/*	  X X
+	*	X 1	2 X	
+	*	X 2 1 X
+	*	  X X
+	*/
+	
+	this.future = [{x:hx-2,y:hy-1},{x:hx-2,y:hy},
+		{x:hx-1,y:hy-2},{x:hx-1,y:hy+1},
+		{x:hx,y:hy-2},{x:hx,y:hy+1},
+		{x:hx+1,y:hy-1},{x:hx+1,y:hy}];
+		
+		
+	this.dirs = [{x:0,y:-1},{x:1,y:-1},{x:1,y:0},{x:1,y:1},{x:0,y:1},{x:-1,y:1},{x:-1,y:0},{x:-1,y:-1}];
 
-function endGame() {
+	// if this function returns zero, the turn was invalid
+	// in this case, the field is not modified
+	this.makeTurn = function(player,x,y) {
 	
-	bPlaying = false;
-	
-	if(currentPlayer.points > currentPlayer.next.points)
-		winner = currentPlayer;
-	else if (currentPlayer.points < currentPlayer.next.points)
-		winner = currentPlayer.next;
-	else
-		alert("draw"); // TODO: handle
-	
-    ctx.fillStyle = "#666";
-	ctx.drawRect();
-    ctx.fillStyle = "#000";
-	ctx.fillText("Score:",150,100);
-	ctx.fillStyle = winner.color;
-	ctx.fillText(winner.points, 150,150);
-	ctx.fillStyle = winner.next.color;
-	ctx.fillText(winner.next.points, 210,150);
-	// TODO: better
-	
-}
-
-function clickHandler(event) {
-	
-	// mouse position
-	var mx = event.clientX-xcanv+scrollX;
-	var my = event.clientY-ycanv+scrollY;
-	
-	// click inside canvas?
-	if(mx > 0 && mx < field.xsize * field.side && my > 0 && my < field.ysize * field.side) {
-	
-		if(!bPlaying) {
-			startGame();
-			return;
-		}
-			
-		var x = parseInt(mx/field.side);
-		var y = parseInt(my/field.side);
-		
-		/*
-		// check if turn is valid
-		var turn = -1;
-		var turns = currentPlayer.validTurns;
-		
-		for(var t in turns) {
-		
-			if(turns[t].x == x && turns[t].y == y) {
-				turn = t;
-				break;
-			}
-		}
-		
-		if(turn == -1) return; // not a valid turn
-		else turns.splice(turn,1); // remove turn from valid turns
-		*/
-			
 		var stolenStones = 0;
 	
 		// check all directions
-		for(var d in dirs) {
+		for(var d in this.dirs) {
 
-			stolenStones += tryPath(x,y,dirs[d].x,dirs[d].y,[],false);
+			stolenStones += this.tryPath(player,x,y,this.dirs[d].x,this.dirs[d].y,[],false);
 
 		}
 		
-		if(stolenStones == 0) return; // no turn
+		if(stolenStones > 0) this.removeFuture(x,y);
 		
-		// put stone
-		field.squares[x][y].stone = currentPlayer.stone; 
-		field.draw();
-		removeFuture(x,y);
-		
-		// change points
-		currentPlayer.points += stolenStones + 1;
-		currentPlayer.next.points -= stolenStones;
-		
-		currentPlayer = currentPlayer.next;
-		// TODO: update info text
-		
-		// check if next player can make a turn
-		// TODO: this function should run in the background
-		checkTurns();
+		return stolenStones;
+	
 	}
-
-}
-
-function tryPath(x,y,deltax,deltay,path,bCheck) {
-
-	var nextx = x+deltax;
-	var nexty = y+deltay;
-
-	// field borders
-	if(nextx == -1 || nexty == -1 || nextx == field.xsize || nexty == field.ysize) return 0;
 	
-	var stone = field.squares[nextx][nexty].stone;
-	
-	// enemy stone
-	if(stone == currentPlayer.next.stone) {
-		path[path.length] = {x:nextx,y:nexty};
-		return tryPath(nextx,nexty,deltax,deltay,path,bCheck);
-	}
-	// own stone - steal stones in path
-	else if (stone == currentPlayer.stone) {
-	
-		if(bCheck) return 1;
-	
-		for(var i in path) {
+	this.tryPath = function(player,x,y,deltax,deltay,path,bCheck) {
+
+		var nextx = x+deltax;
+		var nexty = y+deltay;
+
+		// field borders
+		if(nextx == -1 || nexty == -1 || nextx == this.field.xsize || nexty == this.field.ysize) return 0;
 		
-			field.squares[path[i].x][path[i].y].stone = currentPlayer.stone;
+		var stone = this.field.stones[nextx][nexty];
 		
+		// enemy stone
+		if(stone == player.next.stone) {
+			path[path.length] = {x:nextx,y:nexty};
+			return this.tryPath(player,nextx,nexty,deltax,deltay,path,bCheck);
 		}
+		// own stone
+		else if (stone == player.stone) {
 		
-		return path.length;
-	
-	}
-	// no stone
-	else
-	{
-		// if there is an empty field next to the dropped stone, try to add it to the future turn positions
-		if(path.length == 0) addFuture(nextx,nexty);
-	
-		return 0;
-	}
+			if(bCheck) return 1; // only checking, return true
+			// swap stones in path to players color
+			for(var i in path) this.field.stones[path[i].x][path[i].y] = player.stone;
+			return path.length; // return number of stolen stones
+		}
+		// no stone
+		else
+		{
+			// if there is an empty field next to the dropped stone, try to add it to the future turn positions
+			if(path.length == 0) this.addFuture(nextx,nexty);
+			return 0;
+		}
 
+	};
+
+	this.addFuture = function(x,y) {
+
+		var f = this.future;
+		for(var i in f) if(f[i].x == x && f[i].y == y) return;
+		f[f.length] = {x:x,y:y};
+
+	};
+
+	this.removeFuture = function(x,y) {
+
+		var f = this.future;
+		for(var i in f) if(f[i].x == x && f[i].y == y) f.splice(i,1);
+
+	};
+
+	this.canTurn = function(player) {
+
+		var x,y;
+
+		// try future turns
+		for (var t in this.future) {
+				
+				x = this.future[t].x;
+				y = this.future[t].y;
+				
+				for(var d in this.dirs) {
+
+						if(this.tryPath(player,x,y,this.dirs[d].x,this.dirs[d].y,[],true)) return true;
+
+				}
+				
+		}
+
+		// no valid turns
+		return false;
+
+	};
+	
 }
 
-function addFuture(x,y) {
+/*
+UNUSED, CODE DEPRECATED
 
-	var f = field.future;
-	for(var i in f) if(f[i].x == x && f[i].y == y) return;
-	f[f.length] = {x:x,y:y};
+var fader, faderalpha; // globals for splashText function
 
-}
-
-function removeFuture(x,y) {
-
-	var f = field.future;
-	for(var i in f) if(f[i].x == x && f[i].y == y) f.splice(i,1);
-
-}
-
-function checkTurns() {
-
-	var x,y;
-
-	// try future turns
-	for (var t in field.future) {
-			
-			x = field.future[t].x;
-			y = field.future[t].y;
-			
-			for(var d in dirs) {
-
-					if(tryPath(x,y,dirs[d].x,dirs[d].y,[],true)) return;
-
-			}
-			
-	}
-
-	// no valid turns
-	
-	currentPlayer = currentPlayer.next;
-	// TODO: no turns info, change info text
-	
-	checkTurns();
-
-}
-
-// TODO: use this function
 function splashText(msg) {
     
     faderalpha = 1.0;
@@ -361,5 +316,4 @@ function splashText(msg) {
         }, 50); 
 	
 }
-
-init();
+*/
