@@ -1,3 +1,6 @@
+# ignore session data
+sessions/*.php
+
 # Ignore compiled docs
 _gh_pages
 _site
