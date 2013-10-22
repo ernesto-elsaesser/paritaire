@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Bootstrap 101 Template</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/style.css" rel="stylesheet" media="screen">
@@ -38,23 +39,25 @@
       </header>
     
       <div class="row">
-        <div class="col-md-4">
         
-          <a class="btn btn-primary" href="#">New Session</a>
-          <a class="btn btn-primary" href="#">Rules</a>
-          
+        <div class="alert alert-info">
+          <b>Game initiated!</b> Waiting for 2nd player...  
         </div>
-        <div class="col-md-8">
+        
+        <div class="well">
           
-          <div class="list-group">
-            <span class="list-group-item active">Public Sessions</span>
-            <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-            <a href="#" class="list-group-item">Morbi leo risus</a>
-            <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-            <a href="#" class="list-group-item">Vestibulum at eros</a>
-          </div>
-                  
-        </div>
+          <label for="sessionLink"> Your Session-Link: </label>
+          <input type="url" class="form-control" id="sessionLink">
+          <button type="button" class="btn btn-default right"> Copy </button>
+          
+          
+          
+          <script type="text/javascript">
+          	gameURL = document.URL.split("pending");
+          	gameURL = gameURL[0] + "playing" + gameURL[1];
+          	document.getElementById("sessionLink").value = gameURL;
+          </script>
+        
       </div>
 
       <!-- Site footer -->
