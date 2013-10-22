@@ -47,14 +47,12 @@
         <div class="well">
           
           <label for="sessionLink"> Your Session-Link: </label>
-          <input type="url" class="form-control" id="sessionLink">
           <button type="button" class="btn btn-default right"> Copy </button>
-          
-          
-          
+          <input type="url" class="form-control" id="sessionLink">
+      
           <script type="text/javascript">
-          	gameURL = document.URL.split("pending");
-          	gameURL = gameURL[0] + "playing" + gameURL[1];
+          	gameURL = document.URL.split("pending.html");
+          	gameURL = gameURL[0] + "playing.php" + gameURL[1];
           	document.getElementById("sessionLink").value = gameURL;
           </script>
         
