@@ -76,9 +76,10 @@
     
     <!-- the game -->
     <script src="game.js"></script>
-	<script type="text/javascript" defer="defer">
+	<script type="text/javascript">
 	
-		session = new class_session(document.getElementById('canvas'),"#F00","#00F");
+		session = new class_session(document.getElementById('canvas'),"red","blue",4,4);
+		session.bDebug = true;
 		
 	</script>
 	
