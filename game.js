@@ -1,36 +1,187 @@
-
-function class_session(canvasElement,color1,color2) {
+function class_online_session(canvasElement,clientSide,color1,wins1,color2,wins2,dimx,dimy,next) {
 
 	this.canvas = canvasElement;
 	
 	this.ctx = this.canvas.getContext('2d');
 	this.ctx.font = "20px Georgia";
 	
+	// canvas offset, used for mouse click mapping
 	this.xoffset = this.canvas.offsetLeft + this.canvas.parentElement.offsetLeft;
 	this.yoffset = this.canvas.offsetTop + this.canvas.parentElement.offsetTop;
 
-	this.player1 = new class_player(1,color1);
-	this.player2 = new class_player(2,color2);
+	this.player1 = new class_player(1,color1,wins1);
+	this.player2 = new class_player(2,color2,wins2);
+	
+	// linked loop
+	this.player1.next = this.player2;
+	this.player2.next = this.player1;
+	
+	if(clientSide == 1) {
+		this.me = this.player1;
+		this.other = this.player2;
+	}else {
+		this.me = this.player2;
+		this.other = this.player1;
+	}
+	
+	this.nextStarter = (next == 1 ? this.player1 : this.player2); // player that will start the next game
+	
+	if(next == clientSide) {
+		this.bMyTurn = true;
+		this.ctx.fillStyle = "#000";
+		this.ctx.fillText("Click to play!",130,160); // TODO: relative
+	}
+	else {
+		this.bMyTurn = false;
+		this.ctx.fillStyle = "#000";
+		this.ctx.fillText("Waiting for opponent ...",110,160); // TODO: relative
+	}
+	
+	this.field = new class_field(this,dimx,dimy,this.canvas.width/dimx);
+	this.logic = new class_gamelogic(this.field);
+	
+	this.bPlaying = false; // control flag
+	
+	this.startGame = function() {
+	
+		this.field.init();
+		this.field.draw();
+		
+		this.me.points = 2;
+		this.other.points = 2;
+
+		this.currentPlayer = this.me;
+		this.nextStarter = this.other;
+		this.bPlaying = true;
+	};
+	
+	// TODO: receive game started
+	
+	this.endGame = function() {
+		
+		// TODO: replace with canvas graphics
+		var msg = "Color " ;
+		
+		if(this.currentPlayer.points > this.currentPlayer.next.points) {
+			this.currentPlayer.wins++;
+			msg += this.currentPlayer.color + " won! [";
+		}
+		else if (this.currentPlayer.points < this.currentPlayer.next.points) {
+			this.currentPlayer.next.wins++;
+			msg += this.currentPlayer.next.color + " won! [";
+		}
+		else
+			msg = "Draw! ["
+		
+		msg += this.me.points + ":" + this.other.points + "]";
+		alert(msg);
+		
+		/*
+		ctx.fillStyle = "#666";
+		ctx.drawRect();
+		ctx.fillStyle = "#000";
+		ctx.fillText("Score:",150,100);
+		ctx.fillStyle = winner.color;
+		ctx.fillText(winner.points, 150,150);
+		ctx.fillStyle = winner.next.color;
+		ctx.fillText(winner.next.points, 210,150);
+		*/
+		
+		// TODO: only display when finished loading
+		this.ctx.fillStyle = "#FFF";
+		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+		this.ctx.fillStyle = "#000";
+		this.ctx.fillText("Click to play!",130,160); // TODO: relative
+		
+		this.bPlaying = false;
+	
+	};
+	
+	this.clickHandler = function(event) {
+	
+		if(!this.bMyTurn) return;
+	
+		// mouse position
+		var mx = event.clientX-this.xoffset+scrollX;
+		var my = event.clientY-this.yoffset+scrollY;
+		
+		// click inside canvas?
+		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
+		
+			if(!this.bPlaying) {
+				this.startGame();
+				return;
+			}
+				
+			var x = parseInt(mx/this.field.side);
+			var y = parseInt(my/this.field.side);
+				
+			var stolenStones = this.logic.makeTurn(this.me,x,y);
+			if(stolenStones == 0) return; // no turn
+			
+			// put stone
+			this.field.stones[x][y] = this.me.stone; 
+			this.field.draw();
+			
+			// change points
+			this.me.points += stolenStones + 1;
+			this.other.points -= stolenStones;
+			
+			this.bMyTurn = false;
+			// TODO: update info text
+			
+			// TODO: send turn to opponent / receive opponents turn - each player checks own turns
+			/*
+			// TODO: this function should run in the background
+			if(!this.logic.canTurn(this.currentPlayer)) {
+				this.currentPlayer = this.currentPlayer.next;
+				if(!this.logic.canTurn(this.currentPlayer)) this.endGame(); // TODO: info that no more turns are possible
+			}
+			*/
+		}
+			
+	};
+	
+	this.canvas.onclick = this.clickHandler.bind(this);
+
+} // end class online session
+
+function class_local_session(canvasElement,color1,wins1,color2,wins2,dimx,dimy,next) {
+
+	this.canvas = canvasElement;
+	
+	this.ctx = this.canvas.getContext('2d');
+	this.ctx.font = "20px Georgia";
+	
+	// canvas offset, used for mouse click mapping
+	this.xoffset = this.canvas.offsetLeft + this.canvas.parentElement.offsetLeft;
+	this.yoffset = this.canvas.offsetTop + this.canvas.parentElement.offsetTop;
+
+	this.player1 = new class_player(1,color1,wins1);
+	this.player2 = new class_player(2,color2,wins2);
 	
 	// linked loop
 	this.player1.next = this.player2;
 	this.player2.next = this.player1;
 	
 	this.currentPlayer = {};
-	this.nextStarter = this.player1; // player that will start the next game
+	this.nextStarter = (next == 1 ? this.player1 : this.player2); // player that will start the next game
 	
-	this.field = new class_field(this,10,10,36);
+	this.field = new class_field(this,dimx,dimy,this.canvas.width/dimx);
 	this.logic = new class_gamelogic(this.field);
 	
-	this.bPlaying = false;
+	this.bPlaying = false; // control flag
 	
 	this.ctx.fillStyle = "#000";
-	this.ctx.fillText("Click to play!",140,150);
+	this.ctx.fillText("Click to play!",130,160); // TODO: relative
 	
 	this.startGame = function() {
 	
 		this.field.init();
 		this.field.draw();
+		
+		this.player1.points = 2;
+		this.player2.points = 2;
 
 		this.currentPlayer = this.nextStarter;
 		this.nextStarter = this.nextStarter.next;
@@ -38,16 +189,18 @@ function class_session(canvasElement,color1,color2) {
 	};
 	
 	this.endGame = function() {
-	
-		this.bPlaying = false;
 		
 		// TODO: replace with canvas graphics
-		var msg = "";
+		var msg = "Color " ;
 		
-		if(currentPlayer.points > currentPlayer.next.points)
-			msg = "Color " + this.currentPlayer.color + " won! [";
-		else if (currentPlayer.points < currentPlayer.next.points)
-			msg = "Color " + this.currentPlayer.next.color + " won! [";
+		if(this.currentPlayer.points > this.currentPlayer.next.points) {
+			this.currentPlayer.wins++;
+			msg += this.currentPlayer.color + " won! [";
+		}
+		else if (this.currentPlayer.points < this.currentPlayer.next.points) {
+			this.currentPlayer.next.wins++;
+			msg += this.currentPlayer.next.color + " won! [";
+		}
 		else
 			msg = "Draw! ["
 		
@@ -65,8 +218,13 @@ function class_session(canvasElement,color1,color2) {
 		ctx.fillText(winner.next.points, 210,150);
 		*/
 		
-		// swap starting player
-		this.nextStarter = this.currentPlayer.next;
+		// TODO: only display when finished loading
+		this.ctx.fillStyle = "#FFF";
+		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+		this.ctx.fillStyle = "#000";
+		this.ctx.fillText("Click to play!",130,160); // TODO: relative
+		
+		this.bPlaying = false;
 	
 	};
 	
@@ -93,6 +251,7 @@ function class_session(canvasElement,color1,color2) {
 			// put stone
 			this.field.stones[x][y] = this.currentPlayer.stone; 
 			this.field.draw();
+			if(this.bDebug) this.logic.drawFuture(this.ctx);
 			
 			// change points
 			this.currentPlayer.points += stolenStones + 1;
@@ -114,16 +273,17 @@ function class_session(canvasElement,color1,color2) {
 	
 	this.canvas.onclick = this.clickHandler.bind(this);
 
-} // end class session
+} // end class local session
 
-function class_player(stoneState, colorString) {
+function class_player(stoneState, colorName, winCount) {
 
-	this.color = colorString;
+	this.color = colorName;
 	this.stone = stoneState;
-	this.points = 2;
+	this.points = 0;
+	this.wins = winCount;
 	
 	this.img = new Image();
-	this.img.src = 'img/box' + colorString.substr(1,3) + '.png';
+	this.img.src = 'img/box_' + this.color + '.png';
 	
 	return true;
 }
@@ -269,19 +429,21 @@ function class_gamelogic(refField) {
 
 	};
 
+	// TODO: not working correctly
 	this.canTurn = function(player) {
 
 		var x,y;
 
-		// try future turns
+		// try possible future turns
 		for (var t in this.future) {
 				
 				x = this.future[t].x;
 				y = this.future[t].y;
 				
 				for(var d in this.dirs) {
-
-						if(this.tryPath(player,x,y,this.dirs[d].x,this.dirs[d].y,[],true)) return true;
+						
+						var r = this.tryPath(player,x,y,this.dirs[d].x,this.dirs[d].y,[],true);
+						if(r == 1) return true;
 
 				}
 				
@@ -290,6 +452,16 @@ function class_gamelogic(refField) {
 		// no valid turns
 		return false;
 
+	};
+	
+	this.fimg = new Image();
+	this.fimg.src = "img/future.png";
+	
+	// debug function
+	this.drawFuture = function(refCtx) {
+		var s = this.field.side;
+		for (var t in this.future)
+			refCtx.drawImage(this.fimg, this.future[t].x * s, this.future[t].y * s, s, s);
 	};
 	
 }

@@ -76,9 +76,56 @@
     
     <!-- the game -->
     <script src="game.js"></script>
-	<script type="text/javascript" defer="defer">
+	<script type="text/javascript">
 	
-		session = new class_session(document.getElementById('canvas'),"#F00","#00F");
+	<?php
+	
+		if(isset($_GET["id"])) {
+	
+			$id = $_GET["id"];
+			
+			//print "var id = ".$id.";"
+			// TODO: check id
+	
+			$fpath = "sessions/".$id.".php";
+			
+			$f = fopen($fpath, "r");
+			
+			$data = explode(",",fread($f,filesize($fpath)));
+			fclose($f);
+
+			$online = $data[0];
+			$col1 = $data[1];
+			$points1 = $data[2];
+			$col2 = $data[3];
+			$points2 = $data[4];
+			$dimx = $data[5];
+			$dimy = $data[6];
+			$next = $data[7];
+		
+			if($online === "0") {
+			
+				print "session = new class_local_session(document.getElementById('canvas')," . $col1 . "," . $points1 . "," .
+					$col2 . "," . $points2 . "," . $dimx . "," . $dimy . "," . $next . ");";
+					
+			}
+			else {
+							
+				$me = 1; // TODO: code!?!
+			
+				print "session = new class_online_session(document.getElementById('canvas')," . $me . "," . $col1 . "," . $points1 . "," .
+					$col2 . "," . $points2 . "," . $dimx . "," . $dimy . "," . $next . ");";
+					
+			}
+			
+		}
+		else {
+		
+			// TODO: error handling
+		
+		}
+		
+	?>
 		
 	</script>
 	
