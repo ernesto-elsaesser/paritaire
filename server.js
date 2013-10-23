@@ -1,13 +1,21 @@
+// node.js modules
 var http = require("http");
 var fs = require("fs");
 var url = require("url");
 var querystring = require("querystring");
 
-var sessions = [];
-var sid = 1;
-var cache = {};
-var gameSkeleton = String(fs.readFileSync("playing.skeleton"));
+// global variables
+var sessions = []; // stores all game sessions
+var sid = 1; // next available session ID
+var cache = {}; // stores static documents
+var gameSkeleton = String(fs.readFileSync("playing.skeleton")); // html skeleton
+var mimeTypes = {"html": "text/html",
+	"js": "text/javascript",
+	"png": "image/png",
+	"css": "text/css"};
+var validColors = ["blue","green","orange","red","violet","yellow"];
 
+// web server callback
 function onRequest(request,response) {
 
 	var requrl = url.parse(request.url,true);
@@ -25,24 +33,33 @@ function onRequest(request,response) {
 			});
 		request.on("end", function() {
 			var id = sid++; // atomic
-			sessions[id]=querystring.parse(params);
-			sessions[id].wins1 = 0;
-			sessions[id].wins2 = 0;
-			sessions[id].next = 1;
-			response.writeHead(302, {"Location": "play?id="+id});
+			sessions[id]=querystring.parse(params); // create new session from post data
+			if(checkSession(id)) {
+				sessions[id].wins1 = 0;
+				sessions[id].wins2 = 0;
+				sessions[id].next = 1;
+				sessions[id].joined = 0;
+				response.writeHead(302, {"Location": "play?id="+id});
+			}
+			else { // invalid post data
+				// the session ID remains unused
+				response.writeHead(302, {"Location": "starting.html"});
+			}
 			response.end();
 			});
 		break;
+		
 	case 'play':
 		response.writeHead(200, {"Content-Type": "text/html"});
 		response.write(buildGame(requrl.query["id"]));
 		response.end();
 		break;
+		
 	default:
 		var doc = cache[path];
 		var bFound = true;
 	
-		if(doc == undefined) {
+		if(doc == undefined) { // document not in cache
 			if(fs.existsSync(path)) {
 				doc = fs.readFileSync(path);
 				cache[path] = doc;
@@ -51,11 +68,12 @@ function onRequest(request,response) {
 		}
 
 		if(bFound) {
+			// mime type
 			var frags = path.split(".");
 			var ext = frags[frags.length-1];
-			var mime = "text/"+ext;
-			if(ext === "js") mime = "text/javascript";
-			else if (ext == "png") mime = "image/png";
+			var mime = mimeTypes[ext];
+			if(mime == undefined) mime = "text/" + ext;
+			
 			response.writeHead(200, {"Content-Type": mime});
 			response.write(doc);
 		}
@@ -67,19 +85,54 @@ function onRequest(request,response) {
 
 function buildGame(id) {
 
+	if(id == undefined || isNaN(id)) return "Incorrect URL syntax!";
+
 	var s = sessions[id];
 	
 	if(s == undefined) return "Invalid session ID!";
 	
+	// create the javascript line that initiaties the game session
 	var jsline = "session = new class_";
 
-	if(s.online == "0") jsline += "local";
-	else jsline += "online";
-
-	jsline += "_session(document.getElementById('canvas'),'";
-	jsline += s.col1 + "'," + s.wins1 + ",'" + s.col2 + "'," + s.wins2 + "," + s.dim + "," + s.dim + "," + s.next + ");";
+	if(s.online == "0") jsline += "local_session(document.getElementById('canvas'),";
+	else {
+		jsline += "online_session(document.getElementById('canvas'),";
+	
+		// first or second player to join or session full?
+		if (s.joined == 0) 
+			jsline += "1,";
+		else if (s.joined == 1) 
+			jsline += "2,";
+		else
+			return "Session is full!";
+			
+		s.joined++;
+	}
+	
+	jsline += "'" + s.col1 + "'," + s.wins1 + ",'" + s.col2 + "'," + s.wins2 + "," + s.dim + "," + s.dim + "," + s.next + ");";
 
 	return gameSkeleton.replace("##",jsline);
+}
+
+function checkSession(id) {
+
+	var s = session[id];
+	
+	if(s == undefined) return false;
+
+	// are both colors valid color strings and different?
+	var c = 0;
+	for(var i in validColors) if(s.col1 == validColors[i] || s.col2 == validColors[i]) c++;
+	if( c < 2 ) return false;	
+	
+	// is the dimension an even number?
+	if(isNaN(s.dim) || s.dim % 2) return false;
+	
+	// online flag set?
+	if(!s.online) return false;
+	
+	return true;
+
 }
 
 http.createServer(onRequest).listen(80);
