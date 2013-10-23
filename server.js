@@ -16,7 +16,7 @@ function onRequest(request,response) {
 	if(path === '/') path = 'index.html';
 	else path = path.substr(1,path.length);
 
-	switch(p) {
+	switch(path) {
 
 	case 'create':
 		var params = "";
