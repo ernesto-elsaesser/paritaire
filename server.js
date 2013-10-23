@@ -96,17 +96,19 @@ function buildGame(id) {
 
 	if(s.online == "0") jsline += "local_session(document.getElementById('canvas'),";
 	else {
-		jsline += "online_session(document.getElementById('canvas'),";
 	
 		// first or second player to join or session full?
-		if (s.joined == 0) 
-			jsline += "1,";
-		else if (s.joined == 1) 
-			jsline += "2,";
+		if (s.joined == 0) {
+			s.joined++;
+			return "pending ..."; // TODO: implement
+		}
+		else if (s.joined == 1)  {
+			s.joined++;
+			jsline += "online_session(document.getElementById('canvas'),2,";
+		}
 		else
 			return "Session is full!";
-			
-		s.joined++;
+		
 	}
 	
 	jsline += "'" + s.col1 + "'," + s.wins1 + ",'" + s.col2 + "'," + s.wins2 + "," + s.dim + "," + s.dim + "," + s.next + ");";
