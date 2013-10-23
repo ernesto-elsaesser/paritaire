@@ -116,7 +116,7 @@ function buildGame(id) {
 
 function checkSession(id) {
 
-	var s = session[id];
+	var s = sessions[id];
 	
 	if(s == undefined) return false;
 
