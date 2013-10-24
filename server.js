@@ -94,7 +94,7 @@ function buildGame(id) {
 	// create the javascript line that initiaties the game session
 	var jsline = "session = new class_";
 
-	if(s.online == "0") jsline += "local_session(document.getElementById('canvas'),";
+	if(s.online == "0") jsline += "local_session(document.getElementById('field'),";
 	else {
 	
 		// first or second player to join or session full?
@@ -104,7 +104,7 @@ function buildGame(id) {
 		}
 		else if (s.joined == 1)  {
 			s.joined++;
-			jsline += "online_session(document.getElementById('canvas'),2,";
+			jsline += "online_session(document.getElementById('field'),2,";
 		}
 		else
 			return "Session is full!";

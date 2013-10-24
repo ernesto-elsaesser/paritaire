@@ -1,20 +1,6 @@
-function class_online_session(canvasElement,clientSide,color1,wins1,color2,wins2,dimx,dimy,next) {
+function class_online_session(container,clientSide,color1,wins1,color2,wins2,dimx,dimy,next) {
 
-	this.canvas = canvasElement;
-	
-	this.ctx = this.canvas.getContext('2d');
-	this.ctx.font = "20px Georgia";
-	
-	// canvas offset, used for mouse click mapping
-	this.xoffset = this.canvas.offsetLeft + this.canvas.parentElement.offsetLeft;
-	this.yoffset = this.canvas.offsetTop + this.canvas.parentElement.offsetTop;
-
-	this.player1 = new class_player(1,color1,wins1);
-	this.player2 = new class_player(2,color2,wins2);
-	
-	// linked loop
-	this.player1.next = this.player2;
-	this.player2.next = this.player1;
+	this = new class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next);
 	
 	if(clientSide == 1) {
 		this.me = this.player1;
@@ -24,23 +10,14 @@ function class_online_session(canvasElement,clientSide,color1,wins1,color2,wins2
 		this.other = this.player1;
 	}
 	
-	this.nextStarter = (next == 1 ? this.player1 : this.player2); // player that will start the next game
-	
 	if(next == clientSide) {
 		this.bMyTurn = true;
-		this.ctx.fillStyle = "#000";
-		this.ctx.fillText("Click to play!",130,160); // TODO: relative
+		this.drawText("Click to start!");
 	}
 	else {
 		this.bMyTurn = false;
-		this.ctx.fillStyle = "#000";
-		this.ctx.fillText("Waiting for opponent ...",110,160); // TODO: relative
+		this.drawText("Waiting for opponent ...");
 	}
-	
-	this.field = new class_field(this,dimx,dimy,this.canvas.width/dimx);
-	this.logic = new class_gamelogic(this.field);
-	
-	this.bPlaying = false; // control flag
 	
 	this.startGame = function() {
 	
@@ -57,45 +34,7 @@ function class_online_session(canvasElement,clientSide,color1,wins1,color2,wins2
 	
 	// TODO: receive game started
 	
-	this.endGame = function() {
-		
-		// TODO: replace with canvas graphics
-		var msg = "Color " ;
-		
-		if(this.currentPlayer.points > this.currentPlayer.next.points) {
-			this.currentPlayer.wins++;
-			msg += this.currentPlayer.color + " won! [";
-		}
-		else if (this.currentPlayer.points < this.currentPlayer.next.points) {
-			this.currentPlayer.next.wins++;
-			msg += this.currentPlayer.next.color + " won! [";
-		}
-		else
-			msg = "Draw! ["
-		
-		msg += this.me.points + ":" + this.other.points + "]";
-		alert(msg);
-		
-		/*
-		ctx.fillStyle = "#666";
-		ctx.drawRect();
-		ctx.fillStyle = "#000";
-		ctx.fillText("Score:",150,100);
-		ctx.fillStyle = winner.color;
-		ctx.fillText(winner.points, 150,150);
-		ctx.fillStyle = winner.next.color;
-		ctx.fillText(winner.next.points, 210,150);
-		*/
-		
-		// TODO: only display when finished loading
-		this.ctx.fillStyle = "#FFF";
-		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
-		this.ctx.fillStyle = "#000";
-		this.ctx.fillText("Click to play!",130,160); // TODO: relative
-		
-		this.bPlaying = false;
-	
-	};
+	// TODO: overwrite endGame
 	
 	this.clickHandler = function(event) {
 	
@@ -146,16 +85,17 @@ function class_online_session(canvasElement,clientSide,color1,wins1,color2,wins2
 
 } // end class online session
 
-function class_local_session(canvasElement,color1,wins1,color2,wins2,dimx,dimy,next) {
+function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next) {
 
-	this.canvas = canvasElement;
+	this.canvas = createCanvas(container);
 	
 	this.ctx = this.canvas.getContext('2d');
-	this.ctx.font = "20px Georgia";
+	this.fontsize = Math.floor(this.canvas.width/10);
+	this.ctx.font =  this.fontsize + "px Georgia";
 	
 	// canvas offset, used for mouse click mapping
-	this.xoffset = this.canvas.offsetLeft + this.canvas.parentElement.offsetLeft;
-	this.yoffset = this.canvas.offsetTop + this.canvas.parentElement.offsetTop;
+	this.xoffset = this.canvas.offsetLeft + container.offsetLeft;
+	this.yoffset = this.canvas.offsetTop + container.parentElement.offsetTop;
 
 	this.player1 = new class_player(1,color1,wins1);
 	this.player2 = new class_player(2,color2,wins2);
@@ -171,9 +111,6 @@ function class_local_session(canvasElement,color1,wins1,color2,wins2,dimx,dimy,n
 	this.logic = new class_gamelogic(this.field);
 	
 	this.bPlaying = false; // control flag
-	
-	this.ctx.fillStyle = "#000";
-	this.ctx.fillText("Click to play!",130,160); // TODO: relative
 	
 	this.startGame = function() {
 	
@@ -205,27 +142,23 @@ function class_local_session(canvasElement,color1,wins1,color2,wins2,dimx,dimy,n
 			msg = "Draw! ["
 		
 		msg += this.player1.points + ":" + this.player2.points + "]";
-		alert(msg);
 		
-		/*
-		ctx.fillStyle = "#666";
-		ctx.drawRect();
-		ctx.fillStyle = "#000";
-		ctx.fillText("Score:",150,100);
-		ctx.fillStyle = winner.color;
-		ctx.fillText(winner.points, 150,150);
-		ctx.fillStyle = winner.next.color;
-		ctx.fillText(winner.next.points, 210,150);
-		*/
-		
-		// TODO: only display when finished loading
-		this.ctx.fillStyle = "#FFF";
-		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
-		this.ctx.fillStyle = "#000";
-		this.ctx.fillText("Click to play!",130,160); // TODO: relative
+		this.ctx.drawText(msg + "\nClick to play!");
 		
 		this.bPlaying = false;
 	
+	};
+	
+	this.drawText = function(text) {
+		
+		this.ctx.fillStyle = "#FFF";
+		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+		
+		this.ctx.fillStyle = "#000";
+		var x = (this.canvas.width / 2) - ((text.length * this.fontsize) / 2);
+		var y = (this.canvas.height / 2) - (this.fontsize / 2);
+		this.ctx.fillText(text,x,y);
+		
 	};
 	
 	this.clickHandler = function(event) {
@@ -272,6 +205,8 @@ function class_local_session(canvasElement,color1,wins1,color2,wins2,dimx,dimy,n
 	};
 	
 	this.canvas.onclick = this.clickHandler.bind(this);
+	
+	this.drawText("Click to play!");
 
 } // end class local session
 
@@ -463,6 +398,23 @@ function class_gamelogic(refField) {
 		for (var t in this.future)
 			refCtx.drawImage(this.fimg, this.future[t].x * s, this.future[t].y * s, s, s);
 	};
+	
+}
+
+function createCanvas(container) {
+
+	var canvas = document.createElement('canvas');
+	//this.canvas.id     = "canvas";
+	canvas.width  = container.clientWidth - 20;
+	canvas.style.margin   = "10px";
+	if (canvas.width > 400) {
+		canvas.width = 400;
+		canvas.style.margin = "10px " + (container.clientWidth - 400) / 2 + "px";
+	}
+	canvas.height = canvas.width; // TODO: change for non-square fields
+	
+	container.appendChild(canvas);
+	return canvas;
 	
 }
 
