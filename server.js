@@ -9,7 +9,7 @@ var socketio = require('socket.io');
 var sessions = []; // stores all game sessions
 var sid = 1; // next available session ID
 var cache = {}; // stores static documents
-var gameSkeleton = String(fs.readFileSync("playing.skeleton")); // html skeleton
+var gameTemplate = String(fs.readFileSync("play.template")); // html skeleton
 var mimeTypes = {"html": "text/html",
 	"js": "text/javascript",
 	"png": "image/png",
@@ -39,8 +39,8 @@ function onRequest(request,response) {
 				sessions[id].wins1 = 0;
 				sessions[id].wins2 = 0;
 				sessions[id].next = 1;
-				sessions[id].full = false;
-				response.writeHead(302, {"Location": "play?id="+id});
+				sessions[id].player = [];
+				response.writeHead(302, {"Location": "play?id=" + id + (sessions[id].online == "0" ? "" : "&side=1")});
 			}
 			else { // invalid post data
 				// the session ID remains unused
@@ -52,7 +52,7 @@ function onRequest(request,response) {
 		
 	case 'play':
 		response.writeHead(200, {"Content-Type": "text/html"});
-		response.write(buildGame(requrl.query["id"]));
+		response.write(buildGame(requrl.query["id"],requrl.query["side"]));
 		response.end();
 		break;
 		
@@ -84,7 +84,7 @@ function onRequest(request,response) {
 	}
 }
 
-function buildGame(id) {
+function buildGame(id,side) {
 
 	if(id == undefined || isNaN(id)) return "Incorrect URL syntax!";
 
@@ -92,32 +92,38 @@ function buildGame(id) {
 	
 	if(s == undefined) return "Invalid session ID!";
 	
-	// create the javascript line that initiaties the game session
-	var jsline = "session = new class_";
+	var html = gameTemplate;
+	
+	var lineSession = "session = new class_";
 
-	if(s.online == "0") jsline += "local_session(document.getElementById('field'),";
+	if(s.online == "0") {
+	
+		lineSession += "local_session(document.getElementById('field'),";
+		html = html.replace("##1","");
+		
+	}
 	else {
 	
 		// first or second player to join or session full?
-		if(s.full) return "Session is full!";
-		else if (s.player[1]) {
-			s.full = true;
-			jsline += "online_session(document.getElementById('field'),io.connect('http://localhost')," + id + ",2,";
-		}
-		else if (s.player[2])  {
-			s.full = true;
+		if(s.player[side]) return "Side is already taken!";
+		
+		lineSession += "online_session(document.getElementById('field'),io.connect('http://localhost')," + id + "," + side + ",";
+		
+		if(s.player[(side == 1 ? 2 : 1)] == undefined) {
+		
+			html = html.replace("##1",'<a class="btn btn-primary" href="#" onclick="session.inviteUrl()">Inivitation URL</a>\n' +
+				'<a class="btn btn-primary" href="#" onclick="session.publish()">Publish</a>');
 			
 		}
-		else {
-		
-			return "Pending ..."; // TODO: implement
-		}
+		else html = html.replace("##1","");
 		
 	}
 	
-	jsline += "'" + s.col1 + "'," + s.wins1 + ",'" + s.col2 + "'," + s.wins2 + "," + s.dim + "," + s.dim + "," + s.next + ");";
+	lineSession += "'" + s.col1 + "'," + s.wins1 + ",'" + s.col2 + "'," + s.wins2 + "," + s.dim + "," + s.dim + "," + s.next + ");";
 
-	return gameSkeleton.replace("##",jsline);
+	html = html.replace("##2",lineSession)
+	
+	return html;
 }
 
 function checkSession(id) {
@@ -141,6 +147,12 @@ function checkSession(id) {
 
 }
 
+function publishSession(id) {
+
+	// TODO: implement!
+
+}
+
 var server = http.createServer(onRequest);
 
 server.listen(80);
@@ -149,12 +161,22 @@ var socket = socketio.listen(server);
 
 socket.sockets.on('connection', function (socket) {
 	socket.on('init', function (data) {
-		sessions[data.id].player[data.side] = socket;
+		var s = sessions[data.id];
+		s.player[data.side] = socket;
+		var o = (data.side == 1 ? 2 : 1);
+		
+		if(s.player[o]) {
+			s.player[data.side].emit('full');
+			s.player[o].emit('full');
+		}
 	});
 	socket.on('start', function (data) {
-		sessions[data.id].player[data.to].emit('start', data);
+		sessions[data.id].player[data.to].emit('start');
 	});
 	socket.on('turn', function (data) {
 		sessions[data.id].player[data.to].emit('turn', data);
+	});
+	socket.on('publish', function (data) {
+		publishSession(data.id);
 	});
 });

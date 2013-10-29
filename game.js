@@ -1,21 +1,21 @@
 function class_online_session(container,sock,id,clientSide,color1,wins1,color2,wins2,dimx,dimy,next) {
 
-	this = new class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next);
+	this.canvas = createCanvas(container);
 	
-	this.sid = id;
+	this.ctx = this.canvas.getContext('2d');
+	this.fontsize = Math.floor(this.canvas.width/12);
+	this.ctx.font =  this.fontsize + "px Georgia";
 	
-	// web socket
-	this.socket = sock;
+	// canvas offset, used for mouse click mapping
+	this.xoffset = this.canvas.offsetLeft + container.offsetLeft;
+	this.yoffset = this.canvas.offsetTop + container.parentElement.offsetTop;
+
+	this.player1 = new class_player(1,color1,wins1);
+	this.player2 = new class_player(2,color2,wins2);
 	
-	this.socket.on('start', function (data) {
-		this.startGame();
-	  });
-	  
-	this.socket.on('turn', function (data) {
-		this.othersTurn(data);
-	  });
-	  
-	this.socket.emit('init', {id: this.sid, side: clientSide});
+	// linked loop
+	this.player1.next = this.player2;
+	this.player2.next = this.player1;
 	
 	if(clientSide == 1) {
 		this.me = this.player1;
@@ -25,14 +25,37 @@ function class_online_session(container,sock,id,clientSide,color1,wins1,color2,w
 		this.other = this.player1;
 	}
 	
-	if(next == clientSide) {
-		this.bMyTurn = true;
-		this.drawText("Click to start!");
-	}
-	else {
-		this.bMyTurn = false;
-		this.drawText("Waiting for opponent ...");
-	}
+	this.nextStarter = (next == 1 ? this.player1 : this.player2); // player that will start the next game
+	
+	this.field = new class_field(this,dimx,dimy);
+	this.logic = new class_gamelogic(this.field);
+	
+	this.bPlaying = false; // control flag
+	this.bMyTurn = false;
+	
+	// socket & connection
+	this.sid = id;
+	this.socket = sock;
+	
+	this.socket.on('full', function () {
+		
+		if(session.me === session.nextStarter) {
+			session.bMyTurn = true;
+			session.drawText("Click to start!");
+		}
+		else {
+			session.bMyTurn = false;
+			session.drawText("Opponent begins ...");
+		}
+	  });
+	
+	this.socket.on('start', function () {
+		session.startGame();
+	  });
+	  
+	this.socket.on('turn', function (data) {
+		session.othersTurn(data);
+	  });
 	
 	this.startGame = function() {
 	
@@ -93,6 +116,11 @@ function class_online_session(container,sock,id,clientSide,color1,wins1,color2,w
 	
 	};
 	
+	this.undo = function() {
+	
+	
+	};
+	
 	this.clickHandler = function(event) {
 	
 		if(!this.bMyTurn) return;
@@ -136,7 +164,36 @@ function class_online_session(container,sock,id,clientSide,color1,wins1,color2,w
 			
 	};
 	
+	this.drawText = function(text) {
+		
+		this.ctx.fillStyle = "#FFF";
+		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+		
+		this.ctx.fillStyle = "#000";
+		var x = (this.canvas.width / 2) - (this.fontsize * 0.22 * text.length);
+		var y = (this.canvas.height / 2) - (this.fontsize / 2);
+		this.ctx.fillText(text,x,y);
+		
+	};
+	
+	this.publish = function() {
+	
+		this.socket.emit("publish",{id: this.sid});
+	
+	};
+	
+	this.inviteUrl = function() {
+	
+		// TODO: change! clipboard? modal dialog?
+		alert("http://localhost/play?id=" + this.sid + "&side=" + this.other.stone);
+	
+	};
+	
+	this.socket.emit('init', {id: this.sid, side: clientSide});
+	
 	this.canvas.onclick = this.clickHandler.bind(this);
+	
+	this.drawText("Waiting for opponent ...");
 
 } // end class online session
 
@@ -145,7 +202,7 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 	this.canvas = createCanvas(container);
 	
 	this.ctx = this.canvas.getContext('2d');
-	this.fontsize = Math.floor(this.canvas.width/10);
+	this.fontsize = Math.floor(this.canvas.width/12);
 	this.ctx.font =  this.fontsize + "px Georgia";
 	
 	// canvas offset, used for mouse click mapping
@@ -210,7 +267,7 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
 		
 		this.ctx.fillStyle = "#000";
-		var x = (this.canvas.width / 2) - ((text.length * this.fontsize) / 2);
+		var x = (this.canvas.width / 2) - (this.fontsize * 0.25 * text.length);
 		var y = (this.canvas.height / 2) - (this.fontsize / 2);
 		this.ctx.fillText(text,x,y);
 		

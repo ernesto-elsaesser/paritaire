@@ -44,8 +44,9 @@
             <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>
           </div>
           REDs turn
-          <a class="btn btn-primary" href="#">Undo</a>
-          
+          <a class="btn btn-primary" href="#" onclick="session.undo()">Undo</a>
+		  ##1
+		  
         </div>
         <div class="col-md-4" id="field">
           
@@ -79,7 +80,7 @@
     <script type="text/javascript" src="game.js"></script>
 	<script type="text/javascript">
 	
-	##
+	##2
 		
 	</script>
 	
