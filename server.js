@@ -3,6 +3,7 @@ var http = require("http");
 var fs = require("fs");
 var url = require("url");
 var querystring = require("querystring");
+var socketio = require('socket.io');
 
 // global variables
 var sessions = []; // stores all game sessions
@@ -94,7 +95,7 @@ function buildGame(id) {
 	// create the javascript line that initiaties the game session
 	var jsline = "session = new class_";
 
-	if(s.online == "0") jsline += "local_session(document.getElementById('canvas'),";
+	if(s.online == "0") jsline += "local_session(document.getElementById('field'),";
 	else {
 	
 		// first or second player to join or session full?
@@ -104,7 +105,7 @@ function buildGame(id) {
 		}
 		else if (s.joined == 1)  {
 			s.joined++;
-			jsline += "online_session(document.getElementById('canvas'),2,";
+			jsline += "online_session(document.getElementById('field'),2,";
 		}
 		else
 			return "Session is full!";
@@ -138,3 +139,12 @@ function checkSession(id) {
 }
 
 http.createServer(onRequest).listen(80);
+
+var io = socketio.listen(8080);
+
+io.sockets.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
