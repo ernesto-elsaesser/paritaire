@@ -107,7 +107,7 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 	this.currentPlayer = {};
 	this.nextStarter = (next == 1 ? this.player1 : this.player2); // player that will start the next game
 	
-	this.field = new class_field(this,dimx,dimy,this.canvas.width/dimx);
+	this.field = new class_field(this,dimx,dimy);
 	this.logic = new class_gamelogic(this.field);
 	
 	this.bPlaying = false; // control flag
@@ -223,7 +223,7 @@ function class_player(stoneState, colorName, winCount) {
 	return true;
 }
 
-function class_field(refSession,columnNum,rowNum,sideLength) 
+function class_field(refSession,columnNum,rowNum) 
 {	
 	// error handling
 	if(columnNum % 2 || rowNum % 2) {
@@ -234,7 +234,7 @@ function class_field(refSession,columnNum,rowNum,sideLength)
 	this.session = refSession;
 	this.xsize = columnNum;
 	this.ysize = rowNum;
-	this.side = sideLength;
+	this.side = this.session.canvas.width / columnNum; // TODO: non-square fields?
 	this.future = []; // future turn positions
 	
 	this.imgs = [new Image(), this.session.player1.img, this.session.player2.img];

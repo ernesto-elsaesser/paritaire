@@ -3,6 +3,7 @@ var http = require("http");
 var fs = require("fs");
 var url = require("url");
 var querystring = require("querystring");
+var socketio = require('socket.io');
 
 // global variables
 var sessions = []; // stores all game sessions
@@ -138,3 +139,12 @@ function checkSession(id) {
 }
 
 http.createServer(onRequest).listen(80);
+
+var io = socketio.listen(8080);
+
+io.sockets.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
