@@ -39,7 +39,7 @@ function onRequest(request,response) {
 				sessions[id].wins1 = 0;
 				sessions[id].wins2 = 0;
 				sessions[id].next = 1;
-				sessions[id].joined = 0;
+				sessions[id].full = false;
 				response.writeHead(302, {"Location": "play?id="+id});
 			}
 			else { // invalid post data
@@ -99,16 +99,19 @@ function buildGame(id) {
 	else {
 	
 		// first or second player to join or session full?
-		if (s.joined == 0) {
-			s.joined++;
-			return "pending ..."; // TODO: implement
+		if(s.full) return "Session is full!";
+		else if (s.player[1]) {
+			s.full = true;
+			jsline += "online_session(document.getElementById('field'),io.connect('http://localhost')," + id + ",2,";
 		}
-		else if (s.joined == 1)  {
-			s.joined++;
-			jsline += "online_session(document.getElementById('field'),2,";
+		else if (s.player[2])  {
+			s.full = true;
+			
 		}
-		else
-			return "Session is full!";
+		else {
+		
+			return "Pending ..."; // TODO: implement
+		}
 		
 	}
 	
@@ -138,13 +141,20 @@ function checkSession(id) {
 
 }
 
-http.createServer(onRequest).listen(80);
+var server = http.createServer(onRequest);
 
-var io = socketio.listen(8080);
+server.listen(80);
 
-io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
+var socket = socketio.listen(server);
+
+socket.sockets.on('connection', function (socket) {
+	socket.on('init', function (data) {
+		sessions[data.id].player[data.side] = socket;
+	});
+	socket.on('start', function (data) {
+		sessions[data.id].player[data.to].emit('start', data);
+	});
+	socket.on('turn', function (data) {
+		sessions[data.id].player[data.to].emit('turn', data);
+	});
 });

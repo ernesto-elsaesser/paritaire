@@ -1,6 +1,21 @@
-function class_online_session(container,clientSide,color1,wins1,color2,wins2,dimx,dimy,next) {
+function class_online_session(container,sock,id,clientSide,color1,wins1,color2,wins2,dimx,dimy,next) {
 
 	this = new class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next);
+	
+	this.sid = id;
+	
+	// web socket
+	this.socket = sock;
+	
+	this.socket.on('start', function (data) {
+		this.startGame();
+	  });
+	  
+	this.socket.on('turn', function (data) {
+		this.othersTurn(data);
+	  });
+	  
+	this.socket.emit('init', {id: this.sid, side: clientSide});
 	
 	if(clientSide == 1) {
 		this.me = this.player1;
@@ -27,14 +42,56 @@ function class_online_session(container,clientSide,color1,wins1,color2,wins2,dim
 		this.me.points = 2;
 		this.other.points = 2;
 
-		this.currentPlayer = this.me;
-		this.nextStarter = this.other;
+		if(this.bMyTurn)
+			this.nextStarter = this.other;
+		else
+			this.nextStarter = this.me;
+			
 		this.bPlaying = true;
 	};
 	
-	// TODO: receive game started
+	this.endGame = function() {
+		
+		// TODO: replace with canvas graphics
+		var msg = "" ;
+		
+		if(this.me.points > this.other.points) {
+			this.me.wins++;
+			msg += "You won! [";
+		}
+		else if (this.me.points < this.other.points) {
+			this.other.wins++;
+			msg += "You lost! [";
+		}
+		else
+			msg = "Draw! ["
+		
+		msg += this.me.points + ":" + this.other.points + "]";
+		
+		this.ctx.drawText(msg + "\nClick to play!");
+		
+		this.bPlaying = false;
+		
+		this.bMyTurn = (this.nextStarter === this.me);
 	
-	// TODO: overwrite endGame
+	};
+	
+	this.othersTurn = function(turn) {
+	
+		var stolenStones = this.logic.makeTurn(this.other,turn.x,turn.y);
+			
+		// put stone
+		this.field.stones[turn.x][turn.y] = this.other.stone; 
+		this.field.draw();
+			
+		// change points
+		this.other.points += stolenStones + 1;
+		this.me.points -= stolenStones;
+		
+		if(this.logic.canTurn(this.me)) this.bMyTurn = true;
+		else if(!this.logic.canTurn(this.other)) this.endGame(); // TODO: info that no more turns are possible
+	
+	};
 	
 	this.clickHandler = function(event) {
 	
@@ -49,6 +106,7 @@ function class_online_session(container,clientSide,color1,wins1,color2,wins2,dim
 		
 			if(!this.bPlaying) {
 				this.startGame();
+				this.socket.emit('start', {id: this.sid, to: this.other.stone});
 				return;
 			}
 				
@@ -66,17 +124,14 @@ function class_online_session(container,clientSide,color1,wins1,color2,wins2,dim
 			this.me.points += stolenStones + 1;
 			this.other.points -= stolenStones;
 			
-			this.bMyTurn = false;
 			// TODO: update info text
 			
-			// TODO: send turn to opponent / receive opponents turn - each player checks own turns
-			/*
+			this.socket.emit('turn', {id: this.sid, to: this.other.stone, x: x, y: y});
+			
 			// TODO: this function should run in the background
-			if(!this.logic.canTurn(this.currentPlayer)) {
-				this.currentPlayer = this.currentPlayer.next;
-				if(!this.logic.canTurn(this.currentPlayer)) this.endGame(); // TODO: info that no more turns are possible
-			}
-			*/
+			if(this.logic.canTurn(this.other)) this.bMyTurn = false;
+			else if(!this.logic.canTurn(this.me)) this.endGame(); // TODO: info that no more turns are possible
+			
 		}
 			
 	};
