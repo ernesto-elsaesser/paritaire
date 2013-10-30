@@ -34,8 +34,6 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.socket.on('alone', function () {
 	
-		alert("alone");
-	
 		if(that.bPlaying) ; // in game disconnect
 		
 		if(that.chosenSide != 0) {
@@ -51,7 +49,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 			that.ctx.fillStyle = that.player2.color;
 			that.ctx.fillRect(that.canvas.width/2,0,that.canvas.width / 2,that.canvas.height);
 			that.ctx.fillStyle = "#000";
-			var x = (that.canvas.width / 2) - (that.fontsize * 0.22 * text.length);
+			var x = (that.canvas.width / 2) - (that.fontsize * 3.96);
 			var y = (that.canvas.height / 2) - (that.fontsize / 2);
 			that.ctx.fillText("Choose your color!",x,y);
 		}

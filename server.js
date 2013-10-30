@@ -211,7 +211,7 @@ ioserver.sockets.on('connection', function (socket) {
 			if(socket.session.first === socket)
 				socket.session.first = socket.other
 			
-		}else socket.session.first = null;
+		}else if(socket.session) socket.session.first = null;
 
   });
 });
