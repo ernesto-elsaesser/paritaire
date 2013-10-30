@@ -40,7 +40,7 @@ function onRequest(request,response) {
 				sessions[id].wins2 = 0;
 				sessions[id].next = 1;
 				sessions[id].first = null;
-				response.writeHead(302, {"Location": "play?id=" + id + (sessions[id].online == "0" ? "" : "&side=1")});
+				response.writeHead(302, {"Location": "play?id=" + id});
 			}
 			else { // invalid post data
 				// the session ID remains unused
@@ -183,7 +183,7 @@ ioserver.sockets.on('connection', function (socket) {
 			// cross reference for disconnect event
 			socket.other = socket.session.first;
 			socket.session.first.other = socket;
-			socket.session.first.emit('full',{side: socket.first.side});
+			socket.session.first.emit('full',{side: socket.session.first.side});
 			socket.emit('full',{side: t});
 		}
 			
