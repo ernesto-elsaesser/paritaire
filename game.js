@@ -58,7 +58,9 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.socket.on('full', function (data) {
 		
-		if(data.side == 1) {
+		that.chosenSide = data.side:
+		
+		if(that.chosenSide == 1) {
 			that.me = that.player1;
 			that.other = that.player2;
 		}else {
@@ -74,6 +76,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 			that.bMyTurn = false;
 			that.drawText("Opponent begins ...");
 		}
+		
 	  });
 	
 	this.socket.on('start', function () {
