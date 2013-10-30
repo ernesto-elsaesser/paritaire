@@ -107,7 +107,7 @@ function buildGame(id,side) {
 		// first or second player to join or session full?
 		if(s.player[side]) return "Side is already taken!";
 		
-		lineSession += "online_session(document.getElementById('field'),io.connect('http://localhost')," + id + "," + side + ",";
+		lineSession += "online_session(document.getElementById('field'),io.connect('http://217.84.28.216/')," + id + "," + side + ",";
 		
 		if(s.player[(side == 1 ? 2 : 1)] == undefined) {
 		

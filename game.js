@@ -8,7 +8,7 @@ function class_online_session(container,sock,id,clientSide,color1,wins1,color2,w
 	
 	// canvas offset, used for mouse click mapping
 	this.xoffset = this.canvas.offsetLeft + container.offsetLeft;
-	this.yoffset = this.canvas.offsetTop + container.parentElement.offsetTop;
+	this.yoffset = this.canvas.offsetTop + container.offsetTop;
 
 	this.player1 = new class_player(1,color1,wins1);
 	this.player2 = new class_player(2,color2,wins2);
