@@ -39,7 +39,7 @@ function onRequest(request,response) {
 				sessions[id].wins1 = 0;
 				sessions[id].wins2 = 0;
 				sessions[id].next = 1;
-				sessions[id].player = [];
+				sessions[id].first = null;
 				response.writeHead(302, {"Location": "play?id=" + id + (sessions[id].online == "0" ? "" : "&side=1")});
 			}
 			else { // invalid post data
@@ -52,7 +52,7 @@ function onRequest(request,response) {
 		
 	case 'play':
 		response.writeHead(200, {"Content-Type": "text/html"});
-		response.write(buildGame(requrl.query["id"],requrl.query["side"]));
+		response.write(buildGame(requrl.query["id"]));
 		response.end();
 		break;
 		
@@ -84,7 +84,7 @@ function onRequest(request,response) {
 	}
 }
 
-function buildGame(id,side) {
+function buildGame(id) {
 
 	if(id == undefined || isNaN(id)) return "Incorrect URL syntax!";
 
@@ -103,13 +103,10 @@ function buildGame(id,side) {
 		
 	}
 	else {
-	
-		// first or second player to join or session full?
-		if(s.player[side]) return "Side is already taken!";
 		
-		lineSession += "online_session(document.getElementById('field'),io.connect('http://217.84.28.216/')," + id + "," + side + ",";
+		lineSession += "online_session(document.getElementById('field'),io.connect('http://217.84.28.216/')," + id + ",";
 		
-		if(s.player[(side == 1 ? 2 : 1)] == undefined) {
+		if(s.first == null) {
 		
 			html = html.replace("##1",'<a class="btn btn-primary" href="#" onclick="session.inviteUrl()">Inivitation URL</a>\n' +
 				'<a class="btn btn-primary" href="#" onclick="session.publish()">Publish</a>');
@@ -160,23 +157,56 @@ server.listen(80);
 var socket = socketio.listen(server);
 
 socket.sockets.on('connection', function (socket) {
+
+	socket.other = null;
+	socket.session = null;
+	socket.side = null;
+
 	socket.on('init', function (data) {
-		var s = sessions[data.id];
-		s.player[data.side] = socket;
-		var o = (data.side == 1 ? 2 : 1);
+	
+		console.log("server: init from session " + data.id);
+		socket.session = sessions[data.id];
 		
-		if(s.player[o]) {
-			s.player[data.side].emit('full');
-			s.player[o].emit('full');
+		if(socket.session.first == null) {
+		
+			socket.session.first = socket;
+			socket.emit('alone');
 		}
+		else {
+		
+			var t = (socket.first.side == 1 ? 2 : 1);
+			socket.side = t;
+			// cross reference for disconnect event
+			socket.other = socket.session.first;
+			socket.session.first.other = socket;
+			socket.session.first.emit('full',{side: socket.first.side});
+			socket.emit('full',{side: t});
+		}
+			
 	});
+	socket.on('choose', function (data) {
+		socket.side = data.side;
+	});
+				
 	socket.on('start', function (data) {
-		sessions[data.id].player[data.to].emit('start');
+		socket.other.emit('start');
 	});
 	socket.on('turn', function (data) {
-		sessions[data.id].player[data.to].emit('turn', data);
+		socket.other.emit('turn', data);
 	});
 	socket.on('publish', function (data) {
 		publishSession(data.id);
 	});
+	socket.on('disconnect', function () {
+	
+		if(socket.other) {
+			socket.other.emit('alone');
+			socket.other.other = null;
+			
+			if(socket.session.first === socket)
+				socket.session.first = socket.other
+			
+		}else socket.session.first = null;
+
+  });
 });

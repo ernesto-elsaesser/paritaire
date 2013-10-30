@@ -1,4 +1,4 @@
-function class_online_session(container,sock,id,clientSide,color1,wins1,color2,wins2,dimx,dimy,next) {
+function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,dimy,next) {
 
 	this.canvas = createCanvas(container);
 	
@@ -17,44 +17,69 @@ function class_online_session(container,sock,id,clientSide,color1,wins1,color2,w
 	this.player1.next = this.player2;
 	this.player2.next = this.player1;
 	
-	if(clientSide == 1) {
-		this.me = this.player1;
-		this.other = this.player2;
-	}else {
-		this.me = this.player2;
-		this.other = this.player1;
-	}
-	
 	this.nextStarter = (next == 1 ? this.player1 : this.player2); // player that will start the next game
 	
 	this.field = new class_field(this,dimx,dimy);
 	this.logic = new class_gamelogic(this.field);
 	
-	this.bPlaying = false; // control flag
+	this.bPlaying = false; // control flags
 	this.bMyTurn = false;
+	this.bChoseSide = false;
 	
 	// socket & connection
 	this.sid = id;
 	this.socket = sock;
 	
-	this.socket.on('full', function () {
+	var that = this;
+	
+	this.socket.on('alone', function () {
+	
+		var s;
+	
+		if(that.bPlaying) ; // in game disconnect
 		
-		if(session.me === session.nextStarter) {
-			session.bMyTurn = true;
-			session.drawText("Click to start!");
+		if(that.chosenSide != 0) {
+		
+			that.socket.emit('choose', {id: that.sid, side: that.chosenSide});
+			that.drawText("Waiting for opponent ...");
+			
 		}
 		else {
-			session.bMyTurn = false;
-			session.drawText("Opponent begins ...");
+		
+			that.ctx.fillStyle = that.player1.color;
+			that.ctx.fillRect(0,0,that.canvas.width / 2,that.canvas.height);
+			that.ctx.fillStyle = that.player2.color;
+			that.ctx.fillRect(that.canvas.width,0,that.canvas.width / 2,that.canvas.height);
+		}
+		
+	});
+	
+	this.socket.on('full', function (data) {
+		
+		if(data.side == 1) {
+			that.me = that.player1;
+			that.other = that.player2;
+		}else {
+			that.me = that.player2;
+			that.other = that.player1;
+		}
+		
+		if(that.me === that.nextStarter) {
+			that.bMyTurn = true;
+			that.drawText("Click to start!");
+		}
+		else {
+			that.bMyTurn = false;
+			that.drawText("Opponent begins ...");
 		}
 	  });
 	
 	this.socket.on('start', function () {
-		session.startGame();
+		that.startGame();
 	  });
 	  
 	this.socket.on('turn', function (data) {
-		session.othersTurn(data);
+		that.othersTurn(data);
 	  });
 	
 	this.startGame = function() {
@@ -123,7 +148,7 @@ function class_online_session(container,sock,id,clientSide,color1,wins1,color2,w
 	
 	this.clickHandler = function(event) {
 	
-		if(!this.bMyTurn) return;
+		if(this.chosenSide != 0 && !this.bMyTurn) return;
 	
 		// mouse position
 		var mx = event.clientX-this.xoffset+scrollX;
@@ -132,9 +157,18 @@ function class_online_session(container,sock,id,clientSide,color1,wins1,color2,w
 		// click inside canvas?
 		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
 		
+			if(this.chosenSide == 0) {
+			
+				this.chosenSide = (mx > ((this.field.xsize / 2) * this.field.side) ? 1 : 2);
+			
+				this.socket.emit('choose', {id: this.sid, side: this.chosenSide});
+				this.drawText("Waiting for opponent ...");
+			
+			}
+		
 			if(!this.bPlaying) {
 				this.startGame();
-				this.socket.emit('start', {id: this.sid, to: this.other.stone});
+				this.socket.emit('start', {id: this.sid});
 				return;
 			}
 				
@@ -154,7 +188,7 @@ function class_online_session(container,sock,id,clientSide,color1,wins1,color2,w
 			
 			// TODO: update info text
 			
-			this.socket.emit('turn', {id: this.sid, to: this.other.stone, x: x, y: y});
+			this.socket.emit('turn', {id: this.sid, x: x, y: y});
 			
 			// TODO: this function should run in the background
 			if(this.logic.canTurn(this.other)) this.bMyTurn = false;
@@ -189,11 +223,9 @@ function class_online_session(container,sock,id,clientSide,color1,wins1,color2,w
 	
 	};
 	
-	this.socket.emit('init', {id: this.sid, side: clientSide});
+	this.socket.emit('init', {id: this.sid});
 	
 	this.canvas.onclick = this.clickHandler.bind(this);
-	
-	this.drawText("Waiting for opponent ...");
 
 } // end class online session
 
@@ -521,7 +553,7 @@ function createCanvas(container) {
 	canvas.style.margin   = "10px";
 	if (canvas.width > 400) {
 		canvas.width = 400;
-		canvas.style.margin = "10px " + (container.clientWidth - 400) / 2 + "px";
+		canvas.style.margin = "10px auto";
 	}
 	canvas.height = canvas.width; // TODO: change for non-square fields
 	
