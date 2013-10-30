@@ -58,7 +58,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.socket.on('full', function (data) {
 		
-		that.chosenSide = data.side:
+		that.chosenSide = data.side;
 		
 		if(that.chosenSide == 1) {
 			that.me = that.player1;
