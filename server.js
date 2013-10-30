@@ -154,11 +154,12 @@ var server = http.createServer(onRequest);
 
 server.listen(80);
 
-socketio.set('log level', 2);
 
-var socket = socketio.listen(server);
+var ioserver = socketio.listen(server);
 
-socket.sockets.on('connection', function (socket) {
+ioserver.set('log level', 2);
+
+ioserver.sockets.on('connection', function (socket) {
 
 	socket.other = null;
 	socket.session = null;
