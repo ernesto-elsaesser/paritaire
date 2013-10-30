@@ -121,7 +121,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		
 		msg += this.me.points + ":" + this.other.points + "]";
 		
-		this.ctx.drawText(msg + "\nClick to play!");
+		this.drawText(msg + "\nClick to play!");
 		
 		this.bPlaying = false;
 		
@@ -294,7 +294,7 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 		
 		msg += this.player1.points + ":" + this.player2.points + "]";
 		
-		this.ctx.drawText(msg + "\nClick to play!");
+		this.drawText(msg + "\nClick to play!");
 		
 		this.bPlaying = false;
 	
