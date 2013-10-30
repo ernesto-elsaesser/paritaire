@@ -154,6 +154,8 @@ var server = http.createServer(onRequest);
 
 server.listen(80);
 
+socketio.set('log level', 2);
+
 var socket = socketio.listen(server);
 
 socket.sockets.on('connection', function (socket) {
@@ -164,17 +166,18 @@ socket.sockets.on('connection', function (socket) {
 
 	socket.on('init', function (data) {
 	
-		console.log("server: init from session " + data.id);
 		socket.session = sessions[data.id];
 		
 		if(socket.session.first == null) {
 		
+			console.log("server: init to empty session " + data.id);
 			socket.session.first = socket;
 			socket.emit('alone');
 		}
 		else {
 		
 			var t = (socket.first.side == 1 ? 2 : 1);
+			console.log("server: init to session " + data.id + ", assigned side " + t);
 			socket.side = t;
 			// cross reference for disconnect event
 			socket.other = socket.session.first;
@@ -185,6 +188,7 @@ socket.sockets.on('connection', function (socket) {
 			
 	});
 	socket.on('choose', function (data) {
+		console.log("server: player chose " + data.side + " in session " + data.id);
 		socket.side = data.side;
 	});
 				

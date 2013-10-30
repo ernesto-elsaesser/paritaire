@@ -24,7 +24,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.bPlaying = false; // control flags
 	this.bMyTurn = false;
-	this.bChoseSide = false;
+	this.chosenSide = 0;
 	
 	// socket & connection
 	this.sid = id;
@@ -34,7 +34,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.socket.on('alone', function () {
 	
-		var s;
+		alert("alone");
 	
 		if(that.bPlaying) ; // in game disconnect
 		
