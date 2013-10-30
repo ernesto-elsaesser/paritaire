@@ -179,6 +179,8 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 				
 			var x = parseInt(mx/this.field.side);
 			var y = parseInt(my/this.field.side);
+			
+			if(this.field.stones[x][y] != 0) return;
 				
 			var stolenStones = this.logic.makeTurn(this.me,x,y);
 			if(stolenStones == 0) return; // no turn
@@ -244,7 +246,7 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 	
 	// canvas offset, used for mouse click mapping
 	this.xoffset = this.canvas.offsetLeft + container.offsetLeft;
-	this.yoffset = this.canvas.offsetTop + container.parentElement.offsetTop;
+	this.yoffset = this.canvas.offsetTop + container.offsetTop;
 
 	this.player1 = new class_player(1,color1,wins1);
 	this.player2 = new class_player(2,color2,wins2);
@@ -326,6 +328,8 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 				
 			var x = parseInt(mx/this.field.side);
 			var y = parseInt(my/this.field.side);
+				
+			if(this.field.stones[x][y] != 0) return;
 				
 			var stolenStones = this.logic.makeTurn(this.currentPlayer,x,y);
 			if(stolenStones == 0) return; // no turn
@@ -483,7 +487,7 @@ function class_gamelogic(refField) {
 		// own stone
 		else if (stone == player.stone) {
 		
-			if(bCheck) return 1; // only checking, return true
+			if(path.length > 0 && bCheck) return 1; // only checking, return true
 			// swap stones in path to players color
 			for(var i in path) this.field.stones[path[i].x][path[i].y] = player.stone;
 			return path.length; // return number of stolen stones
