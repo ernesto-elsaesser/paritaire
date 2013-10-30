@@ -177,7 +177,7 @@ ioserver.sockets.on('connection', function (socket) {
 		}
 		else {
 		
-			var t = (socket.first.side == 1 ? 2 : 1);
+			var t = (socket.session.first.side == 1 ? 2 : 1);
 			console.log("server: init to session " + data.id + ", assigned side " + t);
 			socket.side = t;
 			// cross reference for disconnect event
@@ -189,7 +189,7 @@ ioserver.sockets.on('connection', function (socket) {
 			
 	});
 	socket.on('choose', function (data) {
-		console.log("server: player chose " + data.side + " in session " + data.id);
+		console.log("server: player chose side " + data.side + " in session " + data.id);
 		socket.side = data.side;
 	});
 				
