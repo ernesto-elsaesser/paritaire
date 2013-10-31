@@ -34,14 +34,14 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.socket.on('alone', function () {
 	
-		if(that.bPlaying) ; // in game disconnect
+		if(that.bPlaying) { // in game disconnect
 		
-		if(that.chosenSide != 0) {
+           	this.bMyTurn = false;
+           	this.nextStarter = this.nextStarter.next; // revert starter change in startGame
 		
-			that.socket.emit('choose', {id: that.sid, side: that.chosenSide});
-			that.drawText("Waiting for opponent ...");
-			
 		}
+		
+		if(that.chosenSide != 0) that.drawText("Waiting for opponent ...");
 		else {
 		
 			that.ctx.fillStyle = that.player1.color;

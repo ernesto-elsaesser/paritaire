@@ -4,6 +4,7 @@ var fs = require("fs");
 var url = require("url");
 var querystring = require("querystring");
 var socketio = require('socket.io');
+var repl = require('repl');
 
 // global variables
 var sessions = []; // stores all game sessions
@@ -16,6 +17,16 @@ var mimeTypes = {"html": "text/html",
 	"png": "image/png",
 	"css": "text/css"};
 var validColors = ["blue","green","orange","red","violet","yellow"];
+
+
+var shell = repl.start({
+  prompt: "node cli>",
+  input: process.stdin,
+  output: process.stdout
+});
+
+shell.context.sessions = sessions;
+shell.context.clients = clients;
 
 // web server callback
 function onRequest(request,response) {
@@ -230,7 +241,9 @@ ioserver.sockets.on('connection', function (socket) {
           socket.session.first = null;
         }
       }
-      else console.log("server: client without session disconnected");
+      else console.log("server: client (side: " + c.side + ") without session disconnected");
+      
+      delete c;
     }
     else console.log("server: disconnect without client");
 
