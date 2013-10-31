@@ -49,8 +49,7 @@ function onRequest(request,response) {
 			sessions[id]=querystring.parse(params); // create new session from post data
 			if(checkSession(id)) {
 				sessions[id].id = id;
-				sessions[id].wins1 = 0;
-				sessions[id].wins2 = 0;
+				sessions[id].wins = [null,0,0];
 				sessions[id].next = 1;
 				sessions[id].first = null;
 				sessions[id].full = false;
@@ -210,10 +209,15 @@ ioserver.sockets.on('connection', function (socket) {
   });
   		
   socket.on('start', function (data) {
+    var t = sessions[data.id].next;
+    sessions[data.id].next = (t == 1 ? 2 : 1);
     clients[socket.id].other.socket.emit('start');
   });
   socket.on('turn', function (data) {
     clients[socket.id].other.socket.emit('turn', data);
+  });
+  socket.on('win', function (data) {
+    sessions[data.id].wins[clients[socket.id].side]++;
   });
   socket.on('publish', function (data) {
     publishSession(data.id);

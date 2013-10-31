@@ -36,8 +36,8 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 		if(that.bPlaying) { // in game disconnect
 		
+      		this.bPlaying = false;
            	this.bMyTurn = false;
-           	this.nextStarter = this.nextStarter.next; // revert starter change in startGame
 		
 		}
 		
@@ -110,6 +110,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		var msg = "" ;
 		
 		if(this.me.points > this.other.points) {
+      		this.socket.emit("win",{id: this.sid});
 			this.me.wins++;
 			msg += "You won! [";
 		}

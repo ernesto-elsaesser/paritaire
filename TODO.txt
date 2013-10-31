@@ -5,7 +5,9 @@ Sophie:
 
 Ernesto:
 - undo
-- game logic (end, overwrite stones)
 - publish
 - node fileserver security
 - socketio websokcet 502
+- win event
+- modulirisieren
+- timeout timer
