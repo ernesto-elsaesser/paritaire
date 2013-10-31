@@ -10,3 +10,4 @@ Ernesto:
 - socketio websokcet 502
 - modularisieren
 - timeout timer
+- local click position like online

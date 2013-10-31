@@ -7,8 +7,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	this.ctx.font =  this.fontsize + "px Georgia";
 	
 	// canvas offset, used for mouse click mapping
-	this.xoffset = container.offsetLeft;
-	this.yoffset = container.offsetTop;
+	this.container = container;
 
 	this.player1 = new class_player(1,color1,wins1);
 	this.player2 = new class_player(2,color2,wins2);
@@ -107,7 +106,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	this.endGame = function() {
 		
 		// TODO: replace with canvas graphics
-		var msg = "" ;
+		var msg = "";
 		
 		if(this.me.points > this.other.points) {
       		this.socket.emit("win",{id: this.sid});
@@ -123,11 +122,15 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		
 		msg += this.me.points + ":" + this.other.points + "]";
 		
-		this.drawText(msg + "\nClick to play!");
+		this.drawText(msg);
 		
 		this.bPlaying = false;
 		
 		this.bMyTurn = (this.nextStarter === this.me);
+		
+		if(this.bMyTurn) {
+      		this.ctx.fillText("Click to play!", 100,250);
+      	}	
 	
 	};
 	
@@ -158,8 +161,8 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		if(!this.bMyTurn) return;
 	
 		// mouse position
-		var mx = event.clientX-this.xoffset+scrollX+this.canvas.offsetLeft;
-		var my = event.clientY-this.yoffset+scrollY+this.canvas.offsetTop;
+		var mx = event.clientX-this.container.offsetLeft+this.canvas.offsetLeft+scrollX;
+		var my = event.clientY-this.container.offsetTop+this.canvas.offsetTop+scrollY;
 		
 		// click inside canvas?
 		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
