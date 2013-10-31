@@ -8,6 +8,5 @@ Ernesto:
 - publish
 - node fileserver security
 - socketio websokcet 502
-- win event
-- modulirisieren
+- modularisieren
 - timeout timer

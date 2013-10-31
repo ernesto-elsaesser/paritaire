@@ -217,6 +217,7 @@ ioserver.sockets.on('connection', function (socket) {
     clients[socket.id].other.socket.emit('turn', data);
   });
   socket.on('win', function (data) {
+    console.log("server: player " + clients[socket.id].side + " in session " + data.id + " won");
     sessions[data.id].wins[clients[socket.id].side]++;
   });
   socket.on('publish', function (data) {
@@ -229,20 +230,21 @@ ioserver.sockets.on('connection', function (socket) {
     if(c) {
      	
       if (c.session) {
-        
-        c.session.full = false;
     
-        if(c.other) { // session was full
+        if(c.session.full) { // session was full
         
           console.log("server: player " + c.side + " left session " + c.session.id + ", now other is alone");
           c.other.socket.emit('alone');
           c.other.other = undefined;
           if(c.session.first === c) c.session.first = c.other;
+          c.session.full = false;
+           
         }
         else { // player was alone
       		
           console.log("server: player " + c.side + " left session " + c.session.id + ", now session is empty");
-          socket.session.first = null;
+          c.session.first = null;
+          
         }
       }
       else console.log("server: client (side: " + c.side + ") without session disconnected");
