@@ -40,6 +40,7 @@ function onRequest(request,response) {
 				sessions[id].wins2 = 0;
 				sessions[id].next = 1;
 				sessions[id].first = null;
+				sessions[id].full = false;
 				response.writeHead(302, {"Location": "play?id=" + id});
 			}
 			else { // invalid post data
@@ -91,6 +92,7 @@ function buildGame(id) {
 	var s = sessions[id];
 	
 	if(s == undefined) return "Invalid session ID!";
+	if(s.full) return "Session is full!";
 	
 	var html = gameTemplate;
 	
@@ -177,14 +179,15 @@ ioserver.sockets.on('connection', function (socket) {
 		}
 		else {
 		
+      		socket.session.full = true;
 			var t = (socket.session.first.side == 1 ? 2 : 1);
 			console.log("server: init to session " + data.id + ", assigned side " + t);
 			socket.side = t;
 			// cross reference for disconnect event
 			socket.other = socket.session.first;
 			socket.session.first.other = socket;
-			socket.session.first.emit('full',{side: socket.session.first.side});
-			socket.emit('full',{side: t});
+			socket.session.first.emit('ready',{side: socket.session.first.side});
+			socket.emit('ready',{side: t});
 		}
 			
 	});
@@ -203,6 +206,8 @@ ioserver.sockets.on('connection', function (socket) {
 		publishSession(data.id);
 	});
 	socket.on('disconnect', function () {
+	
+     	socket.session.full = false;
 	
 		if(socket.other) {
 			socket.other.emit('alone');
