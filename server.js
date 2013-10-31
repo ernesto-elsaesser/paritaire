@@ -217,7 +217,7 @@ ioserver.sockets.on('connection', function (socket) {
 	
 		if(socket.other) {
 		
-      		console.log("server: player left session " + session.id + ", now other is alone");
+      		console.log("server: player left session " + socket.session.id + ", now other is alone");
 			socket.other.emit('alone');
 			socket.other.other = null;
 			
@@ -227,7 +227,7 @@ ioserver.sockets.on('connection', function (socket) {
 		}
 		else if(socket.session) {
   		
-      		console.log("server: player left session " + session.id + ", now session is empty");
+      		console.log("server: player left session " + socket.session.id + ", now session is empty");
         		socket.session.first = null;
         	}
 
