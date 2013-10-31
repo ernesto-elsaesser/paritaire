@@ -52,11 +52,12 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 			var x = (that.canvas.width / 2) - (that.fontsize * 3.96);
 			var y = (that.canvas.height / 2) - (that.fontsize / 2);
 			that.ctx.fillText("Choose your color!",x,y);
+			that.bMyTurn = true;
 		}
 		
 	});
 	
-	this.socket.on('full', function (data) {
+	this.socket.on('ready', function (data) {
 		
 		that.chosenSide = data.side;
 		
@@ -153,7 +154,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.clickHandler = function(event) {
 	
-		if(this.chosenSide != 0 && !this.bMyTurn) return;
+		if(!this.bMyTurn) return;
 	
 		// mouse position
 		var mx = event.clientX-this.xoffset+scrollX;
@@ -164,6 +165,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		
 			if(this.chosenSide == 0) {
 			
+     			this.bMyTurn = false;
 				this.chosenSide = (mx > ((this.field.xsize / 2) * this.field.side) ? 2 : 1);
 				this.socket.emit('choose', {id: this.sid, side: this.chosenSide});
 				this.drawText("Waiting for opponent ...");
