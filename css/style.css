@@ -1,3 +1,15 @@
+.intro p {
+
+  margin-top: 30px;
+  
+}
+
+.intro a {
+
+  font-size: 1.1em;
+
+}
+
 .footer {
 	float: right;
 }
