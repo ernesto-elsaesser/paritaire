@@ -207,16 +207,29 @@ ioserver.sockets.on('connection', function (socket) {
 	});
 	socket.on('disconnect', function () {
 	
+     	if(!socket.session) {
+     	
+           	console.log("server: disconnect event without session.");
+           	return;
+           }
+     	
      	socket.session.full = false;
 	
 		if(socket.other) {
+		
+      		console.log("server: player left session " + session.id + ", now other is alone");
 			socket.other.emit('alone');
 			socket.other.other = null;
 			
 			if(socket.session.first === socket)
 				socket.session.first = socket.other
 			
-		}else if(socket.session) socket.session.first = null;
+		}
+		else if(socket.session) {
+  		
+      		console.log("server: player left session " + session.id + ", now session is empty");
+        		socket.session.first = null;
+        	}
 
   });
 });
