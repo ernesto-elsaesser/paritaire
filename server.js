@@ -104,7 +104,7 @@ function buildGame(id) {
 	}
 	else {
 		
-		lineSession += "online_session(document.getElementById('field'),io.connect('http://217.84.28.216/')," + id + ",";
+		lineSession += "online_session(document.getElementById('field'),io.connect('http://elsaesser.servegame.com/')," + id + ",";
 		
 		if(s.first == null) {
 		
