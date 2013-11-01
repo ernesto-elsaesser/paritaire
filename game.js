@@ -577,12 +577,10 @@ function createCanvas(container) {
 
 	var canvas = document.createElement('canvas');
 	//this.canvas.id     = "canvas";
-	canvas.width  = container.clientWidth - 20;
-	canvas.style.margin   = "10px";
-	if (canvas.width > 400) {
-		canvas.width = 400;
-		canvas.style.margin = "10px auto";
-	}
+	canvas.width  = container.clientWidth - 30;
+	if (canvas.width > 400) canvas.width = 400;
+	canvas.style.margin   = "0 auto";
+	
 	canvas.height = canvas.width; // TODO: change for non-square fields
 	
 	container.appendChild(canvas);
