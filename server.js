@@ -158,6 +158,6 @@ var server = http.createServer(onRequest);
 
 server.listen(80);
 
-var clients = socket.attachSocket(server,sessions);
+socket.attachSocket(server,sessions);
 
-shell.createShell(5001,{sessions: sessions, clients: clients});
+shell.createShell(5001,{sessions: sessions, clients: socket.clients});

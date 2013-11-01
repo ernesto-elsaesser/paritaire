@@ -1,7 +1,9 @@
 // node.js modules
 var socketio = require('socket.io');
 
-function attachSocket(httpServer,clients,sessions) {
+var clients = [];
+
+function attachSocket(httpServer,sessions) {
 	
 	var socketServer = socketio.listen(httpServer);
 
@@ -89,6 +91,8 @@ function attachSocket(httpServer,clients,sessions) {
 
 	  });
 	});
+	
 }
 
+exports.clients = clients;
 exports.attachSocket = attachSocket;
