@@ -21,6 +21,8 @@ var validColors = ["blue","green","orange","red","violet","yellow"];
 // web server callback
 function onRequest(request,response) {
 
+	console.log(new Date() + " http: request " + request.url);
+
 	var requrl = url.parse(request.url,true);
 	var path = requrl.pathname;
 	
@@ -68,12 +70,13 @@ function onRequest(request,response) {
 		
 	default:
 		
-		console.log("http: requested document " + path);
 		var doc = cache[path];
 		var bFound = true;
 	
 		if(doc == undefined) { // document not in cache
-			if(fs.existsSync(path)) {
+			
+			if(path.substr(0,6) == "server") bFound = false;
+			else if(fs.existsSync(path)) {
 				doc = fs.readFileSync(path);
 				cache[path] = doc;
 			}
@@ -90,7 +93,10 @@ function onRequest(request,response) {
 			response.writeHead(200, {"Content-Type": mime});
 			response.write(doc);
 		}
-		else response.writeHead(404);
+		else {
+			response.writeHead(404);
+			response.write("Error 404: Page not found!");
+		}
 		
 		response.end();
 	}

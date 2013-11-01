@@ -1,15 +1,17 @@
 // node.js modules
 var socketio = require('socket.io');
 
-var clients = [];
+var clients = {};
 
-function attachSocket(httpServer,sessions) {
+function attachSocket(httpServer) {
 	
 	var socketServer = socketio.listen(httpServer);
 
 	socketServer.set('log level', 2);
 
 	socketServer.sockets.on('connection', function (socket) {
+
+		log("new socket connection " + socket.id);
 
   	  clients[socket.id] = {};
 
@@ -21,7 +23,7 @@ function attachSocket(httpServer,sessions) {
     
 	    if(c.session.first == null) {
     
-	      	console.log("socket: init to empty session " + data.id);
+	      	log("INIT to empty session " + data.id + " from " + socket.id);
 	      	c.session.first = c;
 	      	socket.emit('alone');
 	    }
@@ -29,7 +31,7 @@ function attachSocket(httpServer,sessions) {
     
 	        c.session.full = true;
 	      	var t = (c.session.first.side == 1 ? 2 : 1);
-	      	console.log("socket: init to session " + data.id + ", assigned side " + t);
+	      	log("INIT to session " + data.id + ", assigned side " + t + " to " + socket.id);
 	      	c.side = t;
 	      	// cross reference for disconnect event
 	      	c.other = c.session.first;
@@ -40,7 +42,7 @@ function attachSocket(httpServer,sessions) {
     	
 	  });
 	  socket.on('choose', function (data) {
-	    console.log("socket: player chose side " + data.side + " in session " + data.id);
+	    log("CHOSE side " + data.side + " in session " + data.id + " from " + socket.id);
 	    clients[socket.id].side = data.side;
 	  });
   		
@@ -53,10 +55,11 @@ function attachSocket(httpServer,sessions) {
 	    clients[socket.id].other.socket.emit('turn', data);
 	  });
 	  socket.on('win', function (data) {
-	    console.log("socket: player " + clients[socket.id].side + " in session " + data.id + " won");
+	    log("WIN side " + clients[socket.id].side + " in session " + data.id + " from " + socket.id);
 	    sessions[data.id].wins[clients[socket.id].side]++;
 	  });
 	  socket.on('publish', function (data) {
+		  log("PUBLISH session " + data.id + " from " + socket.id);
 	    publishSession(data.id);
 	  });
 	  socket.on('disconnect', function () {
@@ -69,7 +72,7 @@ function attachSocket(httpServer,sessions) {
     
 	        if(c.session.full) { // session was full
         
-	          console.log("socket: player " + c.side + " left session " + c.session.id + ", now other is alone");
+	          log("DISCONNECT side " + c.side + " in session " + c.session.id + " (was full) from " + socket.id);
 	          c.other.socket.emit('alone');
 	          c.other.other = undefined;
 	          if(c.session.first === c) c.session.first = c.other;
@@ -77,22 +80,29 @@ function attachSocket(httpServer,sessions) {
            
 	        }
 	        else { // player was alone
-      		
-	          console.log("socket: player " + c.side + " left session " + c.session.id + ", now session is empty");
+        
+  	          log("DISCONNECT side " + c.side + " in session " + c.session.id + " (now empty) from " + socket.id);
 	          c.session.first = null;
           
 	        }
 	      }
-	      else console.log("socket: client (side: " + c.side + ") without session disconnected");
+	      else log("DISCONNECT uninitialized client, from " + socket.id);
       
 	      delete c;
 	    }
-	    else console.log("socket: disconnect without client");
+	    else log("DISCONNECT no client, from " + socket.id);
 
 	  });
 	});
 	
 }
 
+function log(msg) {
+	
+	console.log(new Date() + " socket: " + msg);
+	
+}
+
 exports.clients = clients;
 exports.attachSocket = attachSocket;
+exports.log = log;
