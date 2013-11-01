@@ -7,7 +7,8 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	this.ctx.font =  this.fontsize + "px Georgia";
 	
 	// canvas offset, used for mouse click mapping
-	this.container = container;
+	this.offsetX = container.offsetLeft;
+	this.offsetY = container.offsetTop;
 
 	this.player1 = new class_player(1,color1,wins1);
 	this.player2 = new class_player(2,color2,wins2);
@@ -93,10 +94,6 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		that.bPlaying = false;
 		
   	  });
-	  
-  	this.socket.on('reconnect', function (data) {
-		this.socket.emit('init', {id: this.sid});
-  	  });
 	
 	this.startGame = function() {
 	
@@ -175,8 +172,8 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		if(!this.bMyTurn) return;
 	
 		// mouse position
-		var mx = event.clientX-this.container.offsetLeft-this.canvas.offsetLeft+scrollX;
-		var my = event.clientY-this.container.offsetTop-this.canvas.offsetTop+scrollY;
+		var mx = event.clientX-this.offsetX-this.canvas.offsetLeft+scrollX;
+		var my = event.clientY-this.offsetY-this.canvas.offsetTop+scrollY;
 		
 		// click inside canvas?
 		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
@@ -267,8 +264,8 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 	this.ctx.font =  this.fontsize + "px Georgia";
 	
 	// canvas offset, used for mouse click mapping
-	this.xoffset = container.offsetLeft;
-	this.yoffset = container.offsetTop;
+	this.offsetX = container.offsetLeft;
+	this.offsetY = container.offsetTop;
 
 	this.player1 = new class_player(1,color1,wins1);
 	this.player2 = new class_player(2,color2,wins2);
@@ -337,8 +334,8 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 	this.clickHandler = function(event) {
 	
 		// mouse position
-		var mx = event.clientX-this.xoffset+scrollX+this.canvas.offsetLeft;
-		var my = event.clientY-this.yoffset+scrollY+this.canvas.offsetTop;
+		var mx = event.clientX-this.offsetX-this.canvas.offsetLeft+scrollX;
+		var my = event.clientY-this.offsetY-this.canvas.offsetTop+scrollY;
 		
 		// click inside canvas?
 		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
