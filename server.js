@@ -135,7 +135,7 @@ function buildGame(id) {
 		
 	}
 	
-	lineSession += "'" + s.col1 + "'," + s.wins1 + ",'" + s.col2 + "'," + s.wins2 + "," + s.dim + "," + s.dim + "," + s.next + ");";
+	lineSession += "'" + s.col1 + "'," + s.wins[1] + ",'" + s.col2 + "'," + s.wins[2] + "," + s.dim + "," + s.dim + "," + s.next + ");";
 
 	html = html.replace("##2",lineSession)
 	

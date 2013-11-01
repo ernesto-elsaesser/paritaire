@@ -140,7 +140,10 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		this.bMyTurn = (this.nextStarter === this.me);
 		
 		if(this.bMyTurn) {
-      		this.ctx.fillText("Click to play!", 100,250);
+			this.ctx.fillStyle = "#000";
+			var x = (this.canvas.width / 2) - (this.fontsize * 3);
+			var y = (this.canvas.height / 2) + (this.fontsize * 2);
+			this.ctx.fillText("Click to play!",x,y);
       	}	
 	
 	};
