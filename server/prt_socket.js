@@ -3,7 +3,7 @@ var socketio = require('socket.io');
 
 var clients = {};
 
-function attachSocket(httpServer) {
+function attachSocket(httpServer,sessions) {
 	
 	var socketServer = socketio.listen(httpServer);
 
@@ -99,7 +99,8 @@ function attachSocket(httpServer) {
 
 function log(msg) {
 	
-	console.log(new Date() + " socket: " + msg);
+	var d = new Date();
+	console.log(d.getYear() + "/" + d.getMonth() + "/" + d.getDay() + "-" + d.getHours() + ":" + d.getMinutes()  + " socket: " + msg);
 	
 }
 

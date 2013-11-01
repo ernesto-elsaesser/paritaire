@@ -21,7 +21,8 @@ var validColors = ["blue","green","orange","red","violet","yellow"];
 // web server callback
 function onRequest(request,response) {
 
-	console.log(new Date() + " http: request " + request.url);
+	var d = new Date();
+	console.log(d.getYear() + "/" + d.getMonth() + "/" + d.getDay() + "-" + d.getHours() + ":" + d.getMinutes()  + " http: " + request.url);
 
 	var requrl = url.parse(request.url,true);
 	var path = requrl.pathname;
