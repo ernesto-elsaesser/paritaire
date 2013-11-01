@@ -1,15 +1,15 @@
 // node.js modules
 var http = require("http");
+var net = require("net");
 var fs = require("fs");
 var url = require("url");
 var querystring = require("querystring");
-var socketio = require('socket.io');
-var repl = require('repl');
+var shell = require('./server/prt_shell');
+var socket = require('./server/prt_socket');
 
 // global variables
 var sessions = []; // stores all game sessions
 var sid = 1; // next available session ID
-var clients = []; // list of socket.io clients, hashed by socket id
 var cache = {}; // stores static documents
 var gameTemplate = String(fs.readFileSync("play.template")); // html skeleton
 var mimeTypes = {"html": "text/html",
@@ -17,16 +17,6 @@ var mimeTypes = {"html": "text/html",
 	"png": "image/png",
 	"css": "text/css"};
 var validColors = ["blue","green","orange","red","violet","yellow"];
-
-
-var shell = repl.start({
-  prompt: "node cli>",
-  input: process.stdin,
-  output: process.stdout
-});
-
-shell.context.sessions = sessions;
-shell.context.clients = clients;
 
 // web server callback
 function onRequest(request,response) {
@@ -168,90 +158,6 @@ var server = http.createServer(onRequest);
 
 server.listen(80);
 
+var clients = socket.attachSocket(server,sessions);
 
-var ioserver = socketio.listen(server);
-
-ioserver.set('log level', 2);
-
-ioserver.sockets.on('connection', function (socket) {
-
-  clients[socket.id] = {};
-
-  socket.on('init', function (data) {
-  
-    var c = clients[socket.id];
-    c.socket = socket;
-    c.session = sessions[data.id];
-    
-    if(c.session.first == null) {
-    
-      	console.log("server: init to empty session " + data.id);
-      	c.session.first = c;
-      	socket.emit('alone');
-    }
-    else {
-    
-        	c.session.full = true;
-      	var t = (c.session.first.side == 1 ? 2 : 1);
-      	console.log("server: init to session " + data.id + ", assigned side " + t);
-      	c.side = t;
-      	// cross reference for disconnect event
-      	c.other = c.session.first;
-      	c.session.first.other = c;
-      	c.session.first.socket.emit('ready',{side: c.session.first.side});
-      	socket.emit('ready',{side: t});
-    }
-    	
-  });
-  socket.on('choose', function (data) {
-    console.log("server: player chose side " + data.side + " in session " + data.id);
-    clients[socket.id].side = data.side;
-  });
-  		
-  socket.on('start', function (data) {
-    var t = sessions[data.id].next;
-    sessions[data.id].next = (t == 1 ? 2 : 1);
-    clients[socket.id].other.socket.emit('start');
-  });
-  socket.on('turn', function (data) {
-    clients[socket.id].other.socket.emit('turn', data);
-  });
-  socket.on('win', function (data) {
-    console.log("server: player " + clients[socket.id].side + " in session " + data.id + " won");
-    sessions[data.id].wins[clients[socket.id].side]++;
-  });
-  socket.on('publish', function (data) {
-    publishSession(data.id);
-  });
-  socket.on('disconnect', function () {
-  
-    var c = clients[socket.id];
-  
-    if(c) {
-     	
-      if (c.session) {
-    
-        if(c.session.full) { // session was full
-        
-          console.log("server: player " + c.side + " left session " + c.session.id + ", now other is alone");
-          c.other.socket.emit('alone');
-          c.other.other = undefined;
-          if(c.session.first === c) c.session.first = c.other;
-          c.session.full = false;
-           
-        }
-        else { // player was alone
-      		
-          console.log("server: player " + c.side + " left session " + c.session.id + ", now session is empty");
-          c.session.first = null;
-          
-        }
-      }
-      else console.log("server: client (side: " + c.side + ") without session disconnected");
-      
-      delete c;
-    }
-    else console.log("server: disconnect without client");
-
-  });
-});
+shell.createShell(5001,{sessions: sessions, clients: clients});
