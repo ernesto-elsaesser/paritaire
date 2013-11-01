@@ -1,6 +1,6 @@
 // node.js modules
 var repl = require('repl');
-var repl = require('net');
+var net = require('net');
 
 function createShell(port,objContext) {
 
@@ -8,18 +8,21 @@ function createShell(port,objContext) {
 
 	net.createServer(function (socket) {
 	  
-	  shell = repl.start({
-	    prompt: "node shell> ",
-	    input: socket,
-	    output: socket
-	  }).on('exit', function() {
-	    socket.end();
-	  });
+		shell = repl.start({
+	    	prompt: "node shell> ",
+	    	input: socket,
+	    	output: socket
+	  	});
+	  
+	  	shell.on('exit', function() {
+	    	socket.end();
+	  	});
+	  
+  		for(var v in objContext) {
+  			shell.context[v] = objContext[v];
+  		} 
+	  
 	}).listen(port);
-
-	for(var v in objContext) {
-		shell.context[v] = objContext[v];
-	}
 	
 	return shell;
 	
