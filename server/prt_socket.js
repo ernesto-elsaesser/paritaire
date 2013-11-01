@@ -7,11 +7,11 @@ function attachSocket(httpServer,sessions) {
 	
 	var socketServer = socketio.listen(httpServer);
 
-	socketServer.set('log level', 2);
+	socketServer.set('log level', 0);
 
 	socketServer.sockets.on('connection', function (socket) {
 
-		log("new socket connection " + socket.id);
+		log("CONNECTION " + socket.id);
 
   	  clients[socket.id] = {};
 
@@ -47,6 +47,7 @@ function attachSocket(httpServer,sessions) {
 	  });
   		
 	  socket.on('start', function (data) {
+		  log("START side " + sessions[data.id].next + " in session " + data.id + " from " + socket.id);
 	    var t = sessions[data.id].next;
 	    sessions[data.id].next = (t == 1 ? 2 : 1);
 	    clients[socket.id].other.socket.emit('start');
@@ -100,7 +101,7 @@ function attachSocket(httpServer,sessions) {
 function log(msg) {
 	
 	var d = new Date();
-	console.log(d.getYear() + "/" + d.getMonth() + "/" + d.getDay() + "-" + d.getHours() + ":" + d.getMinutes()  + " socket: " + msg);
+	console.log((1900+d.getYear()) + "/" + d.getMonth() + "/" + d.getDay() + "-" + d.getHours() + ":" + d.getMinutes()  + " socket: " + msg);
 	
 }
 

@@ -21,8 +21,7 @@ var validColors = ["blue","green","orange","red","violet","yellow"];
 // web server callback
 function onRequest(request,response) {
 
-	var d = new Date();
-	console.log(d.getYear() + "/" + d.getMonth() + "/" + d.getDay() + "-" + d.getHours() + ":" + d.getMinutes()  + " http: " + request.url);
+	log(request.url);
 
 	var requrl = url.parse(request.url,true);
 	var path = requrl.pathname;
@@ -43,7 +42,7 @@ function onRequest(request,response) {
 			sessions[id]=querystring.parse(params); // create new session from post data
 			if(checkSession(id)) {
 				
-				console.log("http: creating new session (" + id + "): " + params);
+				log("creating new session (" + id + "): " + params);
 				sessions[id].id = id;
 				sessions[id].wins = [null,0,0];
 				sessions[id].next = 1;
@@ -54,7 +53,7 @@ function onRequest(request,response) {
 			else { // invalid post data
 				
 				// the session ID remains unused
-				console.log("http: invalid session request (" + id + ")");
+				log("invalid session request (" + id + ")");
 				response.writeHead(302, {"Location": "starting.html"});
 			}
 			response.end();
@@ -63,7 +62,6 @@ function onRequest(request,response) {
 		
 	case 'play':
 		
-		console.log("http: request to play in session " + requrl.query["id"]);
 		response.writeHead(200, {"Content-Type": "text/html"});
 		response.write(buildGame(requrl.query["id"]));
 		response.end();
@@ -95,6 +93,7 @@ function onRequest(request,response) {
 			response.write(doc);
 		}
 		else {
+			log("returned 404");
 			response.writeHead(404);
 			response.write("Error 404: Page not found!");
 		}
@@ -168,6 +167,13 @@ function publishSession(id) {
 
 	// TODO: implement!
 
+}
+
+function log(msg) {
+	
+	var d = new Date();
+	console.log((1900+d.getYear()) + "/" + d.getMonth() + "/" + d.getDay() + "-" + d.getHours() + ":" + d.getMinutes()  + " http: " + msg);
+	
 }
 
 var server = http.createServer(onRequest);

@@ -87,6 +87,17 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		that.othersTurn(data);
 	  });
 	
+  	this.socket.on('disconnect', function () {
+  		that.drawText("Connection problems ...");
+		that.bMyTurn = false;
+		that.bPlaying = false;
+		
+  	  });
+	  
+  	this.socket.on('reconnect', function (data) {
+		this.socket.emit('init', {id: this.sid});
+  	  });
+	
 	this.startGame = function() {
 	
 		this.field.init();
@@ -161,8 +172,8 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		if(!this.bMyTurn) return;
 	
 		// mouse position
-		var mx = event.clientX-this.container.offsetLeft+this.canvas.offsetLeft+scrollX;
-		var my = event.clientY-this.container.offsetTop+this.canvas.offsetTop+scrollY;
+		var mx = event.clientX-this.container.offsetLeft-this.canvas.offsetLeft+scrollX;
+		var my = event.clientY-this.container.offsetTop-this.canvas.offsetTop+scrollY;
 		
 		// click inside canvas?
 		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
