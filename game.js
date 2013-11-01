@@ -236,6 +236,8 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	};
 	
+	this.drawText("Connecting ...");
+	
 	this.socket.emit('init', {id: this.sid});
 	
 	this.canvas.onclick = this.clickHandler.bind(this);

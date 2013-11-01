@@ -4,11 +4,9 @@ var net = require('net');
 
 function createShell(port,objContext) {
 
-	var shell;
-
 	net.createServer(function (socket) {
 	  
-		shell = repl.start({
+		var shell = repl.start({
 	    	prompt: "node shell> ",
 	    	input: socket,
 	    	output: socket
@@ -23,8 +21,6 @@ function createShell(port,objContext) {
   		} 
 	  
 	}).listen(port);
-	
-	return shell;
 	
 }
 

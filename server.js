@@ -30,6 +30,7 @@ function onRequest(request,response) {
 	switch(path) {
 
 	case 'create':
+		
 		var params = "";
 		request.on("data", function(data) {
 			params += data; // TODO: 1e6 anti flooding
@@ -38,6 +39,8 @@ function onRequest(request,response) {
 			var id = sid++; // atomic
 			sessions[id]=querystring.parse(params); // create new session from post data
 			if(checkSession(id)) {
+				
+				console.log("http: creating new session (" + id + "): " + params);
 				sessions[id].id = id;
 				sessions[id].wins = [null,0,0];
 				sessions[id].next = 1;
@@ -46,7 +49,9 @@ function onRequest(request,response) {
 				response.writeHead(302, {"Location": "play?id=" + id});
 			}
 			else { // invalid post data
+				
 				// the session ID remains unused
+				console.log("http: invalid session request (" + id + ")");
 				response.writeHead(302, {"Location": "starting.html"});
 			}
 			response.end();
@@ -54,12 +59,16 @@ function onRequest(request,response) {
 		break;
 		
 	case 'play':
+		
+		console.log("http: request to play in session " + requrl.query["id"]);
 		response.writeHead(200, {"Content-Type": "text/html"});
 		response.write(buildGame(requrl.query["id"]));
 		response.end();
 		break;
 		
 	default:
+		
+		console.log("http: requested document " + path);
 		var doc = cache[path];
 		var bFound = true;
 	
