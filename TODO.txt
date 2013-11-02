@@ -2,6 +2,7 @@ Sophie:
 - Grafiken fuer Spielsteine berarbeiten (werden z.B. im iPad verpixelt angezeigt)
 - GOODIE: Wenn eine Farbe ausgewält ist sie für den anderen nicht mehr wählbar!
 - spinner on play page
+test
 
 Ernesto:
 - undo
