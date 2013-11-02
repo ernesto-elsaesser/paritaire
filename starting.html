@@ -18,7 +18,7 @@
     
     <div class="container">
     
-      <<header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
+      <header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
           <div class="navbar-header">
             <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
               <span class="sr-only">Toggle navigation</span>
@@ -36,121 +36,105 @@
           </nav>
       </header>
     
-	  <div class="row">
+    
+	  	<div class="row">
 
-          <div class="col-md-4">
-            <div class="well">
-              <h1>Player 1</h1>
-              <br>
-			  <div id="carousel-player-1" class="carousel slide" data-interval="false">
-  				
-  				<!-- Wrapper for slides -->
-  				<div class="carousel-inner">
-    			  <div class="item active">
-      				<img src="img/blue.png" alt="blue tile">
-    			  </div>
-    			  <div class="item">
-      				<img src="img/red.png" alt="red tile">
-    			  </div>
-    			  <div class="item">
-      				<img src="img/green.png" alt="green tile">
-    			  </div>
-    			  <div class="item">
-      				<img src="img/orange.png" alt="orange tile">
-    			  </div>
-    			  <div class="item">
-      				<img src="img/violet.png" alt="violet tile">
-    			  </div>
-    			  <div class="item">
-      				<img src="img/yellow.png" alt="yellow tile">
-    			  </div>
-  				</div>
-
-  				<!-- Controls -->
-  				<a class="left carousel-control" href="#carousel-player-1" data-slide="prev">
-    			  <span class="icon-prev"></span>
-  				</a>
-  				<a class="right carousel-control" href="#carousel-player-1" data-slide="next">
-    			  <span class="icon-next"></span>
-  				</a>
-			  </div>
-    	    </div>
-    	  </div>
-          
-          <div class="col-md-4">        
-            <div class="well">
-              <h1>Player 2</h1>
-                            <br>
-			  <div id="carousel-player-2" class="carousel slide" data-interval="false">
-  				
-  				<!-- Wrapper for slides -->
-  				<div class="carousel-inner">
-    			  <div class="item">
-      				<img src="img/blue.png" alt="blue tile">
-    			  </div>
-    			  <div class="item active">
-      				<img src="img/red.png" alt="red tile">
-    			  </div>
-    			  <div class="item">
-      				<img src="img/green.png" alt="green tile">
-    			  </div>
-    			  <div class="item">
-      				<img src="img/orange.png" alt="orange tile">
-    			  </div>
-    			  <div class="item">
-      				<img src="img/violet.png" alt="violet tile">
-    			  </div>
-    			  <div class="item">
-      				<img src="img/yellow.png" alt="yellow tile">
-    			  </div>
-  				</div>
-
-  				<!-- Controls -->
-  				<a class="left carousel-control" href="#carousel-player-2" data-slide="prev">
-    			  <span class="icon-prev"></span>
-  				</a>
-  				<a class="right carousel-control" href="#carousel-player-2" data-slide="next">
-    			  <span class="icon-next"></span>
-  				</a>
-			  </div>
-            </div>
-          </div>
-          
-          <div class="col-md-4">
-            <div class="well">
-              <h1>Game Settings</h1>
-              <ol>
+      	<div class="well well-lg">
+        	<h1>Game Settings</h1>
+					<div class="container intro">
+					
+						<div class="col-md-4 col-sm-6 col-xs-12">
+  			  		<h3>Field Settings</h3>
+  			    	<ol>
                 <li>
-                  <label for="dim">Please Chose your field size:</label>
+                  <label for="dim">Please choose your field size:</label>
                   <select name=dim>
     	              <option value="4">4</option>
     	              <option value="8" selected>8</option>
     	              <option value="10">10</option>
     	              <option value="16">16</option>
-    	          </select>
-    	        </li>
-    	        <li>
-    	          <b>How do you want to play?</b>
-    	          <div class="radio">
-  				    <label>
+    	          	</select>
+    	        	</li>
+    	        	<li>
+    	          	<b>How do you want to play?</b>
+    	          	<div class="radio">
+  				    			<label>
                       <input type="radio" name="online" id="optionsRadios1" value="1" checked>
-                        Online (Multi Device)
+                      Online (Multi Device)
                     </label>
-				  </div>
-				  <div class="radio">
-  					<label>
-				      <input type="radio" name="online" id="optionsRadios2" value="0">
-    					Local (Single Device)
-  					</label>
-				  </div>
-    	        </li>
-    	      </ol>
-    	      <input type="submit" value="Ready!" class="btn btn-primary">
-            </div>
-          </div>
-          
-      </div>      
-    
+				  				</div>
+				  				
+				  				<div class="radio">
+  									<label>
+				      				<input type="radio" name="online" id="optionsRadios2" value="0">
+    									Local (Single Device)
+  									</label>
+				  				</div>
+    	        	</li>
+    	      	</ol>
+  			 	 	</div>
+					
+  			  	<div class="col-md-4 col-sm-3 col-xs-6 center">
+ 			  			<h3>
+ 			  				Color 1 
+	 			      	<a href="#carousel-player-1" data-slide="prev">
+	 			      		<span class="glyphicon glyphicon-chevron-left"></span>
+	 			      	</a>
+	 			      	<a href="#carousel-player-1" data-slide="next">
+	 			      		<span class="glyphicon glyphicon-chevron-right"></span>
+	 			      	</a>
+ 			      	</h3>
+ 			      	
+ 			      	<div id="carousel-player-1" class="carousel slide" data-interval="false">
+ 				
+ 				  			<!-- Wrapper for slides -->
+ 				  			<div class="carousel-inner">
+   			    			<div class="item active"><img src="img/blue.png" alt="blue tile"></div>
+    			  			<div class="item"><img src="img/red.png" alt="red tile"></div>
+    			  			<div class="item"><img src="img/green.png" alt="green tile"></div>
+    			  			<div class="item"><img src="img/orange.png" alt="orange tile"></div>
+    			  			<div class="item"><img src="img/violet.png" alt="violet tile"></div>
+    			  			<div class="item"><img src="img/yellow.png" alt="yellow tile"></div>
+ 								</div>
+
+		  				</div>
+  			  	</div>
+  			  
+  			  	<div class="col-md-4 col-sm-3 col-xs-6 center">
+ 			    		<h3>
+	 			    		Color 2 
+	 			      	<a href="#carousel-player-2" data-slide="prev">
+	 			      		<span class="glyphicon glyphicon-chevron-left"></span>
+	 			      	</a>
+	 			      	<a href="#carousel-player-2" data-slide="next">
+	 			      		<span class="glyphicon glyphicon-chevron-right"></span>
+	 			      	</a>
+	 			      </h3>
+ 			      	
+ 			      	<div id="carousel-player-2" class="carousel slide" data-interval="false">
+ 				
+ 				  			<!-- Wrapper for slides -->
+ 				  			<div class="carousel-inner">
+   			    			<div class="item"><img src="img/blue.png" alt="blue tile"></div>
+    			  			<div class="item active"><img src="img/red.png" alt="red tile"></div>
+    			  			<div class="item"><img src="img/green.png" alt="green tile"></div>
+    			  			<div class="item"><img src="img/orange.png" alt="orange tile"></div>
+    			  			<div class="item"><img src="img/violet.png" alt="violet tile"></div>
+    			  			<div class="item"><img src="img/yellow.png" alt="yellow tile"></div>
+ 								</div>
+
+		  				</div>
+  			  	</div>
+  			  	
+  			  	<div class="col-md-4 col-sm-12 col-xs-12">
+		  				<input type="submit" value="Ready!" class="btn btn-primary wide">
+		  			</div> 
+  			  	
+      		</div>
+      	</div>
+      </div>
+      
+    <!-- 
       <div class="row">    
     	<form action="create" method="post">
     	  <table>
@@ -214,7 +198,7 @@
     	  <input type="submit" value="Ready!" class="btn btn-primary">
     	</form>
       </div>
-
+ -->
       <!-- Site footer -->
       <div class="footer">
         <p>© Blueprint 2013</p>
