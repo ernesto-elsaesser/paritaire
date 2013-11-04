@@ -11,7 +11,7 @@ var socket = require('./server/prt_socket');
 var sessions = []; // stores all game sessions
 var sid = 1; // next available session ID
 var cache = {}; // stores static documents
-var gameTemplate = String(fs.readFileSync("play.template")); // html skeleton
+var gameTemplate = String(fs.readFileSync("play.html")); // html skeleton
 var mimeTypes = {"html": "text/html",
 	"js": "text/javascript",
 	"png": "image/png",
@@ -48,13 +48,17 @@ function onRequest(request,response) {
 				sessions[id].next = 1;
 				sessions[id].first = null;
 				sessions[id].full = false;
-				response.writeHead(302, {"Location": "play?id=" + id});
+				response.writeHead(200, {"Content-Type": "text/plain"});				
+				response.write("" + id);
+				response.end();
 			}
 			else { // invalid post data
 				
 				// the session ID remains unused
 				log("invalid session request (" + id + ")");
-				response.writeHead(302, {"Location": "starting.html"});
+				response.writeHead(200, {"Content-Type": "text/plain"});				
+				//response.write(id);
+				response.end();
 			}
 			response.end();
 			});
@@ -154,7 +158,8 @@ function checkSession(id) {
 	if( c < 2 ) return false;	
 	
 	// is the dimension an even number?
-	if(isNaN(s.dim) || s.dim % 2) return false;
+	var d = parseInt(s.dim);
+	if(isNaN(d) || d % 2) return false;
 	
 	// online flag set?
 	if(!s.online) return false;
