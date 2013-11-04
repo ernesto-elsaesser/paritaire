@@ -1,6 +1,5 @@
 Sophie:
 - Grafiken fuer Spielsteine berarbeiten (werden z.B. im iPad verpixelt angezeigt)
-- GOODIE: Wenn eine Farbe ausgewält ist sie für den anderen nicht mehr wählbar!
 - spinner on play page
 - Licences Dokumentieren (Punkt aus seiner Excel für gute Note); am besten mit seinem Template
 - jquery.min.map ???
