@@ -4,19 +4,21 @@ var net = require("net");
 var fs = require("fs");
 var url = require("url");
 var querystring = require("querystring");
+
+// custom modules
 var shell = require('./server/prt_shell');
 var socket = require('./server/prt_socket');
+var game = require('./server/prt_game_obj');
 
 // global variables
 var sessions = []; // stores all game sessions
 var sid = 1; // next available session ID
 var cache = {}; // stores static documents
-var gameTemplate = String(fs.readFileSync("play.html")); // html skeleton
+var playPage = String(fs.readFileSync("play.html")); // html skeleton
 var mimeTypes = {"html": "text/html",
 	"js": "text/javascript",
 	"png": "image/png",
 	"css": "text/css"};
-var validColors = ["blue","green","orange","red","violet","yellow"];
 
 // web server callback
 function onRequest(request,response) {
@@ -38,19 +40,11 @@ function onRequest(request,response) {
 			params += data; // TODO: 1e6 anti flooding
 			});
 		request.on("end", function() {
-			var id = sid++; // atomic
-			sessions[id]=querystring.parse(params); // create new session from post data
-			if(checkSession(id)) {
+			var id = sid++; // auto increment
+			sessions[id] = new game.Session(id,querystring.parse(params)); // create new session from post data
+			if(sessions[id]) {
 				
-				log("creating new session (" + id + "): " + params);
-				sessions[id].id = id;
-				sessions[id].wins = [null,0,0];
-				sessions[id].nextRound = 1;
-				sessions[id].nextTurn = 0;
-				sessions[id].players = [null,null,null];
-				sessions[id].field = new Array(sessions[id].dim);
-				for(var i = 0; i < sessions[id].dim; i++) sessions[id].field[i] = new Array(sessions[id].dim);
-				sessions[id].playing = false;
+				log("created new session (" + id + "): " + params);
 				response.writeHead(200, {"Content-Type": "text/plain"});				
 				response.write("" + id);
 				response.end();
@@ -58,9 +52,9 @@ function onRequest(request,response) {
 			else { // invalid post data
 				
 				// the session ID remains unused
-				log("invalid session request (" + id + ")");
+				log("invalid session request (" + id + "): " + params);
 				response.writeHead(200, {"Content-Type": "text/plain"});				
-				//response.write(id);
+				//response.write(); no content
 				response.end();
 			}
 			response.end();
@@ -116,58 +110,31 @@ function buildGame(id) {
 	var s = sessions[id];
 	
 	if(s == undefined) return "Invalid session ID!";
-	if(s.players[1] && s.players[2]) return "Session is full!";
+	if(s.players[1].connected && (!s.online || s.players[2].connected)) return "Session is full!";
 	
-	var html = gameTemplate;
+	var html = playPage;
 	
-	var lineSession = "session = new class_";
+	var lineSession = "session = new ";
 
-	if(s.online == "false") {
+	if(!s.online) {
 	
 		html = html.replace("##1","session-local");
-		lineSession += "local_session(document.getElementById('field'),";
+		lineSession += "Local";
 		
 	}
 	else {
 		
 		html = html.replace("##1","session-online");
-		lineSession += "online_session(document.getElementById('field'),io.connect('http://elsaesser.servegame.com/')," + id + ",";
+		lineSession += "Online";
 		
 	}
 	
-	lineSession += "'" + s.col1 + "'," + s.wins[1] + ",'" + s.col2 + "'," + s.wins[2] + "," + s.dim + "," + s.dim + "," + s.next + ");";
+	lineSession += "Session(document.getElementById('field'),io.connect('http://elsaesser.servegame.com/')," + id + 
+		",'" + s.col1 + "','" + s.col2 + "');";
 
 	html = html.replace("##2",lineSession);
 	
 	return html;
-}
-
-function checkSession(id) {
-
-	var s = sessions[id];
-	
-	if(s == undefined) return false;
-
-	// are both colors valid color strings and different?
-	var c = 0;
-	for(var i in validColors) if(s.col1 == validColors[i] || s.col2 == validColors[i]) c++;
-	if( c < 2 ) return false;	
-	
-	// is the dimension an even number?
-	var d = parseInt(s.dim);
-	if(isNaN(d) || d % 2) return false;
-	
-	// online flag set?
-	if(!s.online || s.online == "") return false;
-	
-	return true;
-
-}
-
-function publishSession(id) {
-
-	// TODO: implement!
-
 }
 
 function log(msg) {

@@ -1,5 +1,7 @@
 // node.js modules
 var socketio = require('socket.io');
+// custom modules
+var game = require('./server/prt_game_obj');
 
 var clients = {};
 
@@ -18,15 +20,24 @@ function attachSocket(httpServer,sessions) {
 		socket.on('init', function (data) {
   
 			var c = clients[socket.id];
-			c.socket = socket;
-			c.session = sessions[data.id];
+			//c.socket = socket;
+			var s = sessions[data.id];
 			
-			if(c.session == undefined) {
+			if(s == undefined) {
 				log("INIT invalid session (" + data.id + ") id from " + socket.id);
 				return;
 			}
+			
+			if(!s.online) {
+			
+				log("INIT to local session " + data.id + " from " + socket.id);
+				c.session = s;
+				s.players[1].connect(socket);
+				s.players[1].send("init",s.getState());
+				return;
+			}
 		
-			if(!c.session.players[1] && !c.session.players[2]) {
+			if(!s.players[1].connected && !s.players[2].connected) {
 			
 				log("INIT to empty session " + data.id + " from " + socket.id);
 				socket.emit('alone');
@@ -34,97 +45,127 @@ function attachSocket(httpServer,sessions) {
 			} 
 			else {
 			
-				if(c.session.players[1]) {
-					c.other = c.session.players[1];
-					c.session.players[1].other = c;
-					c.side = 2;
-					c.other.side = 1;
-				}
-				else {
-					c.other = c.session.players[2];
-					c.session.players[2].other = c;
-					c.side = 1;
-					c.other.side = 2;
-				}
+				c.session = s;
+			
+				if(s.players[1].connected) c.side = 2;
+				else c.side = 1;
+
+				log("INIT to session " + data.id + ", assigned side " + c.side + " to " + socket.id);
+				s.players[c.side].connect(socket);
 				
-				c.session.players[c.side] = c;
+				var state = s.getState();
+				state.side = 1;
+				s.players[1].send("init",state);
+				state.side = 2;
+				s.players[2].send("init",state);
 				
-				if(c.session.playing) {
-				
-					log("INIT to session " + data.id + ", resuming game with side " + c.side + " as " + socket.id);
-					socket.emit('resume',{side: c.side, field: c.session.field, turn: c.session.nextTurn});
-					c.other.socket.emit('resume',{side: c.other.side, field: c.session.field, turn: c.session.nextTurn});
-				}
-				else {
-					
-					log("INIT to session " + data.id + ", assigned side 2 to " + socket.id);
-					socket.emit('ready',{side: c.side});
-					c.other.socket.emit('ready',{side: c.other.side});
-				}
 			}
     	
 		});
 	  socket.on('choose', function (data) {
-	    log("CHOSE side " + data.side + " in session " + data.id + " from " + socket.id);
-	    clients[socket.id].session.players[data.side] = clients[socket.id];
+		
+		var s = sessions[data.id];
+		var c = clients[socket.id];
+		
+		if(c.session != s) return;
+		log("CHOOSE side " + data.side + " in session " + data.id + " from " + socket.id);
+		
+		s.players[data.side].connect(socket);
+	    c.session = s;
+		c.side = data.side;
+		
 	  });
   		
 	  socket.on('start', function (data) {
 		
 		var s = sessions[data.id];
-		log("START side " + s.next + " in session " + data.id + " from " + socket.id);
-		  
-		for (var x = 0; x < s.dim; x++) {
-			for (var y = 0; y < s.dim; y++)
-				s.field[x][y]=0;
+		var c = clients[socket.id];
+		
+		if(c.session != s) return;
+	
+		if(s.online && c.side == s.nextRound) {
+		
+			log("START side " + c.side + " in session " + data.id + " from " + socket.id);
+			s.startGame();
+		}
+		else {
+			
+			log("START local session " + data.id + " from " + socket.id);
+			s.startGame();
 		}
 		
-		s.playing = true;
-	    s.nextRound = (s.nextRound == 1 ? 2 : 1);
-	    clients[socket.id].other.socket.emit('start');
+	    
 		
 	  });
+	  
 	  socket.on('turn', function (data) {
+		  
 		var c = clients[socket.id];
-		c.session.field[data.x][data.y] = c.side;
-		c.session.nextTurn = (c.session.nextTurn == 1 ? 2 : 1);
-	    c.other.socket.emit('turn', data);
+		var s = sessions[data.id];
+		
+		if(c.session != s) return;
+		
+		s.turn(c.side,data.x,data.y);
+		
 	  });
-	  socket.on('win', function (data) {
-	    log("WIN side " + clients[socket.id].side + " in session " + data.id + " from " + socket.id);
-	    sessions[data.id].wins[clients[socket.id].side]++;
-		sessions[data.id].playing = false;
+	  
+	  socket.on('undo', function (data) {
+		  
+  		var c = clients[socket.id];
+  		var s = sessions[data.id];
+		
+		if(c.session != s) return;
+		// TODO!
+		
 	  });
+	  
 	  socket.on('publish', function (data) {
-		  log("PUBLISH session " + data.id + " from " + socket.id);
-	    publishSession(data.id);
+		  
+    	var c = clients[socket.id];
+    	var s = sessions[data.id];
+		
+  		if(c.session != s) return;
+		
+		log("PUBLISH session " + data.id + " from " + socket.id);
+	   	s.publish(); // TODO!
+			
 	  });
+	  
 	  socket.on('disconnect', function () {
   
 	    var c = clients[socket.id];
   
 	    if(c) {
      	
-	      if (c.session) {
-		  
-			c.session.players[c.side] = null;
+			var s = c.session;
+			
+	      	if (s) {
+		  	  	
+				if(s.online) {
+				
+					s.players[c.side].disconnect();
     
-	        if(c.session.players[(c.side == 1 ? 2 : 1)]) { // session was full
+					var other = s.players[(c.side == 1 ? 2 : 1)];
+				
+	        		if(other.connected) { // session was full
         
-	          log("DISCONNECT side " + c.side + " in session " + c.session.id + " (was full) from " + socket.id);
-	          c.other.socket.emit('alone');
-	          c.other.other = null;
+	          			log("DISCONNECT side " + c.side + " in session " + s.id + " (was full) from " + socket.id);
+	          	  		other.send('alone');
            
-	        }
-	        else { // player was alone
-        
-  	          log("DISCONNECT side " + c.side + " in session " + c.session.id + " (now empty) from " + socket.id);
-          
-	        }
-	      }
-	      else log("DISCONNECT uninitialized client, from " + socket.id);
+	        		}
+	        		else log("DISCONNECT side " + c.side + " in session " + s.id + " (now empty) from " + socket.id);
+					
+				}
+				else {
+					
+					log("DISCONNECT local session " + s.id + " (now empty) from " + socket.id);
+					s.players[1].disconnect();
+				}
+         
+	      	}
+	      	else log("DISCONNECT uninitialized client, from " + socket.id);
       
-	      delete c;
+	      	delete c;
 	    }
 	    else log("DISCONNECT no client, from " + socket.id);
 

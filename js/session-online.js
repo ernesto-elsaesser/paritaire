@@ -1,4 +1,4 @@
-function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,dimy,next) {
+function OnlineSession(container,sock,id,color1,color2) {
 
 	this.canvas = createCanvas(container);
 	
@@ -10,22 +10,15 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	this.offsetX = container.offsetLeft;
 	this.offsetY = container.offsetTop;
 
-	this.player1 = new class_player(1,color1,wins1);
-	this.player2 = new class_player(2,color2,wins2);
+	this.player1 = new class_player(1,color1,0);
+	this.player2 = new class_player(2,color2,0);
 	
-	// linked loop
-	this.player1.next = this.player2;
-	this.player2.next = this.player1;
-	
-	this.nextStarter = (next == 1 ? this.player1 : this.player2); // player that will start the next game
-	
-	this.field = new class_field(this,dimx,dimy);
-	this.logic = new class_gamelogic(this.field);
+	this.nextStarter = 0; // player that will start the next game
 	
 	this.bPlaying = false; // control flags
-	this.bSuspended = false;
 	this.bMyTurn = false;
 	this.mySide = 0;
+	this.field = null;
 	
 	// socket & connection
 	this.sid = id;
@@ -51,52 +44,77 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		else {
 		
 			that.canvas.drawText("Waiting for opponent ...", that.fontsize);
-			if(that.bPlaying) that.suspendGame();
 		
 		}
 		
 	});
 	
-	this.socket.on('ready', function (data) {
+	this.socket.on('init', function (data) {
 		
-		document.getElementById("invite").style.display = "none";
+		document.getElementById("session-url").style.display = "none";
 		document.getElementById("publish").style.display = "none";
 		
-		if(that.bSuspended) that.bSuspended = false; // discarding old game
-		
 		that.mySide = data.side;
+		that.player1.wins = data.wins[0];
+		that.player2.wins = data.wins[1];
+		that.nextStarter = data.round;
 		
-		if(that.mySide == 1) {
-			that.me = that.player1;
-			that.other = that.player2;
-		}else {
-			that.me = that.player2;
-			that.other = that.player1;
-		}
+		that.field = new Field(that,data.dim,data.dim);
 		
-		if(that.me === that.nextStarter) {
-			that.bMyTurn = true;
-			that.canvas.drawText("Click to start!", that.fontsize);
+		that.bPlaying = data.playing;
+		
+		if(data.playing) {
+			
+			that.field.stones = data.field;
+			that.field.draw();
+		
+			if(that.mySide == data.turn) that.bMyTurn = true;
+			else that.bMyTurn = false;
+		
 		}
 		else {
-			that.bMyTurn = false;
-			that.canvas.drawText("Opponent begins ...", that.fontsize);
+			
+			that.field.clear();
+			
+			if(that.mySide == data.round) {
+				that.bMyTurn = true;
+				that.canvas.drawText("Click to start!", that.fontsize);
+			}
+			else {
+				that.bMyTurn = false;
+				that.canvas.drawText("Opponent begins ...", that.fontsize);
+			}
+		
 		}
 		
-	  });
-	
-	this.socket.on('start', function () {
-		that.startGame();
 	  });
 	  
 	this.socket.on('turn', function (data) {
-		that.othersTurn(data);
-	  });
+		
+		that.bPlaying = true;
+		
+		// update field
+		that.field.update(data.stones); 
+		that.field.draw();
+		var l = data.stones[data.stones.length-1];
+		that.field.highlight(l.x,l.y);
+			
+		// change points
+		that.player1.points = data.points[0];
+		that.player2.points = data.points[1];
+		
+		if(data.next == 0) that.endGame();
+		else that.bMyTurn == (data.next == that.mySide);
+		// TODO: info that player can't turn
+		
+	});
 	
-  	this.socket.on('disconnect', function () {
-		that.suspendGame();
+  	this.socket.on('disconnect', function () { // auto reconnect is on
+		
+		that.bMyTurn = false;
+		that.bPlaying = false;
   		that.canvas.drawText("Connection problems ...", that.fontsize);
-		//that.socket.socket.reconnect();
+		
   	});
 	
 	this.socket.on('reconnect', function () {
@@ -105,50 +123,30 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		
   	});
 	
-	this.socket.on('resume', function (data) {
-		that.resumeGame(data);
-	});
-	
-	this.startGame = function() {
-	
-		this.field.init();
-		this.field.draw();
-		
-		this.me.points = 2;
-		this.other.points = 2;
-
-		if(this.bMyTurn)
-			this.nextStarter = this.other;
-		else
-			this.nextStarter = this.me;
-			
-		this.bPlaying = true;
-	};
-	
 	this.endGame = function() {
 		
 		// TODO: replace with canvas graphics
 		var msg = "";
 		
-		if(this.me.points > this.other.points) {
-      		this.socket.emit("win",{id: this.sid});
-			this.me.wins++;
-			msg += "You won! [";
-		}
-		else if (this.me.points < this.other.points) {
-			this.other.wins++;
-			msg += "You lost! [";
-		}
-		else
-			msg = "Draw! ["
+		var winner = null;
 		
-		msg += this.me.points + ":" + this.other.points + "]";
+		if(this.player1.points > this.player2.points) winner = this.player1;
+		else if(this.player1.points > this.player2.points) winner = this.player2;
+		
+		if(winner) winner.wins++;
+		
+		if(winner.stone == this.mySide) msg += "You won! [";
+		else if (!winner) msg = "Draw! [";
+		else msg += "You lost! [";
+		
+		msg += this.player1.points + ":" + this.player2.points + "]";
 		
 		this.canvas.drawText(msg, this.fontsize);
 		
 		this.bPlaying = false;
 		
-		this.bMyTurn = (this.nextStarter === this.me);
+		this.bMyTurn = (this.nextStarter === this.mySide);
+		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
 		
 		if(this.bMyTurn) {
 			this.ctx.fillStyle = "#000";
@@ -159,63 +157,21 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	};
 	
-	this.suspendGame = function() {
-	
-		document.getElementById("invite").style.display = "none";
-		document.getElementById("publish").style.display = "none";
-		
-		this.bPlaying = false;
-		this.bMyTurn = false;
-	
-	};
-	
-	this.resumeGame = function(data) {
-	
-		document.getElementById("invite").style.display = "none";
-		document.getElementById("publish").style.display = "none";
-		
-		this.mySide = data.side;
-		
-		// TODO: update whos turn it is
-		var p = this.field.load(data.field);
-		this.field.draw();
-		
-		if(this.mySide == 1) {
-			this.me = this.player1;
-			this.other = this.player2;
-			this.me.points = p[0];
-			this.other.points = p[1];
-		}else {
-			this.me = this.player2;
-			this.other = this.player1;
-			this.me.points = p[1];
-			this.other.points = p[0];
-		}
-			
-		this.bMyTurn = (data.turn == data.side);
-			
-		this.bPlaying = true;
-	}
-	
-	this.othersTurn = function(turn) {
-	
-		var stolenStones = this.logic.makeTurn(this.other,turn.x,turn.y);
-			
-		// put stone
-		this.field.stones[turn.x][turn.y] = this.other.stone; 
-		this.field.draw();
-			
-		// change points
-		this.other.points += stolenStones + 1;
-		this.me.points -= stolenStones;
-		
-		if(this.logic.canTurn(this.me)) this.bMyTurn = true;
-		else if(!this.logic.canTurn(this.other)) this.endGame(); // TODO: info that no more turns are possible
-	
-	};
-	
 	this.undo = function() {
 	
+		this.socket.emit("undo",{id: this.sid});
+	
+	};
+	
+	this.publish = function() {
+	
+		this.socket.emit("publish",{id: this.sid});
+	
+	};
+	
+	this.sessionUrl = function() {
+	
+		window.prompt("Link for your opponent:","http://elsaesser.servegame.com/play?id=" + this.sid);
 	
 	};
 	
@@ -237,7 +193,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 				this.socket.emit('choose', {id: this.sid, side: this.mySide});
 				this.canvas.drawText("Waiting for opponent ...", this.fontsize);
 				
-				document.getElementById("invite").style.display = "inline";
+				document.getElementById("session-url").style.display = "inline";
 				document.getElementById("publish").style.display = "inline";
 				
 				return;
@@ -245,7 +201,6 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 			}
 		
 			if(!this.bPlaying) {
-				this.startGame();
 				this.socket.emit('start', {id: this.sid});
 				return;
 			}
@@ -253,43 +208,10 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 			var x = parseInt(mx/this.field.side);
 			var y = parseInt(my/this.field.side);
 			
-			if(this.field.stones[x][y] != 0) return;
-				
-			var stolenStones = this.logic.makeTurn(this.me,x,y);
-			if(stolenStones == 0) return; // no turn
-			
-			// put stone
-			this.field.stones[x][y] = this.me.stone; 
-			this.field.draw();
-			this.field.highlight(x,y);
-			
-			// change points
-			this.me.points += stolenStones + 1;
-			this.other.points -= stolenStones;
-			
-			// TODO: update info text
-			
 			this.socket.emit('turn', {id: this.sid, x: x, y: y});
-			
-			// TODO: this function should run in the background
-			if(this.logic.canTurn(this.other)) this.bMyTurn = false;
-			else if(!this.logic.canTurn(this.me)) this.endGame(); // TODO: info that no more turns are possible
 			
 		}
 			
-	};
-	
-	this.publish = function() {
-	
-		this.socket.emit("publish",{id: this.sid});
-	
-	};
-	
-	this.inviteUrl = function() {
-	
-		// TODO: change! clipboard? modal dialog?
-		window.prompt("Link for your opponent:","http://elsaesser.servegame.com/play?id=" + this.sid);
-	
 	};
 	
 	this.canvas.drawText("Connecting ...", this.fontsize);

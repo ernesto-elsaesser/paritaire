@@ -1,4 +1,4 @@
-function class_player(stoneState, colorName, winCount) {
+function Player(stoneState, colorName, winCount) {
 
 	this.color = colorName;
 	this.stone = stoneState;
@@ -11,7 +11,7 @@ function class_player(stoneState, colorName, winCount) {
 	return true;
 }
 
-function class_field(refSession,columnNum,rowNum) 
+function Field(refSession,columnNum,rowNum) 
 {	
 	// error handling
 	if(columnNum % 2 || rowNum % 2) {
@@ -34,39 +34,24 @@ function class_field(refSession,columnNum,rowNum)
 		this.stones[x] = new Array(this.ysize);
 	}
 	
-	this.init = function() {
+	this.clear = function() {
 	
 		// clear field
 		for (var x = 0; x < this.xsize; x++) {
 			for (var y = 0; y < this.ysize; y++)
 					this.stones[x][y] = 0;
 		}
-		
-		// generate 2x2 pattern at center
-		var hx = (this.xsize/2);
-		var hy = (this.ysize/2);
-		
-		this.stones[hx][hy] = 1;
-		this.stones[hx-1][hy-1] = 1;
-		this.stones[hx][hy-1] = 2;
-		this.stones[hx-1][hy] = 2;
 	
 	};
 	
-	this.load = function(data) {
-	
-		var points = [0,0];
+	this.update = function(data) {
 		
-		for (var x = 0; x < this.xsize; x++) {
-			for (var y = 0; y < this.ysize; y++)
+		for (var i in data) {
 			
-				var stone = data[x][y];
-				this.stones[x][y] = stone;
-				if(stone == 1) points[0]++;
-				else if(stone == 2) points[1]++;
+			var t = data[i];
+			this.stones[t.x][t.y] = t.s;
 		}
 		
-		return points;
 	}
 	
 	this.draw = function() {
@@ -75,138 +60,12 @@ function class_field(refSession,columnNum,rowNum)
 				this.session.ctx.drawImage(this.imgs[this.stones[x][y]], x * this.side, y * this.side, this.side, this.side);
 		}
 	};
+	
 	this.highlight = function(x,y) {
 		this.session.ctx.drawImage(this.imgs[3], x * this.side, y * this.side, this.side, this.side);
 	};
 	
 	return true;
-}
-
-function class_gamelogic(refField) {
-
-	this.field = refField;
-	
-	var hx = (this.field.xsize/2);
-	var hy = (this.field.ysize/2);
-		
-	// compute possible next turns
-	
-	/*	  X X
-	*	X 1	2 X	
-	*	X 2 1 X
-	*	  X X
-	*/
-	
-	this.future = [{x:hx-2,y:hy-1},{x:hx-2,y:hy},
-		{x:hx-1,y:hy-2},{x:hx-1,y:hy+1},
-		{x:hx,y:hy-2},{x:hx,y:hy+1},
-		{x:hx+1,y:hy-1},{x:hx+1,y:hy}];
-		
-		
-	this.dirs = [{x:0,y:-1},{x:1,y:-1},{x:1,y:0},{x:1,y:1},{x:0,y:1},{x:-1,y:1},{x:-1,y:0},{x:-1,y:-1}];
-
-	// if this function returns zero, the turn was invalid
-	// in this case, the field is not modified
-	this.makeTurn = function(player,x,y) {
-	
-		var stolenStones = 0;
-	
-		// check all directions
-		for(var d in this.dirs) {
-
-			stolenStones += this.tryPath(player,x,y,this.dirs[d].x,this.dirs[d].y,[],false);
-
-		}
-		
-		if(stolenStones > 0) this.removeFuture(x,y);
-		
-		return stolenStones;
-	
-	}
-	
-	this.tryPath = function(player,x,y,deltax,deltay,path,bCheck) {
-
-		var nextx = x+deltax;
-		var nexty = y+deltay;
-
-		// field borders
-		if(nextx == -1 || nexty == -1 || nextx == this.field.xsize || nexty == this.field.ysize) return 0;
-		
-		var stone = this.field.stones[nextx][nexty];
-		
-		// enemy stone
-		if(stone == player.next.stone) {
-			path[path.length] = {x:nextx,y:nexty};
-			return this.tryPath(player,nextx,nexty,deltax,deltay,path,bCheck);
-		}
-		// own stone
-		else if (stone == player.stone) {
-		
-			if(path.length > 0 && bCheck) return 1; // only checking, return true
-			// swap stones in path to players color
-			for(var i in path) this.field.stones[path[i].x][path[i].y] = player.stone;
-			return path.length; // return number of stolen stones
-		}
-		// no stone
-		else
-		{
-			// if there is an empty field next to the dropped stone, try to add it to the future turn positions
-			if(path.length == 0) this.addFuture(nextx,nexty);
-			return 0;
-		}
-
-	};
-
-	this.addFuture = function(x,y) {
-
-		var f = this.future;
-		for(var i in f) if(f[i].x == x && f[i].y == y) return;
-		f[f.length] = {x:x,y:y};
-
-	};
-
-	this.removeFuture = function(x,y) {
-
-		var f = this.future;
-		for(var i in f) if(f[i].x == x && f[i].y == y) f.splice(i,1);
-
-	};
-
-	// TODO: not working correctly
-	this.canTurn = function(player) {
-
-		var x,y;
-
-		// try possible future turns
-		for (var t in this.future) {
-				
-				x = this.future[t].x;
-				y = this.future[t].y;
-				
-				for(var d in this.dirs) {
-						
-						var r = this.tryPath(player,x,y,this.dirs[d].x,this.dirs[d].y,[],true);
-						if(r == 1) return true;
-
-				}
-				
-		}
-
-		// no valid turns
-		return false;
-
-	};
-	
-	this.fimg = new Image();
-	this.fimg.src = "img/future.png";
-	
-	// debug function
-	this.drawFuture = function(refCtx) {
-		var s = this.field.side;
-		for (var t in this.future)
-			refCtx.drawImage(this.fimg, this.future[t].x * s, this.future[t].y * s, s, s);
-	};
-	
 }
 
 function createCanvas(container) {

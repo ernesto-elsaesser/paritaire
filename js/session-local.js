@@ -1,4 +1,4 @@
-function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next) {
+function LocalSession(container,sock,id,color1,color2) {
 
 	this.canvas = createCanvas(container);
 	
@@ -10,60 +10,125 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 	this.offsetX = container.offsetLeft;
 	this.offsetY = container.offsetTop;
 
-	this.player1 = new class_player(1,color1,wins1);
-	this.player2 = new class_player(2,color2,wins2);
+	this.player1 = new class_player(1,color1,0);
+	this.player2 = new class_player(2,color2,0);
 	
 	// linked loop
 	this.player1.next = this.player2;
 	this.player2.next = this.player1;
 	
-	this.currentPlayer = {};
-	this.nextStarter = (next == 1 ? this.player1 : this.player2); // player that will start the next game
+	this.nextStarter = 0; // player that will start the next game
 	
-	this.field = new class_field(this,dimx,dimy);
-	this.logic = new class_gamelogic(this.field);
+	this.bPlaying = false; // control flags
+	this.currentSide = 0;
+	this.field = null;
 	
-	this.bPlaying = false; // control flag
+	// socket & connection
+	this.sid = id;
+	this.socket = sock;
 	
-	this.startGame = function() {
+	var that = this;
 	
-		this.field.init();
-		this.field.draw();
+	this.socket.on('init', function (data) {
 		
-		this.player1.points = 2;
-		this.player2.points = 2;
-
-		this.currentPlayer = this.nextStarter;
-		this.nextStarter = this.nextStarter.next;
-		this.bPlaying = true;
-	};
+		document.getElementById("session-url").style.display = "inline";
+		
+		that.currentSide = data.next;
+		that.player1.wins = data.wins[0];
+		that.player2.wins = data.wins[1];
+		that.nextStarter = data.round;
+		
+		that.field = new Field(that,data.dim,data.dim);
+		
+		that.bPlaying = data.playing;
+		
+		if(data.playing) {
+			
+			that.field.stones = data.field;
+			that.field.draw();
+		}
+		else {
+			
+			that.field.clear();
+			that.canvas.drawText("Click to start!", that.fontsize);
+		
+		}
+		
+	  });
+	  
+	this.socket.on('turn', function (data) {
+		
+		that.bPlaying = true;
+		
+		// update field
+		that.field.update(data.stones); 
+		that.field.draw();
+		var l = data.stones[data.stones.length-1];
+		that.field.highlight(l.x,l.y);
+			
+		// change points
+		that.player1.points = data.points[0];
+		that.player2.points = data.points[1];
+		
+		if(data.next == 0) that.endGame();
+		else that.currentSide == data.next;
+		// TODO: info that player can't turn
+		
+	});
+	
+  	this.socket.on('disconnect', function () { // auto reconnect is on
+		
+		that.bPlaying = false;
+  		that.canvas.drawText("Connection problems ...", that.fontsize);
+		
+  	});
+	
+	this.socket.on('reconnect', function () {
+		
+		that.socket.emit('init', {id: that.sid});
+		
+  	});
 	
 	this.endGame = function() {
 		
 		// TODO: replace with canvas graphics
-		var msg = "Color " ;
+		var msg = "";
 		
-		if(this.currentPlayer.points > this.currentPlayer.next.points) {
-			this.currentPlayer.wins++;
-			msg += this.currentPlayer.color + " won! [";
-		}
-		else if (this.currentPlayer.points < this.currentPlayer.next.points) {
-			this.currentPlayer.next.wins++;
-			msg += this.currentPlayer.next.color + " won! [";
-		}
-		else
-			msg = "Draw! ["
+		var winner = null;
+		
+		if(this.player1.points > this.player2.points) winner = this.player1;
+		else if(this.player1.points > this.player2.points) winner = this.player2;
+		
+		if(winner) winner.wins++;
+		
+		if(winner) msg += winner.color + " won! [";
+		else msg = "Draw! [";
 		
 		msg += this.player1.points + ":" + this.player2.points + "]";
 		
 		this.canvas.drawText(msg, this.fontsize);
 		
+		this.bPlaying = false;
+		
+		this.currentSide = this.nextStarter;
+		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
+		
 		this.ctx.fillStyle = "#000";
 		var x = (this.canvas.width / 2) - (this.fontsize * 3);
 		var y = (this.canvas.height / 2) + (this.fontsize * 2);
-		this.ctx.fillText("Click to play!",x,y);
-		
-		this.bPlaying = false;
+		this.ctx.fillText("Click to play!",x,y);	
+	
+	};
+	
+	this.undo = function() {
+	
+		this.socket.emit("undo",{id: this.sid});
+	
+	};
+	
+	this.sessionUrl = function() {
+	
+		window.prompt("Permanent link to this session:","http://elsaesser.servegame.com/play?id=" + this.sid);
 	
 	};
 	
@@ -77,44 +142,23 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
 		
 			if(!this.bPlaying) {
-				this.startGame();
+				this.socket.emit('start', {id: this.sid});
 				return;
 			}
 				
 			var x = parseInt(mx/this.field.side);
 			var y = parseInt(my/this.field.side);
-				
-			if(this.field.stones[x][y] != 0) return;
-				
-			var stolenStones = this.logic.makeTurn(this.currentPlayer,x,y);
-			if(stolenStones == 0) return; // no turn
 			
-			// put stone
-			this.field.stones[x][y] = this.currentPlayer.stone; 
-			this.field.draw();
-			this.field.highlight(x,y);
-			if(this.bDebug) this.logic.drawFuture(this.ctx);
-			
-			// change points
-			this.currentPlayer.points += stolenStones + 1;
-			this.currentPlayer.next.points -= stolenStones;
-			
-			this.currentPlayer = this.currentPlayer.next;
-			// TODO: update info text
-			
-			// check if next player can make a turn
-			// TODO: this function should run in the background
-			if(!this.logic.canTurn(this.currentPlayer)) {
-				this.currentPlayer = this.currentPlayer.next;
-				if(!this.logic.canTurn(this.currentPlayer)) this.endGame(); // TODO: info that no more turns are possible
-			}
+			this.socket.emit('turn', {id: this.sid, x: x, y: y});
 			
 		}
 			
 	};
 	
-	this.canvas.onclick = this.clickHandler.bind(this);
+	this.canvas.drawText("Connecting ...", this.fontsize);
 	
-	this.canvas.drawText("Click to play!", this.fontsize);
+	this.socket.emit('init', {id: this.sid});
+	
+	this.canvas.onclick = this.clickHandler.bind(this);
 
-} 
+}
