@@ -45,9 +45,12 @@ function onRequest(request,response) {
 				log("creating new session (" + id + "): " + params);
 				sessions[id].id = id;
 				sessions[id].wins = [null,0,0];
-				sessions[id].next = 1;
-				sessions[id].first = null;
-				sessions[id].full = false;
+				sessions[id].nextRound = 1;
+				sessions[id].nextTurn = 0;
+				sessions[id].players = [null,null,null];
+				sessions[id].field = new Array(sessions[id].dim);
+				for(var i = 0; i < sessions[id].dim; i++) sessions[id].field[i] = new Array(sessions[id].dim);
+				sessions[id].playing = false;
 				response.writeHead(200, {"Content-Type": "text/plain"});				
 				response.write("" + id);
 				response.end();
@@ -113,7 +116,7 @@ function buildGame(id) {
 	var s = sessions[id];
 	
 	if(s == undefined) return "Invalid session ID!";
-	if(s.full) return "Session is full!";
+	if(s.players[1] && s.players[2]) return "Session is full!";
 	
 	var html = gameTemplate;
 	

@@ -10,8 +10,9 @@ Ernesto:
 - publish
 - socketio websokcet 502
 - timeout timer
+- reconnect
 - shell password
-- mySide nach disconnect? 
-- lost turns?
+- store game online
+- url erst nach choose
 
 LIZENZ!

@@ -53,6 +53,22 @@ function class_field(refSession,columnNum,rowNum)
 	
 	};
 	
+	this.load = function(data) {
+	
+		var points = [0,0];
+		
+		for (var x = 0; x < this.xsize; x++) {
+			for (var y = 0; y < this.ysize; y++)
+			
+				var stone = data[x][y];
+				this.stones[x][y] = stone;
+				if(stone == 1) points[0]++;
+				else if(stone == 2) points[1]++;
+		}
+		
+		return points;
+	}
+	
 	this.draw = function() {
 		for (var x = 0; x < this.xsize; x++) {
 			for (var y = 0; y < this.ysize; y++)

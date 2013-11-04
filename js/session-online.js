@@ -25,7 +25,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	this.bPlaying = false; // control flags
 	this.bSuspended = false;
 	this.bMyTurn = false;
-	this.chosenSide = 0;
+	this.mySide = 0;
 	
 	// socket & connection
 	this.sid = id;
@@ -35,7 +35,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.socket.on('alone', function () {
 	
-		if(that.chosenSide == 0) {
+		if(that.mySide == 0) {
 		
 			that.ctx.fillStyle = that.player1.color;
 			that.ctx.fillRect(0,0,that.canvas.width / 2,that.canvas.height);
@@ -64,9 +64,9 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		
 		if(that.bSuspended) that.bSuspended = false; // discarding old game
 		
-		that.chosenSide = data.side;
+		that.mySide = data.side;
 		
-		if(that.chosenSide == 1) {
+		if(that.mySide == 1) {
 			that.me = that.player1;
 			that.other = that.player2;
 		}else {
@@ -100,13 +100,13 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
   	});
 	
 	this.socket.on('reconnect', function () {
-		alert("reconnected");
-		that.socket.emit('init', {id: that.sid, recon: that.bSuspended});
+		
+		that.socket.emit('init', {id: that.sid});
 		
   	});
 	
-	this.socket.on('resume', function () {
-		that.resumeGame();
+	this.socket.on('resume', function (data) {
+		that.resumeGame(data);
 	});
 	
 	this.startGame = function() {
@@ -165,16 +165,36 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		document.getElementById("publish").style.display = "none";
 		
 		this.bPlaying = false;
-		this.bSuspended = true;
+		this.bMyTurn = false;
 	
 	};
 	
-	this.resumeGame = function() {
+	this.resumeGame = function(data) {
 	
+		document.getElementById("invite").style.display = "none";
+		document.getElementById("publish").style.display = "none";
+		
+		this.mySide = data.side;
+		
 		// TODO: update whos turn it is
+		var p = this.field.load(data.field);
 		this.field.draw();
+		
+		if(this.mySide == 1) {
+			this.me = this.player1;
+			this.other = this.player2;
+			this.me.points = p[0];
+			this.other.points = p[1];
+		}else {
+			this.me = this.player2;
+			this.other = this.player1;
+			this.me.points = p[1];
+			this.other.points = p[0];
+		}
+			
+		this.bMyTurn = (data.turn == data.side);
+			
 		this.bPlaying = true;
-		this.bSuspended = false;
 	}
 	
 	this.othersTurn = function(turn) {
@@ -201,7 +221,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.clickHandler = function(event) {
 	
-		if(this.bSuspended || !this.bMyTurn) return;
+		if(!this.bMyTurn) return;
 	
 		// mouse position
 		var mx = event.clientX-this.offsetX-this.canvas.offsetLeft+pageXOffset;
@@ -210,11 +230,11 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		// click inside canvas?
 		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
 		
-			if(this.chosenSide == 0) {
+			if(this.mySide == 0) {
 			
      			this.bMyTurn = false;
-				this.chosenSide = (mx > ((this.field.xsize / 2) * this.field.side) ? 2 : 1);
-				this.socket.emit('choose', {id: this.sid, side: this.chosenSide});
+				this.mySide = (mx > ((this.field.xsize / 2) * this.field.side) ? 2 : 1);
+				this.socket.emit('choose', {id: this.sid, side: this.mySide});
 				this.canvas.drawText("Waiting for opponent ...", this.fontsize);
 				
 				document.getElementById("invite").style.display = "inline";
@@ -274,7 +294,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.canvas.drawText("Connecting ...", this.fontsize);
 	
-	this.socket.emit('init', {id: this.sid, recon: false});
+	this.socket.emit('init', {id: this.sid});
 	
 	this.canvas.onclick = this.clickHandler.bind(this);
 
