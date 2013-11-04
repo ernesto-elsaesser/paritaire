@@ -10,3 +10,7 @@ Ernesto:
 - timeout timer
 - reconnect
 - shell password
+- store game online
+- url erst nach choose
+
+LIZENZ!

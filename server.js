@@ -121,21 +121,14 @@ function buildGame(id) {
 
 	if(s.online == "false") {
 	
+		html = html.replace("##1","session-local");
 		lineSession += "local_session(document.getElementById('field'),";
-		html = html.replace("##1","");
 		
 	}
 	else {
 		
+		html = html.replace("##1","session-online");
 		lineSession += "online_session(document.getElementById('field'),io.connect('http://elsaesser.servegame.com/')," + id + ",";
-		
-		if(s.first == null) {
-		
-			html = html.replace("##1",'<a id="invite" class="btn btn-primary" href="#" onclick="session.inviteUrl()">Inivitation URL</a>\n' +
-				'<a id="publish" class="btn btn-primary" href="#" onclick="session.publish()">Publish</a>');
-			
-		}
-		else html = html.replace("##1","");
 		
 	}
 	

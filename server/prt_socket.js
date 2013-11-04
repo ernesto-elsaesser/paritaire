@@ -13,34 +13,48 @@ function attachSocket(httpServer,sessions) {
 
 		log("CONNECTION " + socket.id);
 
-  	  clients[socket.id] = {};
+		clients[socket.id] = {};
 
-	  socket.on('init', function (data) {
+		socket.on('init', function (data) {
   
-	    var c = clients[socket.id];
-	    c.socket = socket;
-	    c.session = sessions[data.id];
-    
-	    if(c.session.first == null) {
-    
-	      	log("INIT to empty session " + data.id + " from " + socket.id);
-	      	c.session.first = c;
-	      	socket.emit('alone');
-	    }
-	    else {
-    
-	        c.session.full = true;
-	      	var t = (c.session.first.side == 1 ? 2 : 1);
-	      	log("INIT to session " + data.id + ", assigned side " + t + " to " + socket.id);
-	      	c.side = t;
-	      	// cross reference for disconnect event
-	      	c.other = c.session.first;
-	      	c.session.first.other = c;
-	      	c.session.first.socket.emit('ready',{side: c.session.first.side});
-	      	socket.emit('ready',{side: t});
-	    }
+			var c = clients[socket.id];
+			c.socket = socket;
+			c.session = sessions[data.id];
+			
+			if(c.session == undefined) {
+				log("INIT invalid session (" + data.id + ") id from " + socket.id);
+				return;
+			}
+		
+			if(c.session.first == null) {
+		
+				log("INIT to empty session " + data.id + " from " + socket.id);
+				c.session.first = c;
+				socket.emit('alone');
+			}
+			else {
+		
+				c.session.full = true;
+				var t = (c.session.first.side == 1 ? 2 : 1);
+				c.side = t;
+				// cross reference for disconnect event
+				c.other = c.session.first;
+				c.session.first.other = c;
+				if(data.recon) {
+				
+					log("INIT to session " + data.id + ", resuming game with side " + t + " as " + socket.id);
+					c.session.first.socket.emit('resume');
+					socket.emit('resume');
+				}
+				else {
+					
+					log("INIT to session " + data.id + ", assigned side " + t + " to " + socket.id);
+					c.session.first.socket.emit('ready',{side: c.session.first.side});
+					socket.emit('ready',{side: t});
+				}
+			}
     	
-	  });
+		});
 	  socket.on('choose', function (data) {
 	    log("CHOSE side " + data.side + " in session " + data.id + " from " + socket.id);
 	    clients[socket.id].side = data.side;
