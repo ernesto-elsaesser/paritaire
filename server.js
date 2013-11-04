@@ -119,7 +119,7 @@ function buildGame(id) {
 	
 	var lineSession = "session = new class_";
 
-	if(s.online == "0") {
+	if(s.online == "false") {
 	
 		lineSession += "local_session(document.getElementById('field'),";
 		html = html.replace("##1","");
@@ -131,8 +131,8 @@ function buildGame(id) {
 		
 		if(s.first == null) {
 		
-			html = html.replace("##1",'<a class="btn btn-primary" href="#" onclick="session.inviteUrl()">Inivitation URL</a>\n' +
-				'<a class="btn btn-primary" href="#" onclick="session.publish()">Publish</a>');
+			html = html.replace("##1",'<a id="invite" class="btn btn-primary" href="#" onclick="session.inviteUrl()">Inivitation URL</a>\n' +
+				'<a id="publish" class="btn btn-primary" href="#" onclick="session.publish()">Publish</a>');
 			
 		}
 		else html = html.replace("##1","");
@@ -141,7 +141,7 @@ function buildGame(id) {
 	
 	lineSession += "'" + s.col1 + "'," + s.wins[1] + ",'" + s.col2 + "'," + s.wins[2] + "," + s.dim + "," + s.dim + "," + s.next + ");";
 
-	html = html.replace("##2",lineSession)
+	html = html.replace("##2",lineSession);
 	
 	return html;
 }
@@ -162,7 +162,7 @@ function checkSession(id) {
 	if(isNaN(d) || d % 2) return false;
 	
 	// online flag set?
-	if(!s.online) return false;
+	if(!s.online || s.online == "") return false;
 	
 	return true;
 

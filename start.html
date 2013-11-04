@@ -145,7 +145,7 @@
 							var cb = function(data,status) {
 							
 								if(status == "success" && data.length) 
-									window.location.replace("/play?id=" + data);
+									window.location.href = "/play?id=" + data;
 								else {
 								
 									alertText.style.display = "block";
