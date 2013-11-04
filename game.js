@@ -34,6 +34,9 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	
 	this.socket.on('alone', function () {
 	
+		document.getElementById("invite").style.display = "inline";
+		document.getElementById("publish").style.display = "inline";
+	
 		if(that.bPlaying) { // in game disconnect
 		
       		that.bPlaying = false;
@@ -58,6 +61,9 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	});
 	
 	this.socket.on('ready', function (data) {
+		
+		document.getElementById("invite").style.display = "none";
+		document.getElementById("publish").style.display = "none";
 		
 		that.chosenSide = data.side;
 		
@@ -89,6 +95,10 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	  });
 	
   	this.socket.on('disconnect', function () {
+	
+		document.getElementById("invite").style.display = "none";
+		document.getElementById("publish").style.display = "none";
+		
   		that.drawText("Connection problems ...");
 		that.bMyTurn = false;
 		that.bPlaying = false;
@@ -205,6 +215,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 			// put stone
 			this.field.stones[x][y] = this.me.stone; 
 			this.field.draw();
+			this.field.highlight(x,y);
 			
 			// change points
 			this.me.points += stolenStones + 1;
@@ -243,7 +254,7 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 	this.inviteUrl = function() {
 	
 		// TODO: change! clipboard? modal dialog?
-		alert("http://localhost/play?id=" + this.sid + "&side=" + this.other.stone);
+		window.prompt("Link for your opponent:","http://elsaesser.servegame.com/play?id=" + this.sid);
 	
 	};
 	
@@ -356,6 +367,7 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 			// put stone
 			this.field.stones[x][y] = this.currentPlayer.stone; 
 			this.field.draw();
+			this.field.highlight(x,y);
 			if(this.bDebug) this.logic.drawFuture(this.ctx);
 			
 			// change points
@@ -409,8 +421,9 @@ function class_field(refSession,columnNum,rowNum)
 	this.side = this.session.canvas.width / columnNum; // TODO: non-square fields?
 	this.future = []; // future turn positions
 	
-	this.imgs = [new Image(), this.session.player1.img, this.session.player2.img];
+	this.imgs = [new Image(), this.session.player1.img, this.session.player2.img, new Image()];
 	this.imgs[0].src = 'img/box.png';
+	this.imgs[3].src = 'img/highlight.png';
 	
 	this.stones = new Array(this.xsize); // 2 dimensional array representing the field
 	for (var x = 0; x < this.xsize; x++) {
@@ -441,6 +454,9 @@ function class_field(refSession,columnNum,rowNum)
 			for (var y = 0; y < this.ysize; y++)
 				this.session.ctx.drawImage(this.imgs[this.stones[x][y]], x * this.side, y * this.side, this.side, this.side);
 		}
+	};
+	this.highlight = function(x,y) {
+		this.session.ctx.drawImage(this.imgs[3], x * this.side, y * this.side, this.side, this.side);
 	};
 	
 	return true;
