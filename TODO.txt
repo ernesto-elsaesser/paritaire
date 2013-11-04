@@ -9,3 +9,4 @@ Ernesto:
 - socketio websokcet 502
 - timeout timer
 - reconnect
+- shell password

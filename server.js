@@ -182,4 +182,4 @@ server.listen(80);
 
 socket.attachSocket(server,sessions);
 
-shell.createShell(5001,{sessions: sessions, clients: socket.clients});
+shell.createShell(5001,{sessions: sessions, clients: socket.clients, cache: cache});

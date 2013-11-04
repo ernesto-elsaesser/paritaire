@@ -172,8 +172,8 @@ function class_online_session(container,sock,id,color1,wins1,color2,wins2,dimx,d
 		if(!this.bMyTurn) return;
 	
 		// mouse position
-		var mx = event.clientX-this.offsetX-this.canvas.offsetLeft+scrollX;
-		var my = event.clientY-this.offsetY-this.canvas.offsetTop+scrollY;
+		var mx = event.clientX-this.offsetX-this.canvas.offsetLeft+pageXOffset;
+		var my = event.clientY-this.offsetY-this.canvas.offsetTop+pageYOffset;
 		
 		// click inside canvas?
 		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
@@ -334,8 +334,8 @@ function class_local_session(container,color1,wins1,color2,wins2,dimx,dimy,next)
 	this.clickHandler = function(event) {
 	
 		// mouse position
-		var mx = event.clientX-this.offsetX-this.canvas.offsetLeft+scrollX;
-		var my = event.clientY-this.offsetY-this.canvas.offsetTop+scrollY;
+		var mx = event.clientX-this.offsetX-this.canvas.offsetLeft+pageXOffset;
+		var my = event.clientY-this.offsetY-this.canvas.offsetTop+pageYOffset;
 		
 		// click inside canvas?
 		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
@@ -576,10 +576,15 @@ function class_gamelogic(refField) {
 function createCanvas(container) {
 
 	var canvas = document.createElement('canvas');
-	//this.canvas.id     = "canvas";
+	
 	canvas.width  = container.clientWidth - 30;
-	if (canvas.width > 400) canvas.width = 400;
-	canvas.style.margin   = "0 auto";
+	if (canvas.width > 400) {
+		canvas.width = 400;
+		canvas.style.margin = "10px " + ((container.clientWidth - 430) / 2) + "px";
+	}
+	else {
+		canvas.style.margin   = "10px 0";
+	}
 	
 	canvas.height = canvas.width; // TODO: change for non-square fields
 	
