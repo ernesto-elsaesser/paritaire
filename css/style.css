@@ -1,3 +1,11 @@
+.top-100 {
+	margin-top: 100px;
+}
+
+.alert {
+	margin-top: 2em;	
+}
+
 .wide {
 	width: 100%;
 	margin-top: 3em;
@@ -39,8 +47,4 @@ h3 a:hover {
 .carousel-inner > .item > img {
 	margin: 0 auto;
 	margin-top: 10px;
-}
-
-.row {
-	margin-top: 100px; 
 }
