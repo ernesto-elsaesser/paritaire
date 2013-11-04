@@ -36,7 +36,7 @@
           </nav>
       </header>
     
-			<div class="row top-100"></div>    
+			<div class="row"></div>    
   		<div class="well well-lg">
      		<h1>Game Settings</h1>
 				<div class="container intro">
@@ -44,44 +44,39 @@
 				
 						<div class="col-md-4 col-sm-6 col-xs-12">
   			  		<h3>Field Settings</h3>
-  			    	<ol>
-                <li>
-                  <label for="dim">Please choose your field size:</label>
-                  <select id=dim>
-    	              <option value="4">4</option>
-    	              <option value="8" selected>8</option>
-    	              <option value="10">10</option>
-    	              <option value="16">16</option>
-    	          	</select>
-    	        	</li>
-    	        	<li>
-    	          	<b>How do you want to play?</b>
-    	          	<div class="radio">
-  				    			<label>
-                      <input type="radio" name="online" id="online" value="1" checked>
-                      Online (Multi Device)
-                    </label>
-				  				</div>
-				  				
-				  				<div class="radio">
-  									<label>
-				      				<input type="radio" name="online" id="local" value="0">
-    									Local (Single Device)
-  									</label>
-				  				</div>
-    	        	</li>
-    	      	</ol>
-  			 	 	</div>
+		    	    <label for="dim">Please choose your field size:</label>
+              <select id=dim>
+ 	              <option value="4">4</option>
+ 	              <option value="8" selected>8</option>
+ 	              <option value="10">10</option>
+ 	              <option value="16">16</option>
+ 	          	</select>
+	 	        	<b>How do you want to play?</b>
+ 	          	<div class="radio">
+			    			<label>
+                   <input type="radio" name="online" id="online" value="1" checked>
+                   Online (Multi Device)
+                 </label>
+		  				</div>		
+			  			<div class="radio">
+								<label>
+	      					<input type="radio" name="online" id="local" value="0">
+									Local (Single Device)
+								</label>
+			  			</div>
+    	      </div>
 					
   			  	<div class="col-md-4 col-sm-3 col-xs-6 center">
  			  			<h3>
- 			  				Color 1 
-	 			      	<a href="#carousel-player-1" data-slide="prev">
-	 			      		<span class="glyphicon glyphicon-chevron-left"></span>
-	 			      	</a>
-	 			      	<a href="#carousel-player-1" data-slide="next">
-	 			      		<span class="glyphicon glyphicon-chevron-right"></span>
-	 			      	</a>
+ 			  				Color 1
+ 			  				<nobr> 
+		 			      	<a href="#carousel-player-1" data-slide="prev">
+		 			      		<span class="glyphicon glyphicon-chevron-left"></span>
+		 			      	</a>
+		 			      	<a href="#carousel-player-1" data-slide="next">
+		 			      		<span class="glyphicon glyphicon-chevron-right"></span>
+		 			      	</a>
+		 			      </nobr>
  			      	</h3>
  			      	
  			      	<div id="carousel-player-1" class="carousel slide" data-interval="false">
@@ -102,12 +97,14 @@
   			  	<div class="col-md-4 col-sm-3 col-xs-6 center">
  			    		<h3>
 	 			    		Color 2 
-	 			      	<a href="#carousel-player-2" data-slide="prev">
-	 			      		<span class="glyphicon glyphicon-chevron-left"></span>
-	 			      	</a>
-	 			      	<a href="#carousel-player-2" data-slide="next">
-	 			      		<span class="glyphicon glyphicon-chevron-right"></span>
-	 			      	</a>
+	 			    		<nobr>
+		 			      	<a href="#carousel-player-2" data-slide="prev">
+		 			      		<span class="glyphicon glyphicon-chevron-left"></span>
+		 			      	</a>
+		 			      	<a href="#carousel-player-2" data-slide="next">
+		 			      		<span class="glyphicon glyphicon-chevron-right"></span>
+		 			      	</a>
+		 			      </nobr>
 	 			      </h3>
  			      	
  			      	<div id="carousel-player-2" class="carousel slide" data-interval="false">
