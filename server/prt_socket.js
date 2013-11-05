@@ -104,7 +104,7 @@ function attachSocket(httpServer,sessions) {
 		
 		if(c.session != s) return;
 		
-		s.turn(c.side,data.x,data.y);
+		if(s.playing) s.turn(c.side,data.x,data.y);
 		
 	  });
 	  
@@ -115,6 +115,7 @@ function attachSocket(httpServer,sessions) {
 		
 		if(c.session != s) return;
 		// TODO!
+		if(s.playing) ;
 		
 	  });
 	  
@@ -125,8 +126,10 @@ function attachSocket(httpServer,sessions) {
 		
   		if(c.session != s) return;
 		
-		log("PUBLISH session " + data.id + " from " + socket.id);
-	   	s.publish(); // TODO!
+		if(!s.playing) {
+			log("PUBLISH session " + data.id + " from " + socket.id);
+	   		s.publish();
+		}
 			
 	  });
 	  

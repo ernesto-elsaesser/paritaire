@@ -106,6 +106,12 @@ function Session(id,proto) {
 		return state;
 	};
 	
+	this.publish = function() {
+		
+		// TODO!
+		
+	};
+	
 }
 
 function Player(stone, color, wins) {
