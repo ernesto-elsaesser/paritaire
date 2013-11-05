@@ -51,6 +51,7 @@ function Session(id,proto) {
 	   	if(!this.online) side = this.nextTurn;
 		else if (side != this.nextTurn) return;
 		
+		if(x < 0 || y < 0 || x >= this.dim || y >= this.dim) return;
 		if(this.field.stones[x][y] != 0) return;
 		
 		var stolenStones = this.logic.makeTurn(side,x,y);
@@ -145,8 +146,8 @@ function Player(stone, color, wins) {
 
 }
 
-function Field(columnNum,rowNum) 
-{	
+function Field(columnNum,rowNum) {
+		
 	this.xsize = columnNum;
 	this.ysize = rowNum;
 	this.future = []; // future turn positions

@@ -33,16 +33,10 @@ function Player(stoneState, colorName, winCount) {
 
 function Field(refSession,columnNum,rowNum) 
 {	
-	// error handling
-	if(columnNum % 2 || rowNum % 2) {
-		alert("field dimensions should be even");
-		return false;
-	}
 	
 	this.session = refSession;
 	this.xsize = columnNum;
 	this.ysize = rowNum;
-	this.side = this.session.canvas.width / columnNum; // TODO: non-square fields?
 	this.future = []; // future turn positions
 	
 	this.imgs = [img0, this.session.player[1].img, this.session.player[2].img, img3];
@@ -73,14 +67,21 @@ function Field(refSession,columnNum,rowNum)
 	};
 	
 	this.draw = function() {
+		
+		var side = this.session.canvas.width / this.xsize;
+		// TODO: non-square field?
+		
 		for (var x = 0; x < this.xsize; x++) {
 			for (var y = 0; y < this.ysize; y++)
-				this.session.ctx.drawImage(this.imgs[this.stones[x][y]], x * this.side, y * this.side, this.side, this.side);
+				this.session.ctx.drawImage(this.imgs[this.stones[x][y]], x * side, y * side, side, side);
 		}
 	};
 	
 	this.highlight = function(x,y) {
-		this.session.ctx.drawImage(this.imgs[3], x * this.side, y * this.side, this.side, this.side);
+		
+		var side = this.session.canvas.width / this.xsize;
+		// TODO: non-square field?
+		this.session.ctx.drawImage(this.imgs[3], x * side, y * side, side, side);
 	};
 	
 	return true;
@@ -91,27 +92,37 @@ function createCanvas(container) {
 	var canvas = document.createElement('canvas');
 	
 	canvas.width  = container.clientWidth - 30;
+	/*
 	if (canvas.width > 450) {
 		canvas.width = 450;
 		canvas.style.margin = "10px " + ((container.clientWidth - 480) / 2) + "px";
 	}
 	else {
+	*/
 		canvas.style.margin   = "10px 0";
-	}
+	//}
 	
 	canvas.height = canvas.width; // TODO: change for non-square fields
 	
-	canvas.drawText = function (text, fontsize) {
+	canvas.drawText = function (text) {
 		
 		var ctx = this.getContext("2d");
+		var fontsize = parseInt(ctx.font.substr(0,2));
 		
 		ctx.fillStyle = "#FFF";
-		ctx.fillRect(0,0,canvas.width,canvas.height);
+		ctx.fillRect(0,0,this.width,this.height);
 		
 		ctx.fillStyle = "#000";
 		var x = (this.width / 2) - (fontsize * 0.22 * text.length);
-		var y = (this.height / 2) - (fontsize / 2);
+		var y = this.height * 0.3;
 		ctx.fillText(text,x,y);
+		
+		if(arguments[1]) {
+			var x2 = (this.width / 2) - (fontsize * 0.22 * arguments[1].length);
+			ctx.fillText(arguments[1],x2,y*2);
+		}
+		
+		this.lastText = arguments;
 		
 	};
 	

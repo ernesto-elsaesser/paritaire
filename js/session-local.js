@@ -4,8 +4,7 @@ function LocalSession(socket,ui,id,color1,color2) {
 	this.canvas = createCanvas(this.ui.main);
 	
 	this.ctx = this.canvas.getContext('2d');
-	this.fontsize = Math.floor(this.canvas.width/12);
-	this.ctx.font =  this.fontsize + "px Georgia";
+	this.ctx.font =  Math.floor(this.canvas.width/12) + "px Georgia";
 	
 	this.ui.publish.style.display = "none";
 	
@@ -46,7 +45,7 @@ function LocalSession(socket,ui,id,color1,color2) {
 		else {
 			
 			that.field.clear();
-			that.canvas.drawText("Click to start!", that.fontsize);
+			that.canvas.drawText("Click to start!");
 		
 		}
 		
@@ -97,7 +96,7 @@ function LocalSession(socket,ui,id,color1,color2) {
 		
 		that.ui.info.innerHTML= "";
 		that.bPlaying = false;
-  		that.canvas.drawText("Connection problems ...", that.fontsize);
+  		that.canvas.drawText("Connection problems ...");
 		
   	});
 	
@@ -125,18 +124,13 @@ function LocalSession(socket,ui,id,color1,color2) {
 		
 		msg += this.player[1].points + ":" + this.player[2].points + "]";
 		
-		this.canvas.drawText(msg, this.fontsize);
+		this.canvas.drawText(msg,"Click to play!");
 		
 		this.bPlaying = false;
 		that.ui.info.innerHTML= "";
 		
 		this.currentSide = this.nextStarter;
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
-		
-		this.ctx.fillStyle = "#000";
-		var x = (this.canvas.width / 2) - (this.fontsize * 3);
-		var y = (this.canvas.height / 2) + (this.fontsize * 2);
-		this.ctx.fillText("Click to play!",x,y);	
 	
 	};
 	
@@ -166,8 +160,9 @@ function LocalSession(socket,ui,id,color1,color2) {
 				return;
 			}
 				
-			var x = parseInt(mx/this.field.side);
-			var y = parseInt(my/this.field.side);
+		    var sideLength = this.canvas.width / this.dim;
+			var x = parseInt(mx/sideLength);
+			var y = parseInt(my/sideLength);
 			
 			this.socket.emit('turn', {id: this.sid, x: x, y: y});
 			
@@ -175,10 +170,24 @@ function LocalSession(socket,ui,id,color1,color2) {
 			
 	};
 	
-	this.canvas.drawText("Connecting ...", this.fontsize);
+	this.resizeCanvas = function() {
+	
+		var w = this.ui.main.clientWidth - 30;
+		this.canvas.width = w;
+		this.canvas.height = w; // TODO: change for non-square fields
+		this.ctx.font = Math.floor(w/12) + "px Georgia";
+		
+		if(this.bPlaying) this.field.draw();
+		else this.canvas.drawText(this.canvas.lastText[0],this.canvas.lastText[1]);
+		 
+	};
+	
+	this.canvas.drawText("Connecting ...");
 	
 	this.socket.emit('init', {id: this.sid});
 	
 	this.canvas.onclick = this.clickHandler.bind(this);
+	
+	window.onresize = this.resizeCanvas.bind(this);
 
 }
