@@ -48,7 +48,9 @@ function Session(id,proto) {
    
    this.turn = function(side,x,y) {
 	   
-	   	if(side != this.nextTurn) return;
+	   	if(!this.online) side = this.nextTurn;
+		else if (side != this.nextTurn) return;
+		
 		if(this.field.stones[x][y] != 0) return;
 		
 		var stolenStones = this.logic.makeTurn(side,x,y);
