@@ -64,7 +64,20 @@ h3 a:hover {
 
 /* play.html */
 
+#play-north {
+	
+	height: 34px;
+}
+
+#play-north #next {
+	
+	float: left;
+	padding: 2px;
+	width: 34px;
+}
+
 #play-center {
 	
+	float: clear;
 	margin-top: 10px;
 }

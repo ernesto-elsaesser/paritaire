@@ -74,6 +74,7 @@ function LocalSession(socket,ui,id,color1,color2) {
 			that.ui.next.appendChild(that.player[data.next].icon);
 		}
 		// TODO: info that player can't turn
+		that.ui.undo.className = "btn btn-primary";
 		
 	});
 	
@@ -113,6 +114,7 @@ function LocalSession(socket,ui,id,color1,color2) {
 		this.bPlaying = false;
 		this.field.clear();
 		that.ui.next.style.display = "none";
+		that.ui.undo.className = "btn btn-primary disabled";
 		
 		this.currentSide = this.nextStarter;
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);

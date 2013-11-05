@@ -160,6 +160,7 @@ function OnlineSession(socket,ui,id,color1,color2) {
 		this.bCanUndo = false;
 		this.field.clear();
 		that.ui.next.style.display = "none";
+		that.ui.undo.className = "btn btn-primary disabled";
 		
 		this.bMyTurn = (this.nextStarter == this.mySide);
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
