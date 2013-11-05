@@ -23,6 +23,11 @@ function Player(stoneState, colorName, winCount) {
 	this.img = new Image();
 	this.img.src = 'img/box_' + this.color + '.png';
 	
+	this.icon = new Image();
+	this.icon.src = 'img/' + this.color + '.png';
+	this.icon.width = 30;
+	this.icon.height = 30;
+	
 	return true;
 }
 
@@ -40,7 +45,7 @@ function Field(refSession,columnNum,rowNum)
 	this.side = this.session.canvas.width / columnNum; // TODO: non-square fields?
 	this.future = []; // future turn positions
 	
-	this.imgs = [img0, this.session.player1.img, this.session.player2.img, img3];
+	this.imgs = [img0, this.session.player[1].img, this.session.player[2].img, img3];
 	
 	this.stones = new Array(this.xsize); // 2 dimensional array representing the field
 	for (var x = 0; x < this.xsize; x++) {
@@ -114,13 +119,6 @@ function createCanvas(container) {
 	return canvas;
 	
 }
-
-function setNext(img) {
-	
-	var nextSpan = document.getElementById('next');
-	nextSpan.replaceChild(nextSpan.childNodes[0],img);
-}
-
 
 /*
 UNUSED, CODE DEPRECATED

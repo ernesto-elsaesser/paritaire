@@ -2,15 +2,6 @@
 	display: none;
 }
 
-#game_type {
-	max-width: 200px;
-	margin: 0 auto;
-}
-
-#dim {
-	font-size: 2em;
-}
-
 body {
 	padding-top: 70px;
 }
@@ -24,16 +15,43 @@ body {
 	margin-top: 3em;
 }
 
-.intro p {
+.center {
+	text-align: center;
+}
 
-  margin-top: 30px;
-  
+.right {
+	float: right;
+}
+
+.footer {
+	float: right;
+}
+
+/* index.html */
+
+
+.intro p {
+  margin-top: 30px; 
 }
 
 .intro a {
-
   font-size: 1.1em;
+}
 
+/* start.html */
+
+#game_type {
+	max-width: 200px;
+	margin: 0 auto;
+}
+
+#dim {
+	font-size: 2em;
+}
+
+.carousel-inner > .item > img {
+	margin: 0 auto;
+	margin-top: 10px;
 }
 
 h3 .glyphicon {
@@ -44,20 +62,9 @@ h3 a:hover {
 	text-decoration: none;
 }
 
-.center {
-	text-align: center;
-}
+/* play.html */
 
-#field {
+#play-center {
 	
-	margin-top: 10px;
-}
-
-.footer {
-	float: right;
-}
-
-.carousel-inner > .item > img {
-	margin: 0 auto;
 	margin-top: 10px;
 }

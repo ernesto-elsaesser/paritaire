@@ -69,7 +69,7 @@ function attachSocket(httpServer,sessions) {
 		
 		log("CHOOSE side " + data.side + " in session " + data.id + " from " + socket.id);
 		
-		s.players[data.side].connect(socket);
+		s.player[data.side].connect(socket);
 	    c.session = s;
 		c.side = data.side;
 		

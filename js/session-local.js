@@ -1,21 +1,19 @@
-function LocalSession(container,sock,id,color1,color2) {
+function LocalSession(socket,ui,id,color1,color2) {
 
-	this.canvas = createCanvas(container);
+	this.ui = ui;
+	this.canvas = createCanvas(this.ui.container);
 	
 	this.ctx = this.canvas.getContext('2d');
 	this.fontsize = Math.floor(this.canvas.width/12);
 	this.ctx.font =  this.fontsize + "px Georgia";
 	
-	// canvas offset, used for mouse click mapping
-	this.offsetX = container.offsetLeft;
-	this.offsetY = container.offsetTop;
-
-	this.player1 = new Player(1,color1,0);
-	this.player2 = new Player(2,color2,0);
+	this.ui.publish.style.display = "none";
 	
-	// linked loop
-	this.player1.next = this.player2;
-	this.player2.next = this.player1;
+	// canvas offset, used for mouse click mapping
+	this.offsetX = this.ui.container.offsetLeft;
+	this.offsetY = this.ui.container.offsetTop;
+
+	this.player = [null,new Player(1,color1,0),new Player(2,color2,0)];
 	
 	this.nextStarter = 0; // player that will start the next game
 	
@@ -25,17 +23,15 @@ function LocalSession(container,sock,id,color1,color2) {
 	
 	// socket & connection
 	this.sid = id;
-	this.socket = sock;
+	this.socket = socket;
 	
 	var that = this;
 	
 	this.socket.on('init', function (data) {
 		
-		document.getElementById("session-url").style.display = "inline";
-		
 		that.currentSide = data.next;
-		that.player1.wins = data.wins[0];
-		that.player2.wins = data.wins[1];
+		that.player[1].wins = data.wins[0];
+		that.player[2].wins = data.wins[1];
 		that.nextStarter = data.round;
 		
 		that.field = new Field(that,data.dim,data.dim);
@@ -67,11 +63,16 @@ function LocalSession(container,sock,id,color1,color2) {
 		that.field.highlight(l.x,l.y);
 			
 		// change points
-		that.player1.points = data.points[0];
-		that.player2.points = data.points[1];
+		that.player[1].points = data.points[0];
+		that.player[2].points = data.points[1];
 		
 		if(data.next == 0) that.endGame();
-		else that.currentSide = data.next;
+		else {
+			that.currentSide = data.next;
+			if(that.ui.next.childElementCount)
+				that.ui.next.removeChild(that.ui.next.childNodes[0]);
+			that.ui.next.appendChild(that.player[data.next].icon);
+		}
 		// TODO: info that player can't turn
 		
 	});
@@ -96,8 +97,8 @@ function LocalSession(container,sock,id,color1,color2) {
 		
 		var winner = null;
 		
-		if(this.player1.points > this.player2.points) winner = this.player1;
-		else if(this.player2.points > this.player1.points) winner = this.player2;
+		if(this.player[1].points > this.player[2].points) winner = this.player[1];
+		else if(this.player[2].points > this.player[1].points) winner = this.player[2];
 		
 		if(winner) {
 			winner.wins++;
@@ -105,12 +106,13 @@ function LocalSession(container,sock,id,color1,color2) {
 		}
 		else msg += "Draw! [";
 		
-		msg += this.player1.points + ":" + this.player2.points + "]";
+		msg += this.player[1].points + ":" + this.player[2].points + "]";
 		
 		this.canvas.drawText(msg, this.fontsize);
 		
 		this.bPlaying = false;
 		this.field.clear();
+		that.ui.next.style.display = "none";
 		
 		this.currentSide = this.nextStarter;
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);

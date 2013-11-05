@@ -129,7 +129,7 @@ function buildGame(id) {
 		
 	}
 	
-	lineSession += "Session(document.getElementById('field'),io.connect('http://elsaesser.servegame.com/')," + id + 
+	lineSession += "Session(io.connect('http://elsaesser.servegame.com/'),ui," + id + 
 		",'" + s.player[1].color + "','" + s.player[2].color + "');";
 
 	html = html.replace("##2",lineSession);

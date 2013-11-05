@@ -1,14 +1,15 @@
-function OnlineSession(container,sock,id,color1,color2) {
+function OnlineSession(socket,ui,id,color1,color2) {
 
-	this.canvas = createCanvas(container);
+	this.ui = ui;
+	this.canvas = createCanvas(this.ui.container);
 	
 	this.ctx = this.canvas.getContext('2d');
 	this.fontsize = Math.floor(this.canvas.width/12);
 	this.ctx.font =  this.fontsize + "px Georgia";
 	
 	// canvas offset, used for mouse click mapping
-	this.offsetX = container.offsetLeft;
-	this.offsetY = container.offsetTop;
+	this.offsetX = this.ui.container.offsetLeft;
+	this.offsetY = this.ui.container.offsetTop;
 
 	this.player = [null,new Player(1,color1,0),new Player(2,color2,0)];
 	
@@ -16,16 +17,19 @@ function OnlineSession(container,sock,id,color1,color2) {
 	
 	this.bPlaying = false; // control flags
 	this.bMyTurn = false;
+	this.bCanUndo = false;
 	this.mySide = 0;
 	this.field = null;
 	
 	// socket & connection
 	this.sid = id;
-	this.socket = sock;
+	this.socket = socket;
 	
 	var that = this;
 	
 	this.socket.on('alone', function () {
+	
+		that.ui.publish.className = "btn btn-primary";
 	
 		if(that.mySide == 0) {
 		
@@ -49,9 +53,6 @@ function OnlineSession(container,sock,id,color1,color2) {
 	});
 	
 	this.socket.on('init', function (data) {
-		
-		document.getElementById("session-url").style.display = "none";
-		document.getElementById("publish").style.display = "none";
 		
 		that.mySide = data.side;
 		that.player[1].wins = data.wins[0];
@@ -97,6 +98,14 @@ function OnlineSession(container,sock,id,color1,color2) {
 		that.field.draw();
 		var l = data.stones[data.stones.length-1];
 		that.field.highlight(l.x,l.y);
+		if(l.s == that.mySide) {
+			that.ui.undo.className = "btn btn-primary";
+			that.bCanUndo = true;
+		}
+		else {
+			that.ui.undo.className = "btn btn-primary disabled";
+			that.bCanUndo = false;
+		}
 			
 		// change points
 		that.player[1].points = data.points[0];
@@ -105,7 +114,9 @@ function OnlineSession(container,sock,id,color1,color2) {
 		if(data.next == 0) that.endGame();
 		else {
 			that.bMyTurn = (data.next == that.mySide);
-			setNext(that.player[data.next].img);
+			if(that.ui.next.childElementCount)
+				that.ui.next.removeChild(that.ui.next.childNodes[0]);
+			that.ui.next.appendChild(that.player[data.next].icon);
 		}
 		// TODO: info that player can't turn
 		
@@ -132,8 +143,8 @@ function OnlineSession(container,sock,id,color1,color2) {
 		
 		var winner = null;
 		
-		if(this.player[1].points > this.player[2].points) winner = this.player1;
-		else if(this.player[2].points > this.player[1].points) winner = this.player2;
+		if(this.player[1].points > this.player[2].points) winner = this.player[1];
+		else if(this.player[2].points > this.player[1].points) winner = this.player[2];
 		
 		if(winner) winner.wins++;
 		
@@ -146,7 +157,9 @@ function OnlineSession(container,sock,id,color1,color2) {
 		this.canvas.drawText(msg, this.fontsize);
 		
 		this.bPlaying = false;
+		this.bCanUndo = false;
 		this.field.clear();
+		that.ui.next.style.display = "none";
 		
 		this.bMyTurn = (this.nextStarter == this.mySide);
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
@@ -162,19 +175,19 @@ function OnlineSession(container,sock,id,color1,color2) {
 	
 	this.undo = function() {
 	
-		this.socket.emit("undo",{id: this.sid});
+		if(this.bCanUndo) this.socket.emit("undo",{id: this.sid});
 	
 	};
 	
 	this.publish = function() {
 	
-		this.socket.emit("publish",{id: this.sid});
+		if(this.mySide) this.socket.emit("publish",{id: this.sid});
 	
 	};
 	
 	this.sessionUrl = function() {
 	
-		window.prompt("Link for your opponent:","http://elsaesser.servegame.com/play?id=" + this.sid);
+		window.prompt("Link to join session:","http://elsaesser.servegame.com/play?id=" + this.sid);
 	
 	};
 	
@@ -196,8 +209,7 @@ function OnlineSession(container,sock,id,color1,color2) {
 				this.socket.emit('choose', {id: this.sid, side: this.mySide});
 				this.canvas.drawText("Waiting for opponent ...", this.fontsize);
 				
-				document.getElementById("session-url").style.display = "inline";
-				document.getElementById("publish").style.display = "inline";
+				this.ui.publish.className = "btn btn-primary";
 				
 				return;
 			
