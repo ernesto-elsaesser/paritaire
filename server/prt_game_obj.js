@@ -21,7 +21,7 @@ function Session(id,proto) {
 	this.id = id;
 	this.nextRound = 1;
 	this.nextTurn = 1;
-	this.players = [null,new Player(1,proto.col1,0), new Player(2,proto.col2,0)];
+	this.player = [null,new Player(1,proto.col1,0), new Player(2,proto.col2,0)];
 	this.field = new Field(this.dim, this.dim);
 	this.logic = new GameLogic(this.field);
 	this.playing = false;
@@ -29,8 +29,8 @@ function Session(id,proto) {
 	this.startGame = function() {
 		
 		this.field.init();
-		this.players[1].points = 2;
-		this.players[2].points = 2;
+		this.player[1].points = 2;
+		this.player[2].points = 2;
 		this.playing = true;
 		this.nextTurn = this.nextRound;
 		
@@ -39,9 +39,9 @@ function Session(id,proto) {
 			next:this.nextTurn
 		};
 		
-		this.players[1].send("turn",t);
+		this.player[1].send("turn",t);
 		
-	   	if(this.online) this.players[2].send("turn",t);
+	   	if(this.online) this.player[2].send("turn",t);
 
 	    this.nextRound = (this.nextRound == 1 ? 2 : 1);
    }
@@ -62,16 +62,16 @@ function Session(id,proto) {
 		// change points
 		var other = (side == 1 ? 2 : 1);
 		
-		this.players[side].points += stolenStones + 1;
-		this.players[other].points -= stolenStones;
+		this.player[side].points += stolenStones + 1;
+		this.player[other].points -= stolenStones;
 	
 		if(this.logic.canTurn(other)) this.nextTurn = other;
 		else if(!this.logic.canTurn(side)) { // end of game
 			
 			var winner = null;
 		
-			if(this.players[1].points > this.players[2].points) winner = this.players[1];
-			else if(this.players[2].points > this.players[1].points) winner = this.players[2];
+			if(this.player[1].points > this.player[2].points) winner = this.players[1];
+			else if(this.player[2].points > this.player[1].points) winner = this.players[2];
 		
 			if(winner) winner.wins++;
 			
@@ -80,13 +80,13 @@ function Session(id,proto) {
 		}
 
 		var t = {stones: this.field.getDelta(),
-			points: [this.players[1].points,this.players[2].points],
+			points: [this.player[1].points,this.player[2].points],
 			next:this.nextTurn
 		};
     	
-		this.players[1].send("turn",t);
+		this.player[1].send("turn",t);
 		
-	   	if(this.online) this.players[2].send("turn",t);
+	   	if(this.online) this.player[2].send("turn",t);
 	
    };
    
@@ -95,7 +95,7 @@ function Session(id,proto) {
 		var state = { dim: this.dim,
 			playing: this.playing,
 			round: this.nextRound,
-			wins: [this.players[1].wins, this.players[2].wins]
+			wins: [this.player[1].wins, this.player[2].wins]
 		};
 		
 		if(this.playing) {

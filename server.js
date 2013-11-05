@@ -110,7 +110,7 @@ function buildGame(id) {
 	var s = sessions[id];
 	
 	if(s == undefined) return "Invalid session ID!";
-	if(s.players[1].connected && (!s.online || s.players[2].connected)) return "Session is full!";
+	if(s.player[1].connected && (!s.online || s.player[2].connected)) return "Session is full!";
 	
 	var html = playPage;
 	
@@ -130,7 +130,7 @@ function buildGame(id) {
 	}
 	
 	lineSession += "Session(document.getElementById('field'),io.connect('http://elsaesser.servegame.com/')," + id + 
-		",'" + s.players[1].color + "','" + s.players[2].color + "');";
+		",'" + s.player[1].color + "','" + s.player[2].color + "');";
 
 	html = html.replace("##2",lineSession);
 	

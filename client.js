@@ -115,6 +115,11 @@ function createCanvas(container) {
 	
 }
 
+function setNext(img) {
+	
+	var nextSpan = document.getElementById('next');
+	nextSpan.replaceChild(nextSpan.childNodes[0],img);
+}
 
 
 /*

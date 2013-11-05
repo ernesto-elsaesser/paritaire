@@ -10,8 +10,7 @@ function OnlineSession(container,sock,id,color1,color2) {
 	this.offsetX = container.offsetLeft;
 	this.offsetY = container.offsetTop;
 
-	this.player1 = new Player(1,color1,0);
-	this.player2 = new Player(2,color2,0);
+	this.player = [null,new Player(1,color1,0),new Player(2,color2,0)];
 	
 	this.nextStarter = 0; // player that will start the next game
 	
@@ -30,9 +29,9 @@ function OnlineSession(container,sock,id,color1,color2) {
 	
 		if(that.mySide == 0) {
 		
-			that.ctx.fillStyle = that.player1.color;
+			that.ctx.fillStyle = that.player[1].color;
 			that.ctx.fillRect(0,0,that.canvas.width / 2,that.canvas.height);
-			that.ctx.fillStyle = that.player2.color;
+			that.ctx.fillStyle = that.player[2].color;
 			that.ctx.fillRect(that.canvas.width/2,0,that.canvas.width / 2,that.canvas.height);
 			that.ctx.fillStyle = "#000";
 			var x = (that.canvas.width / 2) - (that.fontsize * 3.96);
@@ -55,8 +54,8 @@ function OnlineSession(container,sock,id,color1,color2) {
 		document.getElementById("publish").style.display = "none";
 		
 		that.mySide = data.side;
-		that.player1.wins = data.wins[0];
-		that.player2.wins = data.wins[1];
+		that.player[1].wins = data.wins[0];
+		that.player[2].wins = data.wins[1];
 		that.nextStarter = data.round;
 		
 		that.field = new Field(that,data.dim,data.dim);
@@ -100,11 +99,14 @@ function OnlineSession(container,sock,id,color1,color2) {
 		that.field.highlight(l.x,l.y);
 			
 		// change points
-		that.player1.points = data.points[0];
-		that.player2.points = data.points[1];
+		that.player[1].points = data.points[0];
+		that.player[2].points = data.points[1];
 		
 		if(data.next == 0) that.endGame();
-		else that.bMyTurn = (data.next == that.mySide);
+		else {
+			that.bMyTurn = (data.next == that.mySide);
+			setNext(that.player[data.next].img);
+		}
 		// TODO: info that player can't turn
 		
 	});
@@ -130,8 +132,8 @@ function OnlineSession(container,sock,id,color1,color2) {
 		
 		var winner = null;
 		
-		if(this.player1.points > this.player2.points) winner = this.player1;
-		else if(this.player1.points > this.player2.points) winner = this.player2;
+		if(this.player[1].points > this.player[2].points) winner = this.player1;
+		else if(this.player[2].points > this.player[1].points) winner = this.player2;
 		
 		if(winner) winner.wins++;
 		
@@ -139,7 +141,7 @@ function OnlineSession(container,sock,id,color1,color2) {
 		else if(winner.stone == this.mySide) msg += "You won! [";
 		else msg += "You lost! [";
 		
-		msg += this.player1.points + ":" + this.player2.points + "]";
+		msg += this.player[1].points + ":" + this.player[2].points + "]";
 		
 		this.canvas.drawText(msg, this.fontsize);
 		
