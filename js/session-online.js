@@ -88,16 +88,39 @@ function OnlineSession(socket,ui,id,color1,color2) {
 		}
 		
 	  });
+	 
+  	this.socket.on('start', function (data) {
+		
+  		// change points
+  		that.player[1].points = data.points[0];
+  		that.player[2].points = data.points[1];
+		
+  		that.bPlaying = true;
+  		that.bCanUndo = false;
+  		that.field.clear();
+  		that.field.update(data.stones); 
+  		that.field.draw();
+		
+		that.bMyTurn = (data.next == that.mySide);
+		that.ui.undo.className = "btn btn-primary disabled";
+		that.ui.next.appendChild(that.player[data.next].icon);
+  	
+	});
 	  
 	this.socket.on('turn', function (data) {
 		
-		that.bPlaying = true;
+		// change points
+		that.player[1].points = data.points[0];
+		that.player[2].points = data.points[1];
 		
-		// update field
+		// update field	
 		that.field.update(data.stones); 
 		that.field.draw();
+		
+		// highlight placed stone
 		var l = data.stones[data.stones.length-1];
 		that.field.highlight(l.x,l.y);
+		
 		if(l.s == that.mySide) {
 			that.ui.undo.className = "btn btn-primary";
 			that.bCanUndo = true;
@@ -106,19 +129,14 @@ function OnlineSession(socket,ui,id,color1,color2) {
 			that.ui.undo.className = "btn btn-primary disabled";
 			that.bCanUndo = false;
 		}
-			
-		// change points
-		that.player[1].points = data.points[0];
-		that.player[2].points = data.points[1];
 		
 		if(data.next == 0) that.endGame();
 		else {
 			that.bMyTurn = (data.next == that.mySide);
-			if(that.ui.next.childElementCount)
-				that.ui.next.removeChild(that.ui.next.childNodes[0]);
+			that.ui.next.removeChild(that.ui.next.childNodes[0]);
 			that.ui.next.appendChild(that.player[data.next].icon);
 		}
-		// TODO: info that player can't turn
+		// TODO: info that player if he can't turn
 		
 	});
 	
@@ -157,10 +175,7 @@ function OnlineSession(socket,ui,id,color1,color2) {
 		this.canvas.drawText(msg, this.fontsize);
 		
 		this.bPlaying = false;
-		this.bCanUndo = false;
-		this.field.clear();
-		that.ui.next.style.display = "none";
-		that.ui.undo.className = "btn btn-primary disabled";
+		this.ui.next.removeChild(this.ui.next.childNodes[0]);
 		
 		this.bMyTurn = (this.nextStarter == this.mySide);
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);

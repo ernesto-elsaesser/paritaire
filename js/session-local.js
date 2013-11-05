@@ -52,9 +52,24 @@ function LocalSession(socket,ui,id,color1,color2) {
 		
 	  });
 	  
-	this.socket.on('turn', function (data) {
+    this.socket.on('start', function (data) {
 		
+		// change points
+		that.player[1].points = data.points[0];
+		that.player[2].points = data.points[1];
+	
 		that.bPlaying = true;
+		that.field.clear();
+		that.field.update(data.stones); 
+		that.field.draw();
+		
+		that.currentSide = data.next;
+		that.ui.undo.className = "btn btn-primary disabled";
+  		that.ui.next.appendChild(that.player[data.next].icon);
+  	
+  	});
+	  
+	this.socket.on('turn', function (data) {
 		
 		// update field
 		that.field.update(data.stones); 
@@ -69,8 +84,7 @@ function LocalSession(socket,ui,id,color1,color2) {
 		if(data.next == 0) that.endGame();
 		else {
 			that.currentSide = data.next;
-			if(that.ui.next.childElementCount)
-				that.ui.next.removeChild(that.ui.next.childNodes[0]);
+			that.ui.next.removeChild(that.ui.next.childNodes[0]);
 			that.ui.next.appendChild(that.player[data.next].icon);
 		}
 		// TODO: info that player can't turn
@@ -112,9 +126,7 @@ function LocalSession(socket,ui,id,color1,color2) {
 		this.canvas.drawText(msg, this.fontsize);
 		
 		this.bPlaying = false;
-		this.field.clear();
-		that.ui.next.style.display = "none";
-		that.ui.undo.className = "btn btn-primary disabled";
+		this.ui.next.removeChild(this.ui.next.childNodes[0]);
 		
 		this.currentSide = this.nextStarter;
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);

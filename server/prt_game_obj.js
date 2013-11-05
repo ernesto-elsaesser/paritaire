@@ -39,9 +39,9 @@ function Session(id,proto) {
 			next:this.nextTurn
 		};
 		
-		this.player[1].send("turn",t);
+		this.player[1].send("start",t);
 		
-	   	if(this.online) this.player[2].send("turn",t);
+	   	if(this.online) this.player[2].send("start",t);
 
 	    this.nextRound = (this.nextRound == 1 ? 2 : 1);
    }
@@ -70,8 +70,8 @@ function Session(id,proto) {
 			
 			var winner = null;
 		
-			if(this.player[1].points > this.player[2].points) winner = this.players[1];
-			else if(this.player[2].points > this.player[1].points) winner = this.players[2];
+			if(this.player[1].points > this.player[2].points) winner = this.player[1];
+			else if(this.player[2].points > this.player[1].points) winner = this.player[2];
 		
 			if(winner) winner.wins++;
 			
