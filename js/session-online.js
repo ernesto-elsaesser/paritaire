@@ -146,12 +146,13 @@ function OnlineSession(socket,ui,id,color1,color2) {
 		
 	});
 	
-  	this.socket.on('disconnect', function () { // auto reconnect is on
+  	this.socket.on('disconnect', function () {
 		
 		that.ui.info.innerHTML = "";
 		that.bMyTurn = false;
 		that.bPlaying = false;
   		that.canvas.drawText("Connection problems ...");
+		that.socket.socket.reconnect(); // should happen automatically
 		
   	});
 	
@@ -238,7 +239,7 @@ function OnlineSession(socket,ui,id,color1,color2) {
 				return;
 			}
 				
-		    var sideLength = this.canvas.width / this.dim;
+		    var sideLength = this.canvas.width / this.field.xsize;
 			var x = parseInt(mx/sideLength);
 			var y = parseInt(my/sideLength);
 			

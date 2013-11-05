@@ -41,6 +41,9 @@ function LocalSession(socket,ui,id,color1,color2) {
 			
 			that.field.stones = data.field;
 			that.field.draw();
+			
+			that.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
+			that.ui.info.appendChild(that.player[data.turn].icon);
 		}
 		else {
 			
@@ -160,7 +163,7 @@ function LocalSession(socket,ui,id,color1,color2) {
 				return;
 			}
 				
-		    var sideLength = this.canvas.width / this.dim;
+		    var sideLength = this.canvas.width / this.field.xsize;
 			var x = parseInt(mx/sideLength);
 			var y = parseInt(my/sideLength);
 			

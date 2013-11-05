@@ -74,3 +74,27 @@ h3 a:hover {
 	width: 200px;
 	padding: 2px;
 }
+
+/* test */
+
+.navbar-header {
+	float: left;
+}
+
+.navbar-collapse {
+	float: right;
+	border: 0;
+}
+
+.navbar-collapse ul {
+	margin: 0;
+}
+
+.navbar-collapse li {
+	float: left;
+}
+
+.navbar-collapse li > a {
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
