@@ -137,36 +137,37 @@
  			  	<script type="text/javascript">
  			  		function validate() {
  			  			
-						alertText = document.getElementById('validation_advice');
+							alertText = document.getElementById('validation_advice');
  			  			colors = document.getElementsByClassName("active");
  			  			
  			  			if(colors[0].id == colors[1].id) {
  			  				
- 			  				//alertText.className += "alert alert-danger";
- 			  				alertText.innerHTML = "<b> Problem: </b> You can not both be " + colors[0].id + "!";
-							alertText.style.display = "block";
+ 			  			alertText.innerHTML = "<b> Problem: </b> You can not both be " + colors[0].id + "!";
+							//alertText.style.display = "block";
+							$("#validation_advice").removeClass("hide");
 							
  			  			} else {
  			  				
- 			  				var postData = { col1: colors[0].id, 
-										col2: colors[1].id, 
-										dim: document.getElementById('dim').value, 
-										online: $('#online').prop('checked')};
+ 			  				var postData = { 
+ 			  							col1: colors[0].id, 
+											col2: colors[1].id, 
+											dim: document.getElementById('dim').value, 
+											online: $('#online').prop('checked')
+										};
 										
-							var cb = function(data,status) {
+								var callback = function (data, status) {
 							
-								if(status == "success" && data.length) 
-									window.location.href = "/play?id=" + data;
-								else {
-								
-									alertText.style.display = "block";
-									alertText.innerHTML = "<b> Problem: </b> Invalid session parameters!";
-								
-								}
-							
-							};
+									if(status == "success" && data.length) { 
 										
- 			  				$.post("create", postData, cb);
+										window.location.href = "/play?id=" + data;
+									} else {
+								
+										alertText.style.display = "block";
+										alertText.innerHTML = "<b> Problem: </b> Invalid session parameters!";
+									}
+								};
+										
+ 			  				$.post("create", postData, callback);
  			  			}
  			  		}
  			  	</script>
@@ -174,7 +175,7 @@
  			  	<div class="row">
   			  	<div class="col-md-12">
   			  		<input type="button" value="Ready!" class="btn btn-primary wide" onclick="validate();">
-		  				<div id="validation_advice" class="alert alert-danger" style="display:none"></div>
+		  				<div id="validation_advice" class="alert alert-danger hide"></div>
 		  			</div> 
 		  		</div>
       	</div>
