@@ -147,12 +147,6 @@ function Player(stone, color, wins) {
 
 function Field(columnNum,rowNum) 
 {	
-	// error handling
-	if(columnNum % 2 || rowNum % 2) {
-		console.log("uneven field dimensions!");
-		return false;
-	}
-	
 	this.xsize = columnNum;
 	this.ysize = rowNum;
 	this.future = []; // future turn positions

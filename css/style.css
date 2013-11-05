@@ -23,8 +23,13 @@ body {
 	float: right;
 }
 
-.footer {
-	float: right;
+.left {
+	float: left;
+}
+
+.clear {
+	
+	clear: both;
 }
 
 /* index.html */
@@ -64,20 +69,9 @@ h3 a:hover {
 
 /* play.html */
 
-#play-north {
+#play-main #info{
 	
-	height: 34px;
-}
-
-#play-north #next {
-	
-	float: left;
+	width: 200px;
 	padding: 2px;
-	width: 34px;
-}
-
-#play-center {
-	
-	float: clear;
-	margin-top: 10px;
+	font-weight: bold;
 }

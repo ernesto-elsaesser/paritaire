@@ -1,7 +1,7 @@
 function LocalSession(socket,ui,id,color1,color2) {
 
 	this.ui = ui;
-	this.canvas = createCanvas(this.ui.container);
+	this.canvas = createCanvas(this.ui.main);
 	
 	this.ctx = this.canvas.getContext('2d');
 	this.fontsize = Math.floor(this.canvas.width/12);
@@ -10,8 +10,8 @@ function LocalSession(socket,ui,id,color1,color2) {
 	this.ui.publish.style.display = "none";
 	
 	// canvas offset, used for mouse click mapping
-	this.offsetX = this.ui.container.offsetLeft;
-	this.offsetY = this.ui.container.offsetTop;
+	this.offsetX = this.ui.main.offsetLeft;
+	this.offsetY = this.ui.main.offsetTop;
 
 	this.player = [null,new Player(1,color1,0),new Player(2,color2,0)];
 	
@@ -65,7 +65,8 @@ function LocalSession(socket,ui,id,color1,color2) {
 		
 		that.currentSide = data.next;
 		that.ui.undo.className = "btn btn-primary disabled";
-  		that.ui.next.appendChild(that.player[data.next].icon);
+		that.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
+		that.ui.info.appendChild(that.player[data.next].icon);
   	
   	});
 	  
@@ -84,8 +85,8 @@ function LocalSession(socket,ui,id,color1,color2) {
 		if(data.next == 0) that.endGame();
 		else {
 			that.currentSide = data.next;
-			that.ui.next.removeChild(that.ui.next.childNodes[0]);
-			that.ui.next.appendChild(that.player[data.next].icon);
+			that.ui.info.removeChild(that.ui.info.childNodes[1]);
+			that.ui.info.appendChild(that.player[data.next].icon);
 		}
 		// TODO: info that player can't turn
 		that.ui.undo.className = "btn btn-primary";
@@ -94,6 +95,7 @@ function LocalSession(socket,ui,id,color1,color2) {
 	
   	this.socket.on('disconnect', function () { // auto reconnect is on
 		
+		that.ui.info.innerHTML= "";
 		that.bPlaying = false;
   		that.canvas.drawText("Connection problems ...", that.fontsize);
 		
@@ -126,7 +128,7 @@ function LocalSession(socket,ui,id,color1,color2) {
 		this.canvas.drawText(msg, this.fontsize);
 		
 		this.bPlaying = false;
-		this.ui.next.removeChild(this.ui.next.childNodes[0]);
+		that.ui.info.innerHTML= "";
 		
 		this.currentSide = this.nextStarter;
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);

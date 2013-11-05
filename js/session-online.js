@@ -1,15 +1,15 @@
 function OnlineSession(socket,ui,id,color1,color2) {
 
 	this.ui = ui;
-	this.canvas = createCanvas(this.ui.container);
+	this.canvas = createCanvas(this.ui.main);
 	
 	this.ctx = this.canvas.getContext('2d');
 	this.fontsize = Math.floor(this.canvas.width/12);
 	this.ctx.font =  this.fontsize + "px Georgia";
 	
 	// canvas offset, used for mouse click mapping
-	this.offsetX = this.ui.container.offsetLeft;
-	this.offsetY = this.ui.container.offsetTop;
+	this.offsetX = this.ui.main.offsetLeft;
+	this.offsetY = this.ui.main.offsetTop;
 
 	this.player = [null,new Player(1,color1,0),new Player(2,color2,0)];
 	
@@ -29,6 +29,7 @@ function OnlineSession(socket,ui,id,color1,color2) {
 	
 	this.socket.on('alone', function () {
 	
+		that.ui.info.innerHTML = "";
 		that.ui.publish.className = "btn btn-primary";
 	
 		if(that.mySide == 0) {
@@ -44,8 +45,10 @@ function OnlineSession(socket,ui,id,color1,color2) {
 			that.bMyTurn = true;
 			
 		}
-		else {
+		else { // opponent disconnected
 		
+			that.ui.info.removeChild(that.ui.info.childNodes[3]);
+			that.ui.info.removeChild(that.ui.info.childNodes[2]);
 			that.canvas.drawText("Waiting for opponent ...", that.fontsize);
 		
 		}
@@ -55,6 +58,10 @@ function OnlineSession(socket,ui,id,color1,color2) {
 	this.socket.on('init', function (data) {
 		
 		that.mySide = data.side;
+		
+		that.ui.info.appendChild(document.createTextNode("Color:\u00A0\u00A0"));
+		that.ui.info.appendChild(that.player[that.mySide].icon.cloneNode());
+		
 		that.player[1].wins = data.wins[0];
 		that.player[2].wins = data.wins[1];
 		that.nextStarter = data.round;
@@ -103,7 +110,8 @@ function OnlineSession(socket,ui,id,color1,color2) {
 		
 		that.bMyTurn = (data.next == that.mySide);
 		that.ui.undo.className = "btn btn-primary disabled";
-		that.ui.next.appendChild(that.player[data.next].icon);
+		that.ui.info.appendChild(document.createTextNode("\u00A0\u00A0Next:\u00A0\u00A0"));
+		that.ui.info.appendChild(that.player[data.next].icon);
   	
 	});
 	  
@@ -133,8 +141,8 @@ function OnlineSession(socket,ui,id,color1,color2) {
 		if(data.next == 0) that.endGame();
 		else {
 			that.bMyTurn = (data.next == that.mySide);
-			that.ui.next.removeChild(that.ui.next.childNodes[0]);
-			that.ui.next.appendChild(that.player[data.next].icon);
+			that.ui.info.removeChild(that.ui.info.childNodes[3]);
+			that.ui.info.appendChild(that.player[data.next].icon);
 		}
 		// TODO: info that player if he can't turn
 		
@@ -142,6 +150,7 @@ function OnlineSession(socket,ui,id,color1,color2) {
 	
   	this.socket.on('disconnect', function () { // auto reconnect is on
 		
+		that.ui.info.innerHTML = "";
 		that.bMyTurn = false;
 		that.bPlaying = false;
   		that.canvas.drawText("Connection problems ...", that.fontsize);
@@ -175,7 +184,8 @@ function OnlineSession(socket,ui,id,color1,color2) {
 		this.canvas.drawText(msg, this.fontsize);
 		
 		this.bPlaying = false;
-		this.ui.next.removeChild(this.ui.next.childNodes[0]);
+		this.ui.info.removeChild(this.ui.info.childNodes[3]);
+		this.ui.info.removeChild(this.ui.info.childNodes[2]);
 		
 		this.bMyTurn = (this.nextStarter == this.mySide);
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
@@ -224,8 +234,6 @@ function OnlineSession(socket,ui,id,color1,color2) {
 				this.mySide = (mx > (this.canvas.clientWidth / 2) ? 2 : 1);
 				this.socket.emit('choose', {id: this.sid, side: this.mySide});
 				this.canvas.drawText("Waiting for opponent ...", this.fontsize);
-				
-				this.ui.publish.className = "btn btn-primary";
 				
 				return;
 			
