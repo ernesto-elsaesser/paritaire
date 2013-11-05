@@ -33,7 +33,6 @@ function Session(id,proto) {
 		this.players[2].points = 2;
 		this.playing = true;
 		this.nextTurn = this.nextRound;
-	    this.nextRound = (this.nextRound == 1 ? 2 : 1);
 		
 		var t = {stones: this.field.getDelta(),
 			points:[2,2],
@@ -43,6 +42,8 @@ function Session(id,proto) {
 		this.players[1].send("turn",t);
 		
 	   	if(this.online) this.players[2].send("turn",t);
+
+	    this.nextRound = (this.nextRound == 1 ? 2 : 1);
    }
    
    this.turn = function(side,x,y) {
@@ -54,13 +55,13 @@ function Session(id,proto) {
 		if(stolenStones == 0) return;
 	
 		// put stone
-		this.field.putStone(side,x,y) = side;
+		this.field.putStone(side,x,y);
 	
 		// change points
 		var other = (side == 1 ? 2 : 1);
 		
-		this.players[side] += stolenStones + 1;
-		this.players[n] -= stolenStones;
+		this.players[side].points += stolenStones + 1;
+		this.players[other].points -= stolenStones;
 	
 		if(this.logic.canTurn(other)) this.nextTurn = other;
 		else if(!this.logic.canTurn(side)) { // end of game
@@ -113,7 +114,6 @@ function Player(stone, color, wins) {
 	this.wins = wins;
 	this.socket = null;
 	this.connected = false;
-	this.opponent = null;
 	
 	this.connect = function(socket) {
 		
@@ -183,8 +183,8 @@ function Field(columnNum,rowNum)
 	
 	this.getDelta = function() {
 		
-		var t = delta;
-		delta = [];
+		var t = this.delta;
+		this.delta = [];
 		return t;
 	}
 	
@@ -252,7 +252,7 @@ function GameLogic(refField) {
 		
 			if(path.length > 0 && bCheck) return 1; // only checking, return true
 			// swap stones in path to players color
-			for(var i in path) this.field.putStone(side,path[i].x][path[i].y]);
+			for(var i in path) this.field.putStone(side,path[i].x,path[i].y);
 			return path.length; // return number of stolen stones
 		}
 		// no stone
@@ -269,7 +269,7 @@ function GameLogic(refField) {
 
 		var f = this.future;
 		for(var i in f) if(f[i].x == x && f[i].y == y) return;
-		f[f.length] = {x:x,y:y};
+		f.push({x:x,y:y});
 
 	};
 
@@ -280,7 +280,7 @@ function GameLogic(refField) {
 
 	};
 
-	this.canTurn = function(player) {
+	this.canTurn = function(side) {
 
 		var x,y;
 
@@ -292,7 +292,7 @@ function GameLogic(refField) {
 				
 				for(var d in this.dirs) {
 						
-						var r = this.tryPath(player,x,y,this.dirs[d].x,this.dirs[d].y,[],true);
+						var r = this.tryPath(side,x,y,this.dirs[d].x,this.dirs[d].y,[],true);
 						if(r == 1) return true;
 
 				}
@@ -301,7 +301,7 @@ function GameLogic(refField) {
 
 		// no valid turns
 		return false;
-		‚
+		
 	};
 	
 }

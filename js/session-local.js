@@ -10,8 +10,8 @@ function LocalSession(container,sock,id,color1,color2) {
 	this.offsetX = container.offsetLeft;
 	this.offsetY = container.offsetTop;
 
-	this.player1 = new class_player(1,color1,0);
-	this.player2 = new class_player(2,color2,0);
+	this.player1 = new Player(1,color1,0);
+	this.player2 = new Player(2,color2,0);
 	
 	// linked loop
 	this.player1.next = this.player2;
@@ -71,7 +71,7 @@ function LocalSession(container,sock,id,color1,color2) {
 		that.player2.points = data.points[1];
 		
 		if(data.next == 0) that.endGame();
-		else that.currentSide == data.next;
+		else that.currentSide = data.next;
 		// TODO: info that player can't turn
 		
 	});
@@ -139,7 +139,7 @@ function LocalSession(container,sock,id,color1,color2) {
 		var my = event.clientY-this.offsetY-this.canvas.offsetTop+pageYOffset;
 		
 		// click inside canvas?
-		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
+		if(mx > 0 && mx < this.canvas.clientWidth && my > 0 && my < this.canvas.clientHeight) {
 		
 			if(!this.bPlaying) {
 				this.socket.emit('start', {id: this.sid});

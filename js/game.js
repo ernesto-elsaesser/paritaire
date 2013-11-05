@@ -1,3 +1,9 @@
+// preload images‚
+var img0 = new Image();
+var img3 = new Image();
+img0.src = 'img/box.png';
+img3.src = 'img/highlight.png';
+
 function Player(stoneState, colorName, winCount) {
 
 	this.color = colorName;
@@ -25,9 +31,7 @@ function Field(refSession,columnNum,rowNum)
 	this.side = this.session.canvas.width / columnNum; // TODO: non-square fields?
 	this.future = []; // future turn positions
 	
-	this.imgs = [new Image(), this.session.player1.img, this.session.player2.img, new Image()];
-	this.imgs[0].src = 'img/box.png';
-	this.imgs[3].src = 'img/highlight.png';
+	this.imgs = [img0, this.session.player1.img, this.session.player2.img, img3];
 	
 	this.stones = new Array(this.xsize); // 2 dimensional array representing the field
 	for (var x = 0; x < this.xsize; x++) {
@@ -52,7 +56,7 @@ function Field(refSession,columnNum,rowNum)
 			this.stones[t.x][t.y] = t.s;
 		}
 		
-	}
+	};
 	
 	this.draw = function() {
 		for (var x = 0; x < this.xsize; x++) {

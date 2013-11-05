@@ -10,8 +10,8 @@ function OnlineSession(container,sock,id,color1,color2) {
 	this.offsetX = container.offsetLeft;
 	this.offsetY = container.offsetTop;
 
-	this.player1 = new class_player(1,color1,0);
-	this.player2 = new class_player(2,color2,0);
+	this.player1 = new Player(1,color1,0);
+	this.player2 = new Player(2,color2,0);
 	
 	this.nextStarter = 0; // player that will start the next game
 	
@@ -104,7 +104,7 @@ function OnlineSession(container,sock,id,color1,color2) {
 		that.player2.points = data.points[1];
 		
 		if(data.next == 0) that.endGame();
-		else that.bMyTurn == (data.next == that.mySide);
+		else that.bMyTurn = (data.next == that.mySide);
 		// TODO: info that player can't turn
 		
 	});
@@ -135,8 +135,8 @@ function OnlineSession(container,sock,id,color1,color2) {
 		
 		if(winner) winner.wins++;
 		
-		if(winner.stone == this.mySide) msg += "You won! [";
-		else if (!winner) msg = "Draw! [";
+		if (!winner) msg = "Draw! [";
+		else if(winner.stone == this.mySide) msg += "You won! [";
 		else msg += "You lost! [";
 		
 		msg += this.player1.points + ":" + this.player2.points + "]";
@@ -144,8 +144,9 @@ function OnlineSession(container,sock,id,color1,color2) {
 		this.canvas.drawText(msg, this.fontsize);
 		
 		this.bPlaying = false;
+		this.field.clear();
 		
-		this.bMyTurn = (this.nextStarter === this.mySide);
+		this.bMyTurn = (this.nextStarter == this.mySide);
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
 		
 		if(this.bMyTurn) {
@@ -184,12 +185,12 @@ function OnlineSession(container,sock,id,color1,color2) {
 		var my = event.clientY-this.offsetY-this.canvas.offsetTop+pageYOffset;
 		
 		// click inside canvas?
-		if(mx > 0 && mx < this.field.xsize * this.field.side && my > 0 && my < this.field.ysize * this.field.side) {
+		if(mx > 0 && mx < this.canvas.clientWidth && my > 0 && my < this.canvas.clientHeight) {
 		
 			if(this.mySide == 0) {
 			
      			this.bMyTurn = false;
-				this.mySide = (mx > ((this.field.xsize / 2) * this.field.side) ? 2 : 1);
+				this.mySide = (mx > (this.canvas.clientWidth / 2) ? 2 : 1);
 				this.socket.emit('choose', {id: this.sid, side: this.mySide});
 				this.canvas.drawText("Waiting for opponent ...", this.fontsize);
 				

@@ -130,7 +130,7 @@ function buildGame(id) {
 	}
 	
 	lineSession += "Session(document.getElementById('field'),io.connect('http://elsaesser.servegame.com/')," + id + 
-		",'" + s.col1 + "','" + s.col2 + "');";
+		",'" + s.players[1].color + "','" + s.players[2].color + "');";
 
 	html = html.replace("##2",lineSession);
 	

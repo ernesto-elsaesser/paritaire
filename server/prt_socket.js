@@ -1,7 +1,7 @@
 // node.js modules
 var socketio = require('socket.io');
 // custom modules
-var game = require('./server/prt_game_obj');
+var game = require('./prt_game_obj');
 
 var clients = {};
 
@@ -67,7 +67,6 @@ function attachSocket(httpServer,sessions) {
 		var s = sessions[data.id];
 		var c = clients[socket.id];
 		
-		if(c.session != s) return;
 		log("CHOOSE side " + data.side + " in session " + data.id + " from " + socket.id);
 		
 		s.players[data.side].connect(socket);
