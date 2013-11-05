@@ -10,7 +10,7 @@ Ernesto:
 - socketio websokcet 502
 - timeout timer
 - shell password
-- mySide nach disconnect? 
 - lost turns?
+- better drawText
 
 LIZENZ!

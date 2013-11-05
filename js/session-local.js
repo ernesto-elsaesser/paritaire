@@ -97,18 +97,20 @@ function LocalSession(container,sock,id,color1,color2) {
 		var winner = null;
 		
 		if(this.player1.points > this.player2.points) winner = this.player1;
-		else if(this.player1.points > this.player2.points) winner = this.player2;
+		else if(this.player2.points > this.player1.points) winner = this.player2;
 		
-		if(winner) winner.wins++;
-		
-		if(winner) msg += winner.color + " won! [";
-		else msg = "Draw! [";
+		if(winner) {
+			winner.wins++;
+			msg += winner.color.toUpperCase() + " won! [";
+		}
+		else msg += "Draw! [";
 		
 		msg += this.player1.points + ":" + this.player2.points + "]";
 		
 		this.canvas.drawText(msg, this.fontsize);
 		
 		this.bPlaying = false;
+		this.field.clear();
 		
 		this.currentSide = this.nextStarter;
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
