@@ -32,12 +32,12 @@ function attachSocket(httpServer,sessions) {
 			
 				log("INIT to local session " + data.id + " from " + socket.id);
 				c.session = s;
-				s.players[1].connect(socket);
-				s.players[1].send("init",s.getState());
+				s.player[1].connect(socket);
+				s.player[1].send("init",s.getState());
 				return;
 			}
 		
-			if(!s.players[1].connected && !s.players[2].connected) {
+			if(!s.player[1].connected && !s.player[2].connected) {
 			
 				log("INIT to empty session " + data.id + " from " + socket.id);
 				socket.emit('alone');
@@ -47,17 +47,17 @@ function attachSocket(httpServer,sessions) {
 			
 				c.session = s;
 			
-				if(s.players[1].connected) c.side = 2;
+				if(s.player[1].connected) c.side = 2;
 				else c.side = 1;
 
 				log("INIT to session " + data.id + ", assigned side " + c.side + " to " + socket.id);
-				s.players[c.side].connect(socket);
+				s.player[c.side].connect(socket);
 				
 				var state = s.getState();
 				state.side = 1;
-				s.players[1].send("init",state);
+				s.player[1].send("init",state);
 				state.side = 2;
-				s.players[2].send("init",state);
+				s.player[2].send("init",state);
 				
 			}
     	
@@ -67,9 +67,18 @@ function attachSocket(httpServer,sessions) {
 		var s = sessions[data.id];
 		var c = clients[socket.id];
 		
-		log("CHOOSE side " + data.side + " in session " + data.id + " from " + socket.id);
+		// this if-clause handles the special case when a second player enters a session
+		// before the first has chosen his color - we then disconnect the second player 
+		// right after his (discarded) decision, so that he will reconnect and resend 
+		// his init message, which will then be answered by an init message from the 
+		// server that will assign him the second color
+		if(s.player[1].connected || s.player[2].connected) {
+			socket.disconnect();
+			return;
+		}
 		
-		s.players[data.side].connect(socket);
+		log("CHOOSE side " + data.side + " in session " + data.id + " from " + socket.id);
+		s.player[data.side].connect(socket);
 	    c.session = s;
 		c.side = data.side;
 		
@@ -145,9 +154,9 @@ function attachSocket(httpServer,sessions) {
 		  	  	
 				if(s.online) {
 				
-					s.players[c.side].disconnect();
+					s.player[c.side].disconnect();
     
-					var other = s.players[(c.side == 1 ? 2 : 1)];
+					var other = s.player[(c.side == 1 ? 2 : 1)];
 				
 	        		if(other.connected) { // session was full
         
@@ -161,7 +170,7 @@ function attachSocket(httpServer,sessions) {
 				else {
 					
 					log("DISCONNECT local session " + s.id + " (now empty) from " + socket.id);
-					s.players[1].disconnect();
+					s.player[1].disconnect();
 				}
          
 	      	}

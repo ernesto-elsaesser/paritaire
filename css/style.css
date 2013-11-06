@@ -2,11 +2,14 @@
 	display: none;
 }
 
+<<<<<<< HEAD
 #game_type {
 	max-width: 200px;
 	margin: 0 auto;
 }
 
+=======
+>>>>>>> branch 'master' of git@github.com:BlueprintDevTeam/paritaire.git
 body {
 	padding-top: 70px;
 }
@@ -20,16 +23,48 @@ body {
 	margin-top: 3em;
 }
 
-.intro p {
+.center {
+	text-align: center;
+}
 
-  margin-top: 30px;
-  
+.right {
+	float: right;
+}
+
+.left {
+	float: left;
+}
+
+.clear {
+	
+	clear: both;
+}
+
+/* index.html */
+
+
+.intro p {
+  margin-top: 30px; 
 }
 
 .intro a {
-
   font-size: 1.1em;
+}
 
+/* start.html */
+
+#game_type {
+	max-width: 200px;
+	margin: 0 auto;
+}
+
+#dim {
+	font-size: 2em;
+}
+
+.carousel-inner > .item > img {
+	margin: 0 auto;
+	margin-top: 10px;
 }
 
 h3 .glyphicon {
@@ -40,20 +75,35 @@ h3 a:hover {
 	text-decoration: none;
 }
 
-.center {
-	text-align: center;
-}
+/* play.html */
 
-#field {
+#play-main #info{
 	
-	margin-top: 10px;
+	width: 200px;
+	padding: 2px;
 }
 
-.footer {
+/* test */
+
+.navbar-header {
+	float: left;
+}
+
+.navbar-collapse {
 	float: right;
+	padding-left: 0;
+	border: 0;
 }
 
-.carousel-inner > .item > img {
-	margin: 0 auto;
-	margin-top: 10px;
+.navbar-collapse ul {
+	margin: 0;
+}
+
+.navbar-collapse li {
+	float: left;
+}
+
+.navbar-collapse li > a {
+	padding-top: 15px;
+	padding-bottom: 15px;
 }

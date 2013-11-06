@@ -1,21 +1,18 @@
-function LocalSession(container,sock,id,color1,color2) {
+function LocalSession(socket,ui,id,color1,color2) {
 
-	this.canvas = createCanvas(container);
+	this.ui = ui;
+	this.canvas = createCanvas(this.ui.main);
 	
 	this.ctx = this.canvas.getContext('2d');
-	this.fontsize = Math.floor(this.canvas.width/12);
-	this.ctx.font =  this.fontsize + "px Georgia";
+	this.ctx.font =  Math.floor(this.canvas.width/12) + "px Georgia";
+	
+	this.ui.publish.style.display = "none";
 	
 	// canvas offset, used for mouse click mapping
-	this.offsetX = container.offsetLeft;
-	this.offsetY = container.offsetTop;
+	this.offsetX = this.ui.main.offsetLeft;
+	this.offsetY = this.ui.main.offsetTop;
 
-	this.player1 = new Player(1,color1,0);
-	this.player2 = new Player(2,color2,0);
-	
-	// linked loop
-	this.player1.next = this.player2;
-	this.player2.next = this.player1;
+	this.player = [null,new Player(1,color1,0),new Player(2,color2,0)];
 	
 	this.nextStarter = 0; // player that will start the next game
 	
@@ -25,17 +22,15 @@ function LocalSession(container,sock,id,color1,color2) {
 	
 	// socket & connection
 	this.sid = id;
-	this.socket = sock;
+	this.socket = socket;
 	
 	var that = this;
 	
 	this.socket.on('init', function (data) {
 		
-		document.getElementById("session-url").style.display = "inline";
-		
 		that.currentSide = data.next;
-		that.player1.wins = data.wins[0];
-		that.player2.wins = data.wins[1];
+		that.player[1].wins = data.wins[0];
+		that.player[2].wins = data.wins[1];
 		that.nextStarter = data.round;
 		
 		that.field = new Field(that,data.dim,data.dim);
@@ -46,19 +41,38 @@ function LocalSession(container,sock,id,color1,color2) {
 			
 			that.field.stones = data.field;
 			that.field.draw();
+			
+			that.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
+			that.ui.info.appendChild(that.player[data.turn].icon);
 		}
 		else {
 			
 			that.field.clear();
-			that.canvas.drawText("Click to start!", that.fontsize);
+			that.canvas.drawText("Click to start!");
 		
 		}
 		
 	  });
 	  
-	this.socket.on('turn', function (data) {
+    this.socket.on('start', function (data) {
 		
+		// change points
+		that.player[1].points = data.points[0];
+		that.player[2].points = data.points[1];
+	
 		that.bPlaying = true;
+		that.field.clear();
+		that.field.update(data.stones); 
+		that.field.draw();
+		
+		that.currentSide = data.next;
+		that.ui.undo.className = "btn btn-primary disabled";
+		that.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
+		that.ui.info.appendChild(that.player[data.next].icon);
+  	
+  	});
+	  
+	this.socket.on('turn', function (data) {
 		
 		// update field
 		that.field.update(data.stones); 
@@ -67,19 +81,25 @@ function LocalSession(container,sock,id,color1,color2) {
 		that.field.highlight(l.x,l.y);
 			
 		// change points
-		that.player1.points = data.points[0];
-		that.player2.points = data.points[1];
+		that.player[1].points = data.points[0];
+		that.player[2].points = data.points[1];
 		
 		if(data.next == 0) that.endGame();
-		else that.currentSide = data.next;
+		else {
+			that.currentSide = data.next;
+			that.ui.info.removeChild(that.ui.info.childNodes[1]);
+			that.ui.info.appendChild(that.player[data.next].icon);
+		}
 		// TODO: info that player can't turn
+		that.ui.undo.className = "btn btn-primary";
 		
 	});
 	
   	this.socket.on('disconnect', function () { // auto reconnect is on
 		
+		that.ui.info.innerHTML= "";
 		that.bPlaying = false;
-  		that.canvas.drawText("Connection problems ...", that.fontsize);
+  		that.canvas.drawText("Connection problems ...");
 		
   	});
 	
@@ -96,8 +116,8 @@ function LocalSession(container,sock,id,color1,color2) {
 		
 		var winner = null;
 		
-		if(this.player1.points > this.player2.points) winner = this.player1;
-		else if(this.player2.points > this.player1.points) winner = this.player2;
+		if(this.player[1].points > this.player[2].points) winner = this.player[1];
+		else if(this.player[2].points > this.player[1].points) winner = this.player[2];
 		
 		if(winner) {
 			winner.wins++;
@@ -105,20 +125,15 @@ function LocalSession(container,sock,id,color1,color2) {
 		}
 		else msg += "Draw! [";
 		
-		msg += this.player1.points + ":" + this.player2.points + "]";
+		msg += this.player[1].points + ":" + this.player[2].points + "]";
 		
-		this.canvas.drawText(msg, this.fontsize);
+		this.canvas.drawText(msg,"Click to play!");
 		
 		this.bPlaying = false;
-		this.field.clear();
+		that.ui.info.innerHTML= "";
 		
 		this.currentSide = this.nextStarter;
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
-		
-		this.ctx.fillStyle = "#000";
-		var x = (this.canvas.width / 2) - (this.fontsize * 3);
-		var y = (this.canvas.height / 2) + (this.fontsize * 2);
-		this.ctx.fillText("Click to play!",x,y);	
 	
 	};
 	
@@ -148,8 +163,9 @@ function LocalSession(container,sock,id,color1,color2) {
 				return;
 			}
 				
-			var x = parseInt(mx/this.field.side);
-			var y = parseInt(my/this.field.side);
+		    var sideLength = this.canvas.width / this.field.xsize;
+			var x = parseInt(mx/sideLength);
+			var y = parseInt(my/sideLength);
 			
 			this.socket.emit('turn', {id: this.sid, x: x, y: y});
 			
@@ -157,10 +173,24 @@ function LocalSession(container,sock,id,color1,color2) {
 			
 	};
 	
-	this.canvas.drawText("Connecting ...", this.fontsize);
+	this.resizeCanvas = function() {
+	
+		var w = this.ui.main.clientWidth - 30;
+		this.canvas.width = w;
+		this.canvas.height = w; // TODO: change for non-square fields
+		this.ctx.font = Math.floor(w/12) + "px Georgia";
+		
+		if(this.bPlaying) this.field.draw();
+		else this.canvas.drawText(this.canvas.lastText[0],this.canvas.lastText[1]);
+		 
+	};
+	
+	this.canvas.drawText("Connecting ...");
 	
 	this.socket.emit('init', {id: this.sid});
 	
 	this.canvas.onclick = this.clickHandler.bind(this);
+	
+	window.onresize = this.resizeCanvas.bind(this);
 
 }
