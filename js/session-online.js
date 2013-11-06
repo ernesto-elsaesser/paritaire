@@ -50,10 +50,19 @@ function OnlineSession(socket,ui,id,color1,color2) {
 		
 	});
 	
+	this.socket.on('full', function () {
+	
+		that.ui.info.innerHTML = "";
+		that.ui.sessionUrl.className = "btn btn-primary disabled";
+		that.canvas.drawText("Session is full.");
+		
+	});
+	
 	this.socket.on('init', function (data) {
 		
 		that.mySide = data.side;
 		
+		that.ui.info.innerHTML = ""; // should already be empty ...
 		that.ui.info.appendChild(document.createTextNode("Color:\u00A0\u00A0"));
 		that.ui.info.appendChild(that.player[that.mySide].icon.cloneNode());
 		
@@ -158,7 +167,7 @@ function OnlineSession(socket,ui,id,color1,color2) {
 	
 	this.socket.on('reconnect', function () {
 		
-		that.socket.emit('init', {id: that.sid});
+		that.socket.emit('init', {id: that.sid, oldside: that.mySide});
 		
   	});
 	
@@ -279,3 +288,4 @@ function OnlineSession(socket,ui,id,color1,color2) {
 	window.onresize = this.resizeCanvas.bind(this);
 
 }
+

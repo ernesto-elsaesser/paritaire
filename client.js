@@ -13,22 +13,20 @@ var colorMap = { // TODO: Sophie
 	violet: "#F0F"
 	};
 
-function Player(stoneState, colorName, winCount) {
+function Player(stone,color) {
 
-	this.color = colorName;
-	this.stone = stoneState;
+	this.stone = stone;
+	this.color = color;
 	this.points = 0;
-	this.wins = winCount;
+	this.wins = 0;
 	
 	this.img = new Image();
 	this.img.src = 'img/box_' + this.color + '.png';
-	
+
 	this.icon = new Image();
 	this.icon.src = 'img/' + this.color + '.png';
 	this.icon.width = 30;
 	this.icon.height = 30;
-	
-	return true;
 }
 
 function Field(refSession,columnNum,rowNum) 

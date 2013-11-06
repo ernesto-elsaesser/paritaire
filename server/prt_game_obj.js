@@ -48,14 +48,17 @@ function Session(id,proto) {
    
    this.turn = function(side,x,y) {
 	   
+	   	if(!this.playing) return 0;
+	   
 	   	if(!this.online) side = this.nextTurn;
-		else if (side != this.nextTurn) return;
+		else if(side != this.nextTurn) return 0;
+		else if(!this.player[1].connected || !this.player[2].connected) return -1; // sends alone message
 		
-		if(isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= this.dim || y >= this.dim) return;
-		if(this.field.stones[x][y] != 0) return;
+		if(isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= this.dim || y >= this.dim) return 0;
+		if(this.field.stones[x][y] != 0) return 0;
 		
 		var stolenStones = this.logic.makeTurn(side,x,y);
-		if(stolenStones == 0) return;
+		if(stolenStones == 0) return 0;
 	
 		// put stone
 		this.field.putStone(side,x,y);
@@ -88,14 +91,18 @@ function Session(id,proto) {
 		this.player[1].send("turn",t);
 		
 	   	if(this.online) this.player[2].send("turn",t);
+		
+		return 1;
 	
    };
    
    this.getState = function() {
 		
-		var state = { dim: this.dim,
+		var state = { online: this.online,
+			dim: this.dim,
 			playing: this.playing,
 			round: this.nextRound,
+			colors : [this.player[1].color, this.player[2].color],
 			wins: [this.player[1].wins, this.player[2].wins]
 		};
 		

@@ -14,7 +14,9 @@ var game = require('./server/prt_game_obj');
 var sessions = []; // stores all game sessions
 var sid = 1; // next available session ID
 var cache = {}; // stores static documents
-var playPage = String(fs.readFileSync("play.html")); // html skeleton
+var newPage = String(fs.readFileSync("new.html"));
+var playPage = String(fs.readFileSync("play.html"));
+var rulesPage = String(fs.readFileSync("rules.html"));
 var mimeTypes = {"html": "text/html",
 	"js": "text/javascript",
 	"png": "image/png",
@@ -61,11 +63,32 @@ function onRequest(request,response) {
 			});
 		break;
 		
-	case 'play':
+	case "play":
 		
-		response.writeHead(200, {"Content-Type": "text/html"});
-		response.write(buildGame(requrl.query["id"]));
+		var html = playPage;
+		var s = sessions[requrl.query["id"]];
+		if(s) html = html.replace("#1",s.player[1].color).replace("#2",s.player[2].color);
+		
+		response.writeHead(200, {"Content-Type": "text/html"});				
+		response.write(html);
 		response.end();
+		
+		break;
+		
+	case "new":
+		
+		response.writeHead(200, {"Content-Type": "text/html"});				
+		response.write(newPage);
+		response.end();
+		
+		break;
+		
+	case "rules":
+		
+		response.writeHead(200, {"Content-Type": "text/html"});				
+		response.write(rulesPage);
+		response.end();
+		
 		break;
 		
 	default:
@@ -103,40 +126,6 @@ function onRequest(request,response) {
 	}
 }
 
-function buildGame(id) {
-
-	if(id == undefined || isNaN(id)) return "Incorrect URL syntax!";
-
-	var s = sessions[id];
-	
-	if(s == undefined) return "Invalid session ID!";
-	if(s.player[1].connected && (!s.online || s.player[2].connected)) return "Session is full!";
-	
-	var html = playPage;
-	
-	var lineSession = "session = new ";
-
-	if(!s.online) {
-	
-		html = html.replace("##1","session-local");
-		lineSession += "Local";
-		
-	}
-	else {
-		
-		html = html.replace("##1","session-online");
-		lineSession += "Online";
-		
-	}
-	
-	lineSession += "Session(io.connect('http://elsaesser.servegame.com/'),ui," + id + 
-		",'" + s.player[1].color + "','" + s.player[2].color + "');";
-
-	html = html.replace("##2",lineSession);
-	
-	return html;
-}
-
 function log(msg) {
 	
 	var d = new Date();
@@ -150,4 +139,4 @@ server.listen(80);
 
 socket.attachSocket(server,sessions);
 
-shell.createShell(5001,{sessions: sessions, clients: socket.clients, cache: cache});
+shell.createShell(5001,{s: sessions, c: socket.clients, cache: cache});

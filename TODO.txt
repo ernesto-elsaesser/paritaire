@@ -4,6 +4,7 @@ Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fŸr gute Note); am besten mit seinem Template
 - jquery.min.map ???
 - start.html L177: style Anweisung durch Klasse "hide" ersetzen -> Wei§ Ernie's Logik das?/MUss sie das wissen?
+- favicon.ico
 
 Ernesto:
 - undo
@@ -13,5 +14,8 @@ Ernesto:
 - shell password
 - lost turns?
 - better drawText
+
+- alone in init
+- session 72 type error!
 
 LIZENZ!
