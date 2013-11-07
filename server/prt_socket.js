@@ -30,6 +30,19 @@ function attachSocket(httpServer,sessions) {
 			}
 			
 			if(!s.online) {
+				
+				if(s.player[1].connected) {
+					
+					if(!data.oldside) {
+						
+						log("INIT to full local session " + data.id + " from " + socket.id);
+						socket.emit('full');
+						return;
+					} 
+					
+					s.player[1].disconnect();
+					
+				}
 			
 				log("INIT to local session " + data.id + " from " + socket.id);
 				c.session = s;
@@ -94,10 +107,9 @@ function attachSocket(httpServer,sessions) {
 				
 			s.player[c.side].connect(socket);
 				
-			var state = s.getState();
-			state.side = c.side;
-			s.player[c.side].send("init",state);
-			s.player[(c.side == 1 ? 2 : 1)].send("otherjoined",s.nextTurn);
+			s.player[c.side].send("init",s.getState());
+			s.player[1].send("otherjoined",{side: 1, turn: s.nextTurn});
+			s.player[2].send("otherjoined",{side: 2, turn: s.nextTurn});
     	
 		});
 	  socket.on('choose', function (data) {
@@ -129,8 +141,9 @@ function attachSocket(httpServer,sessions) {
 		
 		if(c.session != s) return;
 	
-		if(s.online && c.side == s.nextRound) {
+		if(s.online) {
 		
+			if(c.side != s.nextRound) return;
 			log("START side " + c.side + " in session " + data.id + " from " + socket.id);
 			s.startGame();
 		}

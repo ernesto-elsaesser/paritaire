@@ -20,13 +20,13 @@
 	
 	    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 		    <div class="navbar-header">
-		      <a href="index.html" class="navbar-brand">paritaire</a>
+		      <a href="/" class="navbar-brand">paritaire</a>
 		    </div>
 		    <nav class="navbar-collapse bs-navbar-collapse" role="navigation">
 		      <ul class="nav navbar-nav">
-		        <li><a href="start.html">New</a></li>
-		        <li><a href="public.html">Public</a></li>
-		        <li><a href="rules.html">Rules</a></li>
+		        <li><a href="new">New</a></li>
+		        <li><a href="public">Public</a></li>
+		        <li><a href="rules">Rules</a></li>
 		      </ul>
 		    </nav>
 	    </div>
@@ -77,7 +77,7 @@
 	<script type="text/javascript" src="socket.io/socket.io.js"></script>
 	
     <!-- the game -->
-    <script type="text/javascript" src="client.js"></script>
+    <script type="text/javascript" src="js/client.js"></script>
 	<script type="text/javascript" src="js/session.js"></script>
 	<script type="text/javascript">
 	
@@ -89,7 +89,7 @@
 		undo: document.getElementById('undo')
 	};
 	
-	var session = new Session(ui);
+	var session = new Session(ui,"#1","#2");
 		
 	</script>
 	

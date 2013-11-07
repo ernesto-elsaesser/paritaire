@@ -14,6 +14,7 @@ var game = require('./server/prt_game_obj');
 var sessions = []; // stores all game sessions
 var sid = 1; // next available session ID
 var cache = {}; // stores static documents
+var indexPage = String(fs.readFileSync("index.html"));
 var newPage = String(fs.readFileSync("new.html"));
 var playPage = String(fs.readFileSync("play.html"));
 var rulesPage = String(fs.readFileSync("rules.html"));
@@ -29,13 +30,17 @@ function onRequest(request,response) {
 
 	var requrl = url.parse(request.url,true);
 	var path = requrl.pathname;
-	
-	if(path === '/') path = 'index.html';
-	else path = path.substr(1,path.length);
 
 	switch(path) {
 
-	case 'create':
+	case "/": 
+	
+		response.writeHead(200, {"Content-Type": "text/html"});				
+		response.write(indexPage);
+		response.end();
+		break;
+
+	case '/create':
 		
 		var params = "";
 		request.on("data", function(data) {
@@ -63,7 +68,7 @@ function onRequest(request,response) {
 			});
 		break;
 		
-	case "play":
+	case "/play":
 		
 		var html = playPage;
 		var s = sessions[requrl.query["id"]];
@@ -75,7 +80,7 @@ function onRequest(request,response) {
 		
 		break;
 		
-	case "new":
+	case "/new":
 		
 		response.writeHead(200, {"Content-Type": "text/html"});				
 		response.write(newPage);
@@ -83,7 +88,7 @@ function onRequest(request,response) {
 		
 		break;
 		
-	case "rules":
+	case "/rules":
 		
 		response.writeHead(200, {"Content-Type": "text/html"});				
 		response.write(rulesPage);
@@ -93,10 +98,15 @@ function onRequest(request,response) {
 		
 	default:
 		
+		// TODO: regex filter
+		path = path.substr(1,path.length); // strip "/" at start
+		
 		var doc = cache[path];
 		var bFound = true;
 	
-		if(doc == undefined) { // document not in cache
+		if(path.substr(path.length-1) == "/") 
+			bFound = false;
+		else if(doc == undefined) { // document not in cache
 			
 			if(path.substr(0,6) == "server") bFound = false;
 			else if(fs.existsSync(path)) {

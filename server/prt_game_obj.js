@@ -102,13 +102,12 @@ function Session(id,proto) {
 			dim: this.dim,
 			playing: this.playing,
 			round: this.nextRound,
-			colors : [this.player[1].color, this.player[2].color],
+			turn: this.nextTurn,
 			wins: [this.player[1].wins, this.player[2].wins]
 		};
 		
 		if(this.playing) {
 			state.field = this.field.stones;
-			state.turn = this.nextTurn;
 		}
 			
 		return state;
