@@ -11,8 +11,8 @@ var socket = require('./server/prt_socket');
 var game = require('./server/prt_game_obj');
 
 // global variables
-var sessions = []; // stores all game sessions
-var publicSessions = [];
+var sessions = {}; // stores all game sessions
+var publicSessions = {};
 
 var cache = {
 	"/new": fs.readFileSync("new.html"),

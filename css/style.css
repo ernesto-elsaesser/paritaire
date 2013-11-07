@@ -54,6 +54,12 @@ body {
 	margin-bottom: 40px;
 }
 
+#settings-vs {
+	font-size: 22px;
+	font-weight: bold;
+	margin-top: 50px;
+}
+
 #settings h1 {
 	margin-bottom: 20px;
 }

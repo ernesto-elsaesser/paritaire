@@ -25,7 +25,7 @@ function attachSocket(httpServer,sessions,publicSessions) {
 			var s = sessions[data.id];
 			
 			if(s == undefined) {
-				log("INIT invalid session (" + data.id + ") id from " + socket.id);
+				log("INIT invalid session " + data.id + " from " + socket.id);
 				//socket.emit('invalid'); TODO
 				return;
 			}
@@ -172,8 +172,14 @@ function attachSocket(httpServer,sessions,publicSessions) {
 		
 		if(c.session == s) r = s.turn(c.side,data.x,data.y);
 		
-		log("TURN [" + data.x + ":" + data.y + "] from side " + c.side + " in session " + 
-			data.id + " (" + (r == 1 ? "valid" : "invalid") +") from " + socket.id);
+		if(s.online) {
+			log("TURN [" + data.x + ":" + data.y + "] from side " + c.side + " in session " + 
+				data.id + " (" + (r == 1 ? "valid" : "invalid") +") from " + socket.id);
+		}
+		else {
+			log("TURN [" + data.x + ":" + data.y + "] in local session " + 
+				data.id + " (" + (r == 1 ? "valid" : "invalid") +") from " + socket.id);
+		}
 		
 		if(r == -1) socket.emit("alone");
 		
