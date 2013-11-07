@@ -18,6 +18,8 @@ var indexPage = String(fs.readFileSync("index.html"));
 var newPage = String(fs.readFileSync("new.html"));
 var playPage = String(fs.readFileSync("play.html"));
 var rulesPage = String(fs.readFileSync("rules.html"));
+var filters = [ new RegExp(".*\/$"),
+	new RegExp("server","i")];
 var mimeTypes = {"html": "text/html",
 	"js": "text/javascript",
 	"png": "image/png",
@@ -98,25 +100,30 @@ function onRequest(request,response) {
 		
 	default:
 		
-		// TODO: regex filter
 		path = path.substr(1,path.length); // strip "/" at start
 		
-		var doc = cache[path];
-		var bFound = true;
-	
-		if(path.substr(path.length-1) == "/") 
-			bFound = false;
-		else if(doc == undefined) { // document not in cache
+		var bRespond = true;
+		
+		for(var i in filters) { // url filter
 			
-			if(path.substr(0,6) == "server") bFound = false;
-			else if(fs.existsSync(path)) {
-				doc = fs.readFileSync(path);
-				cache[path] = doc;
+			if(path.match(filters[i])) bRespond = false;
+		}
+		
+		if(bRespond) {
+			
+			var doc = cache[path];
+		
+			if(doc == undefined) { // document not in cache
+			
+				if(fs.existsSync(path)) {
+					doc = fs.readFileSync(path);
+					cache[path] = doc;
+				}
+				else bRespond = false;
 			}
-			else bFound = false;
 		}
 
-		if(bFound) {
+		if(bRespond) {
 			// mime type
 			var frags = path.split(".");
 			var ext = frags[frags.length-1];

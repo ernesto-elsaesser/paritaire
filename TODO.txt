@@ -5,6 +5,7 @@ Sophie:
 - jquery.min.map ???
 - start.html L177: style Anweisung durch Klasse "hide" ersetzen -> Wei§ Ernie's Logik das?/MUss sie das wissen?
 - favicon.ico
+- theme roller: graue buttons
 
 Ernesto:
 - undo
@@ -13,9 +14,5 @@ Ernesto:
 - timeout timer
 - shell password
 - lost turns?
-- better drawText
-
-- alone in init
-- session 72 type error!
 
 LIZENZ!
