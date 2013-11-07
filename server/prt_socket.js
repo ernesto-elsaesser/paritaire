@@ -5,11 +5,12 @@ var game = require('./prt_game_obj');
 
 var clients = {};
 
-function attachSocket(httpServer,sessions) {
+function attachSocket(httpServer,sessions,publicSessions) {
 	
 	var socketServer = socketio.listen(httpServer);
 
 	socketServer.set('log level', 0);
+	socketServer.set('polling duration', 5);
 
 	socketServer.sockets.on('connection', function (socket) {
 
@@ -190,9 +191,21 @@ function attachSocket(httpServer,sessions) {
 		
   		if(c.session != s) return;
 		
-		if(!s.playing) {
+		if(s.online) {
+			
+			for(var i in publicSessions) {
+				if(publicSessions[i].publicName == data.name) {
+					log("PUBLISH session " + data.id + " with used name from " + socket.id);
+					socket.emit("published", {success: false});
+					return;
+				}
+			}
+			
 			log("PUBLISH session " + data.id + " from " + socket.id);
-	   		s.publish();
+	   		s.publicName = data.name;
+			publicSessions[s.id] = s;
+
+			socket.emit("published", {success: true});
 		}
 			
 	  });

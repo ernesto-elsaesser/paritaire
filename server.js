@@ -12,18 +12,33 @@ var game = require('./server/prt_game_obj');
 
 // global variables
 var sessions = []; // stores all game sessions
-var sid = 1; // next available session ID
-var cache = {}; // stores static documents
-var indexPage = String(fs.readFileSync("index.html"));
-var newPage = String(fs.readFileSync("new.html"));
+var publicSessions = [];
+
+var cache = {
+	"/": fs.readFileSync("index.html"),
+	"/new": fs.readFileSync("new.html"),
+	"/rules": fs.readFileSync("rules.html"),
+	"/404": fs.readFileSync("404.html")
+	};
+
+var publicPage = String(fs.readFileSync("public.html"));
 var playPage = String(fs.readFileSync("play.html"));
-var rulesPage = String(fs.readFileSync("rules.html"));
-var filters = [ new RegExp(".*\/$"),
-	new RegExp("server","i")];
-var mimeTypes = {"html": "text/html",
+
+var filters = [ 
+	new RegExp(".+\/$"),
+	new RegExp("server","i")
+	];
+	
+var mimeTypes = {
+	"html": "text/html",
 	"js": "text/javascript",
 	"png": "image/png",
-	"css": "text/css"};
+	"css": "text/css",
+	"/": "text/html",
+	"/new": "text/html",
+	"/public": "text/html",
+	"/rules": "text/html"
+	};
 
 // web server callback
 function onRequest(request,response) {
@@ -35,13 +50,6 @@ function onRequest(request,response) {
 
 	switch(path) {
 
-	case "/": 
-	
-		response.writeHead(200, {"Content-Type": "text/html"});				
-		response.write(indexPage);
-		response.end();
-		break;
-
 	case '/create':
 		
 		var params = "";
@@ -49,7 +57,7 @@ function onRequest(request,response) {
 			params += data; // TODO: 1e6 anti flooding
 			});
 		request.on("end", function() {
-			var id = sid++; // auto increment
+			var id = (new Date()).getTime();
 			sessions[id] = new game.Session(id,querystring.parse(params)); // create new session from post data
 			if(sessions[id]) {
 				
@@ -71,6 +79,7 @@ function onRequest(request,response) {
 		break;
 		
 	case "/play":
+	case "/play.html":
 		
 		var html = playPage;
 		var s = sessions[requrl.query["id"]];
@@ -82,25 +91,25 @@ function onRequest(request,response) {
 		
 		break;
 		
-	case "/new":
+	case "/public":
+	case "/public.html":
 		
-		response.writeHead(200, {"Content-Type": "text/html"});				
-		response.write(newPage);
-		response.end();
+		var html = publicPage;
+		var list = "";
 		
-		break;
+		for(var i in publicSessions) {
+			list += '<a href="/play?id=' + publicSessions[i].id + '" class="list-group-item">' + publicSessions[i].publicName + '</a>';
+		}
 		
-	case "/rules":
+		html = html.replace("##",list);
 		
-		response.writeHead(200, {"Content-Type": "text/html"});				
-		response.write(rulesPage);
+		response.writeHead(200, {"Content-Type": "text/html"});	
+		response.write(html);
 		response.end();
 		
 		break;
 		
 	default:
-		
-		path = path.substr(1,path.length); // strip "/" at start
 		
 		var bRespond = true;
 		
@@ -115,8 +124,10 @@ function onRequest(request,response) {
 		
 			if(doc == undefined) { // document not in cache
 			
-				if(fs.existsSync(path)) {
-					doc = fs.readFileSync(path);
+				file = path.substr(1,path.length); // strip "/" at start
+			
+				if(fs.existsSync(file)) {
+					doc = fs.readFileSync(file);
 					cache[path] = doc;
 				}
 				else bRespond = false;
@@ -136,7 +147,7 @@ function onRequest(request,response) {
 		else {
 			log("returned 404");
 			response.writeHead(404);
-			response.write("Error 404: Page not found!");
+			response.write(cache["/404"]);
 		}
 		
 		response.end();
@@ -154,6 +165,6 @@ var server = http.createServer(onRequest);
 
 server.listen(80);
 
-socket.attachSocket(server,sessions);
+socket.attachSocket(server,sessions,publicSessions);
 
 shell.createShell(5001,{s: sessions, c: socket.clients, cache: cache});
