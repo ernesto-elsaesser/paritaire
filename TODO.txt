@@ -6,10 +6,11 @@ Sophie:
 - start.html L177: style Anweisung durch Klasse "hide" ersetzen -> Wei§ Ernie's Logik das?/MUss sie das wissen?
 - favicon.ico
 - theme roller: graue buttons
+- rules: explain that publish is only until opponent joined
+- info: requires javascript
 
 Ernesto:
 - undo
-- publish
 - socketio websokcet 502
 - timeout timer
 - shell password

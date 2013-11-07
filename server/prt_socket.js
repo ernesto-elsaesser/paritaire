@@ -111,6 +111,12 @@ function attachSocket(httpServer,sessions,publicSessions) {
 			s.player[c.side].send("init",s.getState());
 			s.player[1].send("otherjoined",{side: 1, turn: s.nextTurn});
 			s.player[2].send("otherjoined",{side: 2, turn: s.nextTurn});
+			
+			if(s.publicName) {
+				
+				s.publicName = null;
+				delete publicSessions[s.id];
+			}
     	
 		});
 	  socket.on('choose', function (data) {

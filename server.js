@@ -15,12 +15,12 @@ var sessions = []; // stores all game sessions
 var publicSessions = [];
 
 var cache = {
-	"/": fs.readFileSync("index.html"),
 	"/new": fs.readFileSync("new.html"),
 	"/rules": fs.readFileSync("rules.html"),
 	"/404": fs.readFileSync("404.html")
 	};
 
+var indexPage = String(fs.readFileSync("index.html"));
 var publicPage = String(fs.readFileSync("public.html"));
 var playPage = String(fs.readFileSync("play.html"));
 
@@ -34,9 +34,7 @@ var mimeTypes = {
 	"js": "text/javascript",
 	"png": "image/png",
 	"css": "text/css",
-	"/": "text/html",
 	"/new": "text/html",
-	"/public": "text/html",
 	"/rules": "text/html"
 	};
 
@@ -90,16 +88,19 @@ function onRequest(request,response) {
 		response.end();
 		
 		break;
-		
+	
+	case "/":
 	case "/public":
 	case "/public.html":
 		
-		var html = publicPage;
+		var html = (path == "/" ? indexPage : publicPage);
 		var list = "";
 		
 		for(var i in publicSessions) {
 			list += '<a href="/play?id=' + publicSessions[i].id + '" class="list-group-item">' + publicSessions[i].publicName + '</a>';
 		}
+		
+		if(list == "") list = '<a href="#" class="list-group-item">No public sessions.</a>';
 		
 		html = html.replace("##",list);
 		

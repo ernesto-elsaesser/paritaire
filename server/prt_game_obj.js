@@ -25,6 +25,7 @@ function Session(id,proto) {
 	this.field = new Field(this.dim, this.dim);
 	this.logic = new GameLogic(this.field);
 	this.playing = false;
+	this.publicName = null;
 	
 	this.startGame = function() {
 		
@@ -111,12 +112,6 @@ function Session(id,proto) {
 		}
 			
 		return state;
-	};
-	
-	this.publish = function() {
-		
-		// TODO!
-		
 	};
 	
 }

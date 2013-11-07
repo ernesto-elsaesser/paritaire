@@ -87,10 +87,13 @@ body {
 /* play.html */
 
 #play-main #info{
-	
 	width: 200px;
 	padding: 2px;
 }
+#play-side {
+	height: 44px;
+}
+
 
 /* navbar */
 
