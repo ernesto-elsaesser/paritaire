@@ -1,4 +1,4 @@
-var validColors = ["blue","green","orange","red","violet","yellow"];
+var validColors = ["blue","green","orange","red","violet","yellow","cyan"];
 
 function Session(id,proto) {
 	

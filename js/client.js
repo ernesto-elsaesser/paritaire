@@ -4,15 +4,6 @@ var img3 = new Image();
 img0.src = 'img/box.png';
 img3.src = 'img/highlight.png';
 
-var colorMap = { // TODO: Sophie
-	red: "#F00",
-	blue: "#00F",
-	green: "#0F0",
-	orange: "#111",
-	yellow: "#FF0",
-	violet: "#F0F"
-	};
-
 function Player(stone,color) {
 
 	this.stone = stone;
@@ -24,7 +15,7 @@ function Player(stone,color) {
 	this.img.src = 'img/box_' + this.color + '.png';
 
 	this.icon = new Image();
-	this.icon.src = 'img/' + this.color + '.png';
+	this.icon.src = 'img/icon_' + this.color + '.png';
 	this.icon.width = 30;
 	this.icon.height = 30;
 }

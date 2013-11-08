@@ -178,7 +178,7 @@ function shutdown() {
 	
 	log("shutdown - dumping sessions.");
 	
-	var dump = "{";
+	var dump = "";
 	
 	for(var id in sessions) {
 		sessions[id].player[1].disconnect();
@@ -186,7 +186,7 @@ function shutdown() {
 		dump += '"' + id + '":' + JSON.stringify(sessions[id].getState(true)) + ",";
 	}
 	
-	dump = dump.substr(0,dump.length-1) + "}";
+	dump = "{" + dump.substr(0,dump.length-1) + "}";
 	
 	fs.writeFileSync("sessions.dump", dump);
 	
