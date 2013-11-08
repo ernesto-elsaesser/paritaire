@@ -19,6 +19,7 @@ Ernesto:
 - keep public list on restart
 - favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
 - Delete session button
+- Give up button
 
 LIZENZ!
 
