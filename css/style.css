@@ -20,6 +20,10 @@ body {
 	margin-top: 3em;
 }
 
+.no-top-margin {
+	
+	margin-top: 0;
+}
 .center {
 	text-align: center;
 }
@@ -48,39 +52,61 @@ body {
   font-size: 1.1em;
 }
 
-/* start.html */
+/* new.html */
 
-#game_type {
+
+#settings-controls {
+	margin-bottom: 40px;
+}
+
+#settings-vs {
+	font-size: 22px;
+	font-weight: bold;
+	margin-top: 50px;
+}
+
+#settings h1 {
+	margin-bottom: 20px;
+}
+
+#settings h3 {
+	margin-bottom: 20px;
+}
+
+#settings-gametype {
 	max-width: 200px;
 	margin: 0 auto;
 }
 
-#dim {
-	font-size: 2em;
+#settings-dim {
+	font-size: 1.5em;
 }
 
-.carousel-inner > .item > img {
+#settings .carousel-inner > .item > img {
 	margin: 0 auto;
 	margin-top: 10px;
 }
 
-h3 .glyphicon {
+#settings h3 .glyphicon {
 	font-size: 0.7em;
 }
 
-h3 a:hover {
+#settings h3 a:hover {
 	text-decoration: none;
 }
 
 /* play.html */
 
 #play-main #info{
-	
 	width: 200px;
 	padding: 2px;
 }
+#play-side {
+	height: 44px;
+}
 
-/* test */
+
+/* navbar */
 
 .navbar-header {
 	float: left;

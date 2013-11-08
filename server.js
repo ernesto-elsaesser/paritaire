@@ -11,14 +11,32 @@ var socket = require('./server/prt_socket');
 var game = require('./server/prt_game_obj');
 
 // global variables
-var sessions = []; // stores all game sessions
-var sid = 1; // next available session ID
-var cache = {}; // stores static documents
-var playPage = String(fs.readFileSync("play.html")); // html skeleton
-var mimeTypes = {"html": "text/html",
+var sessions = {}; // stores all game sessions
+var publicSessions = {};
+
+var cache = {
+	"/new": fs.readFileSync("new.html"),
+	"/rules": fs.readFileSync("rules.html"),
+	"/404": fs.readFileSync("404.html")
+	};
+
+var indexPage = String(fs.readFileSync("index.html"));
+var publicPage = String(fs.readFileSync("public.html"));
+var playPage = String(fs.readFileSync("play.html"));
+
+var filters = [ 
+	new RegExp(".+\/$"),
+	new RegExp("server","i")
+	];
+	
+var mimeTypes = {
+	"html": "text/html",
 	"js": "text/javascript",
 	"png": "image/png",
-	"css": "text/css"};
+	"css": "text/css",
+	"/new": "text/html",
+	"/rules": "text/html"
+	};
 
 // web server callback
 function onRequest(request,response) {
@@ -27,20 +45,17 @@ function onRequest(request,response) {
 
 	var requrl = url.parse(request.url,true);
 	var path = requrl.pathname;
-	
-	if(path === '/') path = 'index.html';
-	else path = path.substr(1,path.length);
 
 	switch(path) {
 
-	case 'create':
+	case '/create':
 		
 		var params = "";
 		request.on("data", function(data) {
 			params += data; // TODO: 1e6 anti flooding
 			});
 		request.on("end", function() {
-			var id = sid++; // auto increment
+			var id = (new Date()).getTime();
 			sessions[id] = new game.Session(id,querystring.parse(params)); // create new session from post data
 			if(sessions[id]) {
 				
@@ -61,29 +76,66 @@ function onRequest(request,response) {
 			});
 		break;
 		
-	case 'play':
+	case "/play":
+	case "/play.html":
 		
-		response.writeHead(200, {"Content-Type": "text/html"});
-		response.write(buildGame(requrl.query["id"]));
+		var html = playPage;
+		var s = sessions[requrl.query["id"]];
+		if(s) html = html.replace("#1",s.player[1].color).replace("#2",s.player[2].color);
+		
+		response.writeHead(200, {"Content-Type": "text/html"});				
+		response.write(html);
 		response.end();
+		
+		break;
+	
+	case "/":
+	case "/public":
+	case "/public.html":
+		
+		var html = (path == "/" ? indexPage : publicPage);
+		var list = "";
+		
+		for(var i in publicSessions) {
+			list += '<a href="/play?id=' + publicSessions[i].id + '" class="list-group-item">' + publicSessions[i].publicName + '</a>';
+		}
+		
+		if(list == "") list = '<a href="#" class="list-group-item">No public sessions.</a>';
+		
+		html = html.replace("##",list);
+		
+		response.writeHead(200, {"Content-Type": "text/html"});	
+		response.write(html);
+		response.end();
+		
 		break;
 		
 	default:
 		
-		var doc = cache[path];
-		var bFound = true;
-	
-		if(doc == undefined) { // document not in cache
+		var bRespond = true;
+		
+		for(var i in filters) { // url filter
 			
-			if(path.substr(0,6) == "server") bFound = false;
-			else if(fs.existsSync(path)) {
-				doc = fs.readFileSync(path);
-				cache[path] = doc;
+			if(path.match(filters[i])) bRespond = false;
+		}
+		
+		if(bRespond) {
+			
+			var doc = cache[path];
+		
+			if(doc == undefined) { // document not in cache
+			
+				file = path.substr(1,path.length); // strip "/" at start
+			
+				if(fs.existsSync(file)) {
+					doc = fs.readFileSync(file);
+					cache[path] = doc;
+				}
+				else bRespond = false;
 			}
-			else bFound = false;
 		}
 
-		if(bFound) {
+		if(bRespond) {
 			// mime type
 			var frags = path.split(".");
 			var ext = frags[frags.length-1];
@@ -96,45 +148,11 @@ function onRequest(request,response) {
 		else {
 			log("returned 404");
 			response.writeHead(404);
-			response.write("Error 404: Page not found!");
+			response.write(cache["/404"]);
 		}
 		
 		response.end();
 	}
-}
-
-function buildGame(id) {
-
-	if(id == undefined || isNaN(id)) return "Incorrect URL syntax!";
-
-	var s = sessions[id];
-	
-	if(s == undefined) return "Invalid session ID!";
-	if(s.player[1].connected && (!s.online || s.player[2].connected)) return "Session is full!";
-	
-	var html = playPage;
-	
-	var lineSession = "session = new ";
-
-	if(!s.online) {
-	
-		html = html.replace("##1","session-local");
-		lineSession += "Local";
-		
-	}
-	else {
-		
-		html = html.replace("##1","session-online");
-		lineSession += "Online";
-		
-	}
-	
-	lineSession += "Session(io.connect('http://elsaesser.servegame.com/'),ui," + id + 
-		",'" + s.player[1].color + "','" + s.player[2].color + "');";
-
-	html = html.replace("##2",lineSession);
-	
-	return html;
 }
 
 function log(msg) {
@@ -148,6 +166,6 @@ var server = http.createServer(onRequest);
 
 server.listen(80);
 
-socket.attachSocket(server,sessions);
+socket.attachSocket(server,sessions,publicSessions);
 
-shell.createShell(5001,{sessions: sessions, clients: socket.clients, cache: cache});
+shell.createShell(5001,{s: sessions, c: socket.clients, cache: cache});
