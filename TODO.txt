@@ -7,6 +7,7 @@ Sophie:
 - rules: explain that publish is only until opponent joined
 - info: requires javascript
 - coolerer Colorpicker (Farben diagonal)
+- ist das * in rules.html L83 in allen Browsern hochgestellt?
 
 Ernesto:
 - undo

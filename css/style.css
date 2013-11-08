@@ -24,6 +24,11 @@ body {
 	
 	margin-top: 0;
 }
+
+.justify {
+	text-align: justify;
+}
+
 .center {
 	text-align: center;
 }
@@ -135,4 +140,9 @@ body {
 
 #accordion {
 	margin-bottom: 20px;
+}
+
+#carousel-frame {
+	margin: 0 0 15px 15px;
+	width: 33%;
 }
