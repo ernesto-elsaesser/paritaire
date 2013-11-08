@@ -36,8 +36,10 @@
       <div class="jumbotron">
       	<h1> Playing Paritaire </h1>
       	<p> 
-      		Playing paritaire is a simple as it sounds because you need no login or password! 
-      		But if you have some questions anyhow, you can read the FAQ below.
+      		Playing paritaire is simple enough to get you started in seconds, 
+			and yet complex enough to stay interesting, game after game!
+			And you don't have to create an account!
+      		Below, we show you how to start, play and share a game.
       	</p>
       </div>  
 
@@ -46,19 +48,71 @@
 				
 					<div class="panel-group justify" id="accordion">
 					
+	  					<div class="panel panel-default">
+	    					<div class="panel-heading">
+	      					<h4 class="panel-title">
+	        					<a data-toggle="collapse" data-parent="#accordion" href="#collapseStart">
+						          How do I start a game?
+	        					</a>
+	      					</h4>
+	    					</div>
+	    					<div id="collapseStart" class="panel-collapse collapse">
+	      					<div class="panel-body">
+	      						<b> Settings </b><br>
+	        					To start a new game session, click the <i>New</i> button in the navigation bar. 
+								This will lead you to the set up page, where you can configure the following parameters:<br>
+	        					<br>
+	        					<b> Parameters </b><br/>
+								<br/>
+	        					<ul>
+	        						<li>
+	        							<b> Field Size </b><br>
+	        							The field size ist set to 8x8 by default, but you can choose a larger field if you want to.<br />
+										A larger field will make the game more compley, but it will also take longer to finish.
+	        						</li>
+	        						<br>
+	        						<li>
+	        							<b>
+	        								<a data-toggle="collapse" data-parent="#accordion" href="#collapseModes"> 
+	        									Game Mode 
+	        								</a>
+	        							</b>
+	        						</li>
+	        						<br>
+	        						<li>
+	        							<b> Colors </b><br>
+	        							You can choose one of these beautiful colors for you and your opponent.<br>
+	        							<div id="image-row">
+		        							<img alt="icon blue" src="img/icon_blue.png">
+		        							<img alt="icon cyan" src="img/icon_cyan.png">
+		        							<img alt="icon green" src="img/icon_green.png">
+		        							<img alt="icon yellow" src="img/icon_yellow.png">
+		        							<img alt="icon orange" src="img/icon_orange.png">
+		        							<img alt="icon red" src="img/icon_red.png">
+		        							<img alt="icon violet" src="img/icon_violet.png">
+		        						</div>
+	        						</li>
+	        					</ul>
+								<br/>
+	        					When you are satisfied with your choice, click the <i>"Ready!"</i> button. 
+								This will move you directly into the game. <br/>
+								Altough, if you have chosen online mode, you'll have to wait until an opponent joins your session.<br>
+	        				</div>
+						    </div>
+	  					</div>
+					
   					<div class="panel panel-default">
     					<div class="panel-heading">
       					<h4 class="panel-title">
         					<a data-toggle="collapse" data-parent="#accordion" href="#collapseRules">
-          					What are the game rules?
+          					What are the rules?
         					</a>
       					</h4>
     					</div>
     					<div id="collapseRules" class="panel-collapse collapse in">
       					<div class="panel-body">
-        					Paritaire is a game you might already know as <i>reversi</i> or <i>othello</i> 
-        					and follows the same rules:
-        					Your main goal is to have more tokens in the end than your opponent.<br>
+        					Paritaire is a game you might already know as <i>reversi</i> or <i>othello</i>:
+        					Your main goal is to have more tokens than your opponent when the game ends.<br>
         					<br>
        					 
        					 	<div class="right" id="carousel-frame">
@@ -80,22 +134,21 @@
 									</div>
         				
         					<b>But how can I reach this goal?</b><br>
-        					Every game starts with four crossed tokens.
-        					Now both players can set their tokens alternately by following these two rules: 
+        					Every game starts with four crossed tokens.<br/>
+        					Both players can place their tokens alternately by following these two rules:<br/>
+							<br/>
         					<ol>
-        						<li> You can only put your token beside* an opposing token. </li>
-        						<li> You can only put it there if there is at least one of your tokens in an
-        								 at it arising row*. </li>
+        						<li> You can only place your tokens next to an opposing token (horizontally, vertically or diagonally). </li>
+        						<li> You can only put it there, if the new and one of your other tokens will inclose<br/>
+									 at least one opposing token in a straight line (horizontally, vertically or diagonally). </li>
         					</ol>
-        					As a result of your move all opposing tokens that are bounded in a straight row 
-        					by your new token and your other tokens will change their color and become yours.<br>
-									If a player could not set any token the other player has another move. <br>
-									<br>
-									<b>How does the game end?</b><br>
-        					The game ends if there is no possibility left to place any token.
-									That player that has the majority of tokens will win the game.<br>
-									<br>
-        					*<small><i> horizontal, vertical & diagonal </i></small> 
+        					After placing a token, all the opposing tokens that get inclosed by your move
+							will change their color to become yours. If a player can not place any tokens, the other player can turn again. <br>
+							<br>
+							<b>When does the game end?</b><br>
+        					The game ends when there is no possibility left to place any token.
+							The player that has most tokens at this point wins the game.<br>
+							<br>
         				</div>
     					</div>
   					</div>
@@ -110,25 +163,27 @@
     					</div>
     					<div id="collapseModes" class="panel-collapse collapse">
       					<div class="panel-body">
-        					On setting up a game you are asked to choose between different game modes.
-        					At the moment you can choose between the online and the local mode:<br>
+        					When setting up a game, you can choose between different game modes.
+        					At the moment, you can choose between online and local mode:<br>
         					<br>
         					<ul>
         						<li> 
         							<b> Online </b><br>
-        							You can play via Internet on two devices. The only thing you have to do is
-        							share your game and wait for your opponent to join it. <br>
-        							See also how to 
-        							<a data-toggle="collapse" data-parent="#accordion" href="#collapseStart">share</a> 
-        							and how to 
-        							<a data-toggle="collapse" data-parent="#accordion" href="#collapseJoin">join</a> 
-        							games.
+        							Choose this mode, if you have and your opponent both want to use 
+									their own device (smartphone, tablet or computer).<br/>
+									After you have created a session, you have to wait until your opponent joins your session. 
+        							Learn
+        							<a data-toggle="collapse" data-parent="#accordion" href="#collapseShare">
+										here
+									</a> 
+        							how to join others sessions.
         						</li>
         						<br>
         						<li>
         							<b> Local </b><br>
-        							If you do not have or do not want to play on two devices you can also play on
-        							on device.
+        							Choose this mode, if you want to play on a single device.
+									In local mode, you and your opponent should sit next to each other, <br/>
+									so that you both can place your tokens alterningly on the same screen.
         						</li>
         					</ul> 
         				</div>
@@ -138,93 +193,41 @@
   					<div class="panel panel-default">
     					<div class="panel-heading">
       					<h4 class="panel-title">
-        					<a data-toggle="collapse" data-parent="#accordion" href="#collapseStart">
-					          How can I start a game?
+        					<a data-toggle="collapse" data-parent="#accordion" href="#collapseShare">
+					          How do I share a game?
         					</a>
       					</h4>
     					</div>
-    					<div id="collapseStart" class="panel-collapse collapse">
+    					<div id="collapseShare" class="panel-collapse collapse">
       					<div class="panel-body">
-      						<b> Settings </b><br>
-        					To start a new game session click the <i>new</i> button in the navigation bar to get
-        					to the set up options where you can set the different game parameters below.<br>
-        					When you finished your settings you can start the game by pressing the <i>"Ready!"</i>
-        					button which leads you to the play page. If you have chosen the local mode you can 
-        					start the game immediatly, if you have chosen the online mode, you have to wait until
-        					your opponent joins the session.<br>
+        					In general, you can join a game by opening the session link in a browser.<br>
         					<br>
-        					<b> Opponent </b><br>
-        					To invite a friend to play online with you, you can press the <i>"Session Link"</i> 
-        					button to copy and send the Link. If you want to play with an unknown opponent press
-        					the <i>"Publish"</i> button to give your session a name and publish it an the main 
-        					page.<br> 
-        					<br>
-        					<b> Parameters </b><br>
-        					<ul>
-        						<li>
-        							<b> Field Size </b><br>
-        							The field size ist set to 8x8 by default which is a good size for each diplay size
-        							(screens, tablets and smartphones).
-        						</li>
-        						<br>
-        						<li>
-        							<b>
-        								<a data-toggle="collapse" data-parent="#accordion" href="#collapseModes"> 
-        									Game Mode 
-        								</a>
-        							</b>
-        						</li>
-        						<br>
-        						<li>
-        							<b> Colors </b><br>
-        							Before starting the players can choose a color they identify with during the game.<br>
-        							<div id="image-row">
-	        							<img alt="" src="img/icon_blue.png">
-	        							<img alt="" src="img/icon_cyan.png">
-	        							<img alt="" src="img/icon_green.png">
-	        							<img alt="" src="img/icon_yellow.png">
-	        							<img alt="" src="img/icon_orange.png">
-	        							<img alt="" src="img/icon_red.png">
-	        							<img alt="" src="img/icon_violet.png">
-	        						</div>
-        						</li>
-        					</ul>
-        				</div>
-					    </div>
-  					</div>
-  					
-  					<div class="panel panel-default">
-    					<div class="panel-heading">
-      					<h4 class="panel-title">
-        					<a data-toggle="collapse" data-parent="#accordion" href="#collapseJoin">
-					          How can I join a game?
-        					</a>
-      					</h4>
-    					</div>
-    					<div id="collapseJoin" class="panel-collapse collapse">
-      					<div class="panel-body">
-        					In general you can join each game by opening the session link in a browser.<br>
-        					<br>
-        					<b> How do I get a Session Link? </b><br>
-        					You can get your session link by three drifferent ways:<br>
+        					<b> How do I get a session link? </b><br>
+        					There are three drifferent situations:<br>
         					<br>
         					<ul>
         						<li> 
-        							If you already have an opponent, but no session, you have to 
+        							If you already have an opponent, but no session, you can 
         							<a data-toggle="collapse" data-parent="#accordion" href="#collapseStart">
-        								start a new one.
+        								start
         							</a>
+									 a new 
+         							<a data-toggle="collapse" data-parent="#accordion" href="#collapseModes">
+         								online
+         							</a>
+									 session.
         						</li>
         						<br>
         						<li>
-        							If your opponent already created a new session, he just has to tell you the
-        							session link. He can get it by pressing the <i>"Session Link"</i> button.
+        							If your opponent already created a session, he has to send you the
+        							session link (e.g. via e-mail or instant messenger). <br/>
+									He can get the link by pressing the <i>"Session Link"</i> button.
         						</li>
         						<br>
         						<li>
-        							If you have no opponent you can join a public session by clicking on one.
-        							You can find all current public sessions under <i>"Public"</i> in the 
-        							navigation bar or on the start page. 
+        							If you don't have an opponent yet, you can publish your own session with the <i>"Publish"</i> button, 
+									or join a public session by selecting one in the public list.
+        							You can find that list by clicking the <i>"Public"</i> button in the navigation bar, or on the start page. 
         						</li>
         					</ul>
         				</div>
