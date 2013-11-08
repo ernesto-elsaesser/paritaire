@@ -1,19 +1,20 @@
 Sophie:
 - Grafiken fuer Spielsteine berarbeiten (werden z.B. im iPad verpixelt angezeigt)
 - spinner on play page
-- Licences Dokumentieren (Punkt aus seiner Excel f�r gute Note); am besten mit seinem Template
+- Licences Dokumentieren (Punkt aus seiner Excel fr gute Note); am besten mit seinem Template
 - jquery.min.map ???
-- start.html L177: style Anweisung durch Klasse "hide" ersetzen -> Wei� Ernie's Logik das?/MUss sie das wissen?
+- start.html L177: style Anweisung durch Klasse "hide" ersetzen -> Wei§ Ernie's Logik das?/MUss sie das wissen?
 - favicon.ico
 - theme roller: graue buttons
 - rules: explain that publish is only until opponent joined
 - info: requires javascript
+- favicons für local machen (Kreis mit beiden Farben nach dem Schema farbe1_farbe2.png, wobei die Farben alphabetisch aufgezählt werden); fließender Übergang der Farben?
 
 Ernesto:
 - undo
 - socketio websokcet 502
 - timeout timer
 - shell password
-- lost turns?
+- favicon ist die Spielerfarbe (bei local ist es ein Kreis mit beiden Farben nach dem Schema farbe1_farbe2.png, wobei die Farben alphabetisch aufgezählt werden)
 
 LIZENZ!
