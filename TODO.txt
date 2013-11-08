@@ -14,6 +14,7 @@ Ernesto:
 - socketio websokcet 502
 - timeout timer
 - shell password
+- zuschauer mode
 - favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
 
 LIZENZ!

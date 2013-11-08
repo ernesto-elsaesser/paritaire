@@ -11,8 +11,19 @@ var socket = require('./server/prt_socket');
 var game = require('./server/prt_game_obj');
 
 // global variables
-var sessions = {}; // stores all game sessions
+var sessions = {};
 var publicSessions = {};
+
+if(fs.existsSync("sessions.dump")) {// try to load old sessions
+	
+		var dump = JSON.parse(String(fs.readFileSync("sessions.dump")));
+			
+		for(var id in dump) {
+			
+			sessions[id] = new game.Session(id,dump[id]);
+			
+		}
+	}
 
 var cache = {
 	"/new": fs.readFileSync("new.html"),
@@ -26,7 +37,8 @@ var playPage = String(fs.readFileSync("play.html"));
 
 var filters = [ 
 	new RegExp(".+\/$"),
-	new RegExp("server","i")
+	new RegExp("server","i"),
+	new RegExp("sessions.dump","i")
 	];
 	
 var mimeTypes = {
@@ -41,7 +53,7 @@ var mimeTypes = {
 // web server callback
 function onRequest(request,response) {
 
-	log(request.url);
+	log("http: " + request.url);
 
 	var requrl = url.parse(request.url,true);
 	var path = requrl.pathname;
@@ -158,9 +170,32 @@ function onRequest(request,response) {
 function log(msg) {
 	
 	var d = new Date();
-	console.log((1900+d.getYear()) + "/" + d.getMonth() + "/" + d.getDay() + "-" + d.getHours() + ":" + d.getMinutes()  + " http: " + msg);
+	console.log((1900+d.getYear()) + "/" + (1+d.getMonth()) + "/" + d.getDate() + "-" + d.getHours() + ":" + d.getMinutes()  + " " + msg);
 	
 }
+
+function shutdown() {
+	
+	log("shutdown - dumping sessions.");
+	
+	var dump = "";
+	
+	for(var id in sessions) {
+		sessions[id].player[1].disconnect();
+		sessions[id].player[2].disconnect();
+		dump += '"' + id + '":' + JSON.stringify(sessions[id].getState(true)) + ",";
+	}
+	
+	dump = "{" + dump.substr(0,dump.length-1) + "}";
+	
+	fs.writeFileSync("sessions.dump", dump);
+	
+	process.exit(0);
+	
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
 
 var server = http.createServer(onRequest);
 
@@ -168,4 +203,4 @@ server.listen(80);
 
 socket.attachSocket(server,sessions,publicSessions);
 
-shell.createShell(5001,{s: sessions, c: socket.clients, cache: cache});
+shell.createShell(5001,{s: sessions, ps: publicSessions, c: socket.clients, cache: cache});
