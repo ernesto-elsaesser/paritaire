@@ -16,5 +16,7 @@ Ernesto:
 - timeout timer
 - shell password
 - favicon ist die Spielerfarbe (bei local ist es ein Kreis mit beiden Farben nach dem Schema farbe1_farbe2.png, wobei die Farben alphabetisch aufgezählt werden)
+- restart when session is playing
+- zuschauer mode
 
 LIZENZ!

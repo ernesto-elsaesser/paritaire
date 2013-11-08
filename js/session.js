@@ -118,7 +118,7 @@ function Session(ui,color1,color2) {
 			
 			if(data.alone) {
 			
-				that.ui.publish.className = "btn btn-primary";
+				if(!that.publicName) that.ui.publish.className = "btn btn-primary";
 				that.colorPicker();
 			}
 				
@@ -231,6 +231,7 @@ function Session(ui,color1,color2) {
 		that.ui.info.innerHTML = "";
 		that.canvas.onclick = null;
 		that.bEnded = false;
+		delete that.mySide;
   		that.canvas.drawText("Connection problems ...");
 		that.socket.socket.reconnect(); // should happen automatically
 		
@@ -257,7 +258,10 @@ function Session(ui,color1,color2) {
 	this.socket.on('published', function (data) {
 		
 		if(!data.success) alert("Pubication failed because the name is already used!");
-		else alert("Session published.");
+		else {
+			that.ui.publish.className = "btn btn-primary disabled";
+			alert("Session published.");
+		}
 		
   	});
 	

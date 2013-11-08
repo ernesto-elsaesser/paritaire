@@ -2,34 +2,57 @@ var validColors = ["blue","green","orange","red","violet","yellow"];
 
 function Session(id,proto) {
 	
-	if(proto == undefined) return null;
-
-	// are both colors valid color strings and different?
-	var c = 0;
-	for(var i in validColors) if(proto.col1 == validColors[i] || proto.col2 == validColors[i]) c++;
-	if( c < 2 ) return null;	
-	
-	// is the dimension an even number?
-	this.dim = parseInt(proto.dim);
-	if(isNaN(this.dim) || this.dim % 2) return null;
-	
-	// online flag
-	if(proto.online == "true") this.online = true;
-	else if(proto.online == "false") this.online = false;
-	else return null;
-	
 	this.id = id;
-	this.nextRound = 1;
-	this.nextTurn = 1;
-	this.player = [null,new Player(1,proto.col1,0), new Player(2,proto.col2,0)];
-	this.field = new Field(this.dim, this.dim);
-	this.logic = new GameLogic(this.field);
-	this.playing = false;
-	this.publicName = null;
+	
+	if(proto.wins) { // restore state
+		
+		this.online = proto.online;
+		this.dim = proto.dim;
+		this.playing = proto.playing;
+		this.nextRound = proto.round;
+		this.nextTurn = proto.turn;
+		
+		this.player = [null,new Player(1,proto.colors[0],proto.wins[0]), new Player(2,proto.colors[1],proto.wins[1])];
+		
+		this.field = new Field(this.dim, this.dim);
+		this.logic = new GameLogic(this.field);
+		
+		if(this.playing) {
+			this.field.stones = proto.field;
+			this.logic.computeFuture();
+		}
+
+		if(this.online) this.publicName = proto.publicName;
+		
+	}
+	else { // create new from post data
+
+		// are both colors valid color strings and different?
+		var c = 0;
+		for(var i in validColors) if(proto.col1 == validColors[i] || proto.col2 == validColors[i]) c++;
+		if( c < 2 ) return null;	
+	
+		// is the dimension an even number?
+		this.dim = parseInt(proto.dim);
+		if(isNaN(this.dim) || this.dim % 2) return null;
+	
+		// online flag
+		if(proto.online == "true") this.online = true;
+		else if(proto.online == "false") this.online = false;
+		else return null;
+	
+		this.nextRound = 1;
+		this.nextTurn = 1;
+		this.player = [null,new Player(1,proto.col1,0), new Player(2,proto.col2,0)];
+		this.field = new Field(this.dim, this.dim);
+		this.logic = new GameLogic(this.field);
+		this.playing = false;
+		this.publicName = null;
+	}
 	
 	this.startGame = function() {
 		
-		this.field.init();
+		this.logic.init();
 		this.player[1].points = 2;
 		this.player[2].points = 2;
 		this.playing = true;
@@ -97,7 +120,7 @@ function Session(id,proto) {
 	
    };
    
-   this.getState = function() {
+   this.getState = function(dumping) {
 		
 		var state = { online: this.online,
 			dim: this.dim,
@@ -109,6 +132,13 @@ function Session(id,proto) {
 		
 		if(this.playing) {
 			state.field = this.field.stones;
+		}
+		else if(this.online) {
+			state.publicName = this.publicName;
+		}
+		
+		if(dumping) {
+			state.colors = [this.player[1].color, this.player[2].color];
 		}
 			
 		return state;
@@ -151,7 +181,6 @@ function Field(columnNum,rowNum) {
 		
 	this.xsize = columnNum;
 	this.ysize = rowNum;
-	this.future = []; // future turn positions
 	this.delta = [];
 	
 	this.stones = new Array(this.xsize); // 2 dimensional array representing the field
@@ -197,25 +226,32 @@ function Field(columnNum,rowNum) {
 function GameLogic(refField) {
 
 	this.field = refField;
-	
-	var hx = (this.field.xsize/2);
-	var hy = (this.field.ysize/2);
-		
-	// compute possible next turns
-	
-	/*	  X X
-	*	X 1	2 X	
-	*	X 2 1 X
-	*	  X X
-	*/
-	
-	this.future = [{x:hx-2,y:hy-1},{x:hx-2,y:hy},
-		{x:hx-1,y:hy-2},{x:hx-1,y:hy+1},
-		{x:hx,y:hy-2},{x:hx,y:hy+1},
-		{x:hx+1,y:hy-1},{x:hx+1,y:hy}];
-		
-		
+	this.future = [null,[],[]]; // possible next turns
 	this.dirs = [{x:0,y:-1},{x:1,y:-1},{x:1,y:0},{x:1,y:1},{x:0,y:1},{x:-1,y:1},{x:-1,y:0},{x:-1,y:-1}];
+
+	this.init = function() {
+				
+		this.field.init();
+		this.computeFuture();
+		
+	};
+	
+	this.computeFuture = function() {
+		
+		this.future = [null,[],[]];
+		
+		var stone;
+		
+		for (var x = 0; x < this.field.xsize; x++) {
+			for (var y = 0; y < this.field.ysize; y++) {
+				
+				stone = this.field.stones[x][y];
+				if(stone != 0) this.updateFuture(stone,x,y);
+						
+			}
+		}
+		
+	}
 
 	// if this function returns zero, the turn was invalid
 	// in this case, the field is not modified
@@ -230,11 +266,11 @@ function GameLogic(refField) {
 
 		}
 		
-		if(stolenStones > 0) this.removeFuture(x,y);
+		if(stolenStones > 0) this.updateFuture(side,x,y);
 		
 		return stolenStones;
 	
-	}
+	};
 	
 	this.tryPath = function(side,x,y,deltax,deltay,path,bCheck) {
 
@@ -260,39 +296,65 @@ function GameLogic(refField) {
 			return path.length; // return number of stolen stones
 		}
 		// no stone
-		else
-		{
-			// if there is an empty field next to the dropped stone, try to add it to the future turn positions
-			if(path.length == 0) this.addFuture(nextx,nexty);
-			return 0;
-		}
+		else return 0;
 
 	};
+	
+	this.updateFuture = function(side,x,y) {
+		
+		var tx, ty;
+		var other = (side == 1 ? 2 : 1);
+		
+		for(var d in this.dirs) {
+			
+			tx = x+this.dirs[d].x;
+			ty = y+this.dirs[d].y;
+			
+			if(tx == -1 || ty == -1 || tx == this.field.xsize || ty == this.field.ysize) continue;
+			
+			if(this.field.stones[tx][ty] == 0)
+				this.addFuture(other,tx,ty);
+			
+		}
+		
+		this.removeFuture(1,x,y);
+		this.removeFuture(2,x,y);
+	};
 
-	this.addFuture = function(x,y) {
+	this.addFuture = function(side,x,y) {
 
-		var f = this.future;
-		for(var i in f) if(f[i].x == x && f[i].y == y) return;
+		var f = this.future[side];
+		
+		for(var i in f) 
+			if(f[i].x == x && f[i].y == y) return;
+		
 		f.push({x:x,y:y});
 
 	};
 
-	this.removeFuture = function(x,y) {
+	this.removeFuture = function(side,x,y) {
 
-		var f = this.future;
-		for(var i in f) if(f[i].x == x && f[i].y == y) f.splice(i,1);
+		var f = this.future[side];
+		
+		for(var i in f) {
+			if(f[i].x == x && f[i].y == y) {
+				f.splice(i,1);
+				return;
+			}
+		}
 
 	};
 
 	this.canTurn = function(side) {
 
 		var x,y;
+		var f = this.future[side];
 
 		// try possible future turns
-		for (var t in this.future) {
+		for (var t in f) {
 				
-				x = this.future[t].x;
-				y = this.future[t].y;
+				x = f[t].x;
+				y = f[t].y;
 				
 				for(var d in this.dirs) {
 						
