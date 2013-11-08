@@ -18,3 +18,9 @@ Ernesto:
 - favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
 
 LIZENZ!
+
+
+Allg. Sachen?
+- sollen Farben Šnderbar sein?
+- kann man bei jedem neuen spiel einer session die spielfeldgrš§e wieder Šndern?
+- soll Game Mode (online/local) Šnderbar sein? Wenn ja, wer darf?
