@@ -41,10 +41,6 @@ body {
 	float: right;
 }
 
-.left {
-	float: left;
-}
-
 .clear {
 	
 	clear: both;
@@ -62,7 +58,6 @@ body {
 }
 
 /* new.html */
-
 
 #settings-controls {
 	margin-bottom: 40px;
@@ -142,19 +137,19 @@ body {
 
 /* rules.html */
 
-#accordion {
+#rules-accordion {
 	margin-bottom: 20px;
 }
 
-#carousel-frame {
+#rules-carousel-frame {
 	margin: 0 0 15px 15px;
 	width: 33%;
 }
 
-#image-row {
+#rules-image-row {
 	margin-top: 10px;
 }
 
-#image-row img {
+#rules-image-row img {
 	width: 12%;
 }

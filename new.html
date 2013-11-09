@@ -49,32 +49,31 @@
 	 	          </div>
 	 	        	<h3 class="center">Game Mode</h3>
 	 	        	<div id="settings-gametype">
-				  		<div class="radio">
-							<label>
-		      					<input type="radio" name="online" id="local" value="0" checked>
-								Local (one device)
-							</label>
+					  		<div class="radio">
+								<label>
+			      			<input type="radio" name="online" id="local" value="0" checked>
+									Local (one device)
+								</label>
+					  		</div>
+		 	          <div class="radio">
+					    		<label>
+		             		<input type="radio" name="online" id="online" value="1">
+		                Online (two devices)
+		              </label>
+				  			</div>
+					  		<div class="radio">
+									<label>
+			      				<input type="radio" name="online" id="local" value="0" disabled>
+										Adventure (will come soon)
+									</label>
+					  		</div>
 				  		</div>
-	 	          		<div class="radio">
-				    		<label>
-	                   		 	<input type="radio" name="online" id="online" value="1">
-	                  		  Online (two devices)
-	                 	 	</label>
-			  			</div>
-				  		<div class="radio">
-							<label>
-		      					<input type="radio" name="online" id="local" value="0" disabled>
-								Adventure (will come soon)
-							</label>
-				  		</div>
-				  	</div>
     	      </div>
 				
-			  <h3 class="center"> Sides </h3>
+			  		<h3 class="center"> Sides </h3>
 				
-			  <div>
-			  	<div class="col-md-3 col-sm-3 col-xs-5 center">
- 			  		<div id="carousel-player-1" class="carousel slide" data-interval="false">
+			  		<div class="col-md-3 col-sm-3 col-xs-5 center">
+ 			  			<div id="carousel-player-1" class="carousel slide" data-interval="false">
  				
  				  			<!-- Wrapper for slides -->
  				  			<a href="#carousel-player-1" data-slide="next">
@@ -92,12 +91,10 @@
 		  				</div>
   			  	</div>
 				
-				<div class="col-md-1 col-sm-1 col-xs-2" id="settings-vs">
-					vs.
-				</div>
+						<div class="col-md-1 col-sm-1 col-xs-2 center" id="settings-vs"> vs. </div>
 				
   			  	<div class="col-md-3 col-sm-3 col-xs-5 center">
- 			    	<div id="carousel-player-2" class="carousel slide" data-interval="false">
+ 			    		<div id="carousel-player-2" class="carousel slide" data-interval="false">
  				
  				  			<!-- Wrapper for slides -->
 	 				  		<a href="#carousel-player-2" data-slide="next">
@@ -114,14 +111,12 @@
 
 		  				</div>
   			  	</div>
-				<div class="center">
-					<i>(tap to change)</i>
-				</div>
-			</div>
-			  </div>
-			  
-  			  	
- 			  	<script type="text/javascript">
+				
+						<div class="center"> <i>(tap to change)</i> </div>
+					
+					</div>
+										
+					<script type="text/javascript">
  			  		function validate() {
  			  			
 						alertText = document.getElementById('validation_advice');
@@ -157,15 +152,15 @@
  			  				$.post("create", postData, callback);
  			  			}
  			  		}
- 			  	</script>
-  			  	
- 			  	<div class="row">
-  			  	<div class="col-md-12">
-					<div id="validation_advice" class="alert alert-danger hide no-top-margin"></div>
-  			  		<input type="button" value="Ready!" class="btn btn-primary wide no-top-margin" onclick="validate();">
-		  				
-		  			</div> 
-		  		</div>
+			  	</script>
+ 			  	
+		  		<div class="row">
+			  			<div class="col-md-12">
+							<div id="validation_advice" class="alert alert-danger hide no-top-margin"></div>
+			  				<input type="button" value="Ready!" class="btn btn-primary wide no-top-margin" onclick="validate();">
+  					</div> 
+  				</div>
+	  			
       	</div>
 
       	<!-- Site footer -->

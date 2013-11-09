@@ -1,13 +1,11 @@
 Sophie:
-- Grafiken fuer Spielsteine berarbeiten (werden z.B. im iPad verpixelt angezeigt)
-- spinner on play page
 - Licences Dokumentieren (Punkt aus seiner Excel fÂŸr gute Note); am besten mit seinem Template
 - jquery.min.map ???
 - theme roller: graue buttons
-- rules: explain that publish is only until opponent joined
 - info: requires javascript
 - coolerer Colorpicker (Farben diagonal)
 - ist das * in rules.html L83 in allen Browsern hochgestellt?
+- color picker bug: beim tappen einer farbe rutsht diese von der mitte nach links und slided erst dann weg
 
 Ernesto:
 - undo
@@ -24,3 +22,4 @@ Allg. Sachen?
 - sollen Farben Šnderbar sein?
 - kann man bei jedem neuen spiel einer session die spielfeldgrš§e wieder Šndern?
 - soll Game Mode (online/local) Šnderbar sein? Wenn ja, wer darf?
+- public session nach 1h/xxh... lšschen, damit keine Leichen da rumliegen?
