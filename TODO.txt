@@ -6,14 +6,18 @@ Sophie:
 - coolerer Colorpicker (Farben diagonal)
 - ist das * in rules.html L83 in allen Browsern hochgestellt?
 - color picker bug: beim tappen einer farbe rutsht diese von der mitte nach links und slided erst dann weg
+- remove position indicator in rules image slider
 
 Ernesto:
 - undo
 - socketio websokcet 502
 - timeout timer
 - shell password
-- zuschauer mode
+- spectator mode
+- keep public list on restart
 - favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
+- Delete session button
+- Give up button
 
 LIZENZ!
 

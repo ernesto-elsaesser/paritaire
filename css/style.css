@@ -6,11 +6,6 @@ a {
 	display: none;
 }
 
-#game_type {
-	max-width: 200px;
-	margin: 0 auto;
-}
-
 body {
 	padding-top: 70px;
 }
@@ -46,12 +41,13 @@ body {
 	clear: both;
 }
 
-/* index.html */
-
-
-.intro p {
+.jumbotron p {
   margin-top: 30px; 
 }
+
+
+/* index.html */
+
 
 .intro a {
   font-size: 1.1em;
