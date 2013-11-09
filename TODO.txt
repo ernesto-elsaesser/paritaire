@@ -4,9 +4,6 @@ Sophie:
 - theme roller: graue buttons
 - info: requires javascript
 - coolerer Colorpicker (Farben diagonal)
-- ist das * in rules.html L83 in allen Browsern hochgestellt?
-- color picker bug: beim tappen einer farbe rutsht diese von der mitte nach links und slided erst dann weg
-- remove position indicator in rules image slider
 
 Ernesto:
 - undo
