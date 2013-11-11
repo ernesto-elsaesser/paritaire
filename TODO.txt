@@ -1,14 +1,9 @@
 Sophie:
-- Grafiken fuer Spielsteine berarbeiten (werden z.B. im iPad verpixelt angezeigt)
-- spinner on play page
 - Licences Dokumentieren (Punkt aus seiner Excel fÂr gute Note); am besten mit seinem Template
 - jquery.min.map ???
 - theme roller: graue buttons
-- rules: explain how publishing works (session is only published until opponent joins)
 - info: requires javascript
 - coolerer Colorpicker (Farben diagonal)
-- ist das * in rules.html L83 in allen Browsern hochgestellt?
-- remove position indicator in rules carrousel
 
 Ernesto:
 - undo
@@ -20,12 +15,6 @@ Ernesto:
 - favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
 - Delete session button
 - Give up button
+- delete session and publications after time period
 
 LIZENZ!
-
-
-Allg. Sachen?
-- sollen Farben nderbar sein?
-- kann man bei jedem neuen spiel einer session die spielfeldgr§e wieder ndern?
-- soll Game Mode (online/local) nderbar sein? Wenn ja, wer darf?
--> erstmal alles nicht, wenn die settings nicht passen muss man halt ne neue session machen

@@ -186,7 +186,7 @@ function shutdown() {
 		dump += '"' + id + '":' + JSON.stringify(sessions[id].getState(true)) + ",";
 	}
 	
-	dump = "{" + dump.substr(0,dump.length-1) + "}";
+	dump = "{" + dump.substr(0,dump.length-1) + "}\n";
 	
 	fs.writeFileSync("sessions.dump", dump);
 	

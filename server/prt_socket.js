@@ -168,9 +168,10 @@ function attachSocket(httpServer,sessions,publicSessions) {
 		  
 		var c = clients[socket.id];
 		var s = sessions[data.id];
-		var r = 0;
 		
-		if(c.session == s) r = s.turn(c.side,data.x,data.y);
+		if(c.session != s) return;
+		
+		var r = s.turn(c.side,data.x,data.y);
 		
 		if(s.online) {
 			log("TURN [" + data.x + ":" + data.y + "] from side " + c.side + " in session " + 
@@ -191,8 +192,16 @@ function attachSocket(httpServer,sessions,publicSessions) {
   		var s = sessions[data.id];
 		
 		if(c.session != s) return;
-		// TODO!
-		if(s.playing) ;
+		
+		var r = s.undo(c.side);
+		
+		if(s.online) {
+			log("UNDO from side " + c.side + " in session " + data.id + 
+				" (" + (r == 1 ? "valid" : "invalid") +") from " + socket.id);
+		}
+		else {
+			log("UNDO in local session " + data.id + " (" + (r == 1 ? "valid" : "invalid") +") from " + socket.id);
+		}
 		
 	  });
 	  

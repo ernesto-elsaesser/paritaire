@@ -3,6 +3,7 @@ var validColors = ["blue","green","orange","red","violet","yellow","cyan"];
 function Session(id,proto) {
 	
 	this.id = id;
+	this.lastTurn = null; // no undo for stored sessions
 	
 	if(proto.wins) { // restore state
 		
@@ -57,6 +58,7 @@ function Session(id,proto) {
 		this.player[2].points = 2;
 		this.playing = true;
 		this.nextTurn = this.nextRound;
+		this.lastTurn = null;
 		
 		var t = {stones: this.field.getDelta(),
 			points:[2,2],
@@ -70,6 +72,10 @@ function Session(id,proto) {
 	    this.nextRound = (this.nextRound == 1 ? 2 : 1);
    }
    
+   // return codes:
+   //  1 - success
+   //  0 - invlaid turn
+   // -1 - invalid connection state
    this.turn = function(side,x,y) {
 	   
 	   	if(!this.playing) return 0;
@@ -93,6 +99,8 @@ function Session(id,proto) {
 		this.player[side].points += stolenStones + 1;
 		this.player[other].points -= stolenStones;
 	
+		var thisTurn = this.nextTurn;
+	
 		if(this.logic.canTurn(other)) this.nextTurn = other;
 		else if(!this.logic.canTurn(side)) { // end of game
 			
@@ -107,11 +115,53 @@ function Session(id,proto) {
 			this.playing = false;
 		}
 
-		var t = {stones: this.field.getDelta(),
-			points: [this.player[1].points,this.player[2].points],
-			next:this.nextTurn
+		var d = this.field.getDelta();
+
+		this.lastTurn = {stones: d,
+			points: [d.length, d.length],
+			side: thisTurn,
+			next: this.nextTurn
 		};
+		
+		this.lastTurn.points[(side==1?1:0)] = -(d.length-1);
     	
+		this.player[1].send("turn",this.lastTurn);
+		
+	   	if(this.online) this.player[2].send("turn",this.lastTurn);
+		
+		return 1;
+	
+   };
+   
+   this.undo = function(side) {
+   	
+		if(!this.playing) return 0; 
+		if(!this.lastTurn) return 0;
+		if(this.online && this.lastTurn.side != side) return 0;
+		
+		var stones = [];
+		var t = this.lastTurn.stones;
+		
+		for(var i in t) {
+			
+			this.field.stones[t[i].x][t[i].y] = t[i].os;
+			this.logic.addFuture(1,t[i].x,t[i].y);
+			this.logic.addFuture(2,t[i].x,t[i].y);
+			stones.push({x:t[i].x,y:t[i].y,s:t[i].os});
+			
+		}
+		
+		var t = {stones: stones,
+			points: this.lastTurn.points.map(function(a){return -a;}),
+			side: this.lastTurn.side,
+			next: this.lastTurn.side
+		};
+		
+		this.nextTurn = t.side;
+		this.player[1].points += t.points[0];
+		this.player[2].points += t.points[1];
+		this.lastTurn = null;
+		
 		this.player[1].send("turn",t);
 		
 	   	if(this.online) this.player[2].send("turn",t);
@@ -209,8 +259,9 @@ function Field(columnNum,rowNum) {
 	
 	this.putStone = function(side,x,y) {
 		
+		var old = this.stones[x][y];
 		this.stones[x][y] = side;
-		this.delta.push({x:x,y:y,s:side});
+		this.delta.push({x:x,y:y,s:side,os:old});
 		
 	};
 	

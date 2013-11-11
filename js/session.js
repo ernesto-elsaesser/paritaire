@@ -198,8 +198,8 @@ function Session(ui,color1,color2) {
 	this.socket.on('turn', function (data) {
 		
 		// change points
-		that.player[1].points = data.points[0];
-		that.player[2].points = data.points[1];
+		that.player[1].points += data.points[0];
+		that.player[2].points += data.points[1];
 		
 		// update field	
 		that.field.update(data.stones); 
@@ -212,13 +212,14 @@ function Session(ui,color1,color2) {
 		if(that.online && l.s != that.mySide) {
 			that.ui.undo.className = "btn btn-primary disabled";
 		}
-		else {
+		else if(l.s != 0){ // if not already an undo turn
 			that.ui.undo.className = "btn btn-primary";
 		}
 		
 		if(data.next == 0) that.endGame();
 		else {
-			that.bMyTurn = (data.next == that.mySide);
+			if(that.online) that.bMyTurn = (data.next == that.mySide);
+			else that.currentSide = data.next;
 			that.ui.info.removeChild(that.ui.info.childNodes[that.ui.info.childNodes.length-1]);
 			that.ui.info.appendChild(that.player[data.next].icon);
 		}
@@ -340,6 +341,7 @@ function Session(ui,color1,color2) {
 	
 		// TODO: check enabled
 		this.socket.emit("undo",{id: this.sid});
+		this.ui.undo.className = "btn btn-primary disabled";
 	
 	};
 	
