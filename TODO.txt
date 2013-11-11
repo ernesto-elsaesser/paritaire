@@ -8,7 +8,7 @@ Sophie:
 - info: requires javascript
 - coolerer Colorpicker (Farben diagonal)
 - ist das * in rules.html L83 in allen Browsern hochgestellt?
-- remove position indicator in rules image slider
+- remove position indicator in rules carrousel
 
 Ernesto:
 - undo
@@ -28,3 +28,4 @@ Allg. Sachen?
 - sollen Farben nderbar sein?
 - kann man bei jedem neuen spiel einer session die spielfeldgr§e wieder ndern?
 - soll Game Mode (online/local) nderbar sein? Wenn ja, wer darf?
+-> erstmal alles nicht, wenn die settings nicht passen muss man halt ne neue session machen
