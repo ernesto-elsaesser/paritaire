@@ -5,7 +5,7 @@ var game = require('./prt_game_obj');
 
 var clients = {};
 
-function attachSocket(httpServer,sessions,publicSessions) {
+function attachSocket(httpServer,sessions,publications) {
 	
 	var socketServer = socketio.listen(httpServer);
 
@@ -29,6 +29,8 @@ function attachSocket(httpServer,sessions,publicSessions) {
 				//socket.emit('invalid'); TODO
 				return;
 			}
+
+			s.isUsed(); // increase expiration date
 			
 			if(!s.online) {
 				
@@ -115,7 +117,7 @@ function attachSocket(httpServer,sessions,publicSessions) {
 			if(s.publicName) {
 				
 				s.publicName = null;
-				delete publicSessions[s.id];
+				delete publications[s.id];
 			}
     	
 		});
@@ -229,8 +231,8 @@ function attachSocket(httpServer,sessions,publicSessions) {
 		
 		if(s.online) {
 			
-			for(var i in publicSessions) {
-				if(publicSessions[i].publicName == data.name) {
+			for(var i in publications) {
+				if(publications[i].publicName == data.name) {
 					log("PUBLISH session " + data.id + " with used name from " + socket.id);
 					socket.emit("published", {success: false});
 					return;
@@ -238,8 +240,8 @@ function attachSocket(httpServer,sessions,publicSessions) {
 			}
 			
 			log("PUBLISH session " + data.id + " from " + socket.id);
-	   		s.publicName = data.name;
-			publicSessions[s.id] = s;
+	   		s.publish(data.name);
+			publications[s.id] = s;
 
 			socket.emit("published", {success: true});
 		}

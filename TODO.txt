@@ -4,17 +4,14 @@ Sophie:
 - theme roller: graue buttons
 - info: requires javascript
 - coolerer Colorpicker (Farben diagonal)
+- footer: margin, "eese", impressum page
+- rules: provide info: publication expires after 1 hour
 
 Ernesto:
 - socketio websokcet 502
-- timeout timer
 - shell password
 - spectator mode
-- keep public list on restart
 - favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
 PROBLEM: favicon wird für domain gecached?
-- Delete session button
-- Give up button
-- delete session and publications after time period
 
 LIZENZ!

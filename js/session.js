@@ -129,7 +129,7 @@ function Session(ui,color1,color2) {
 			
 			if(data.alone) {
 			
-				if(!that.publicName) that.ui.publish.className = "btn btn-primary";
+				if(!that.published) that.ui.publish.className = "btn btn-primary";
 				that.colorPicker();
 			}
 				

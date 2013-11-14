@@ -12,17 +12,23 @@ var game = require('./server/prt_game_obj');
 
 // global variables
 var sessions = {};
-var publicSessions = {};
+var publications = {};
 
 if(fs.existsSync("sessions.dump")) {// try to load old sessions
-	
+
 		var dump = JSON.parse(String(fs.readFileSync("sessions.dump")));
-			
+		var c = 0;
+
 		for(var id in dump) {
 			
-			sessions[id] = new game.Session(id,dump[id]);
+			sessions[id] = new game.Session(dump[id]);
+			if(dump[id].pubname) publications[id] = sessions[id];
+			c++;
 			
 		}
+
+
+		log("init: restored " + c + " sessions.");
 	}
 
 var cache = {
@@ -68,7 +74,7 @@ function onRequest(request,response) {
 			});
 		request.on("end", function() {
 			var id = (new Date()).getTime();
-			sessions[id] = new game.Session(id,querystring.parse(params)); // create new session from post data
+			sessions[id] = new game.Session(querystring.parse(params)); // create new session from post data
 			if(sessions[id]) {
 				
 				log("created new session (" + id + "): " + params);
@@ -108,8 +114,8 @@ function onRequest(request,response) {
 		var html = (path == "/" ? indexPage : publicPage);
 		var list = "";
 		
-		for(var i in publicSessions) {
-			list += '<a href="/play?id=' + publicSessions[i].id + '" class="list-group-item">' + publicSessions[i].publicName + '</a>';
+		for(var id in publications) {
+			list += '<a href="/play?id=' + id + '" class="list-group-item">' + publications[id].publicName + '</a>';
 		}
 		
 		if(list == "") list = '<a href="#" class="list-group-item">No public sessions.</a>';
@@ -174,6 +180,40 @@ function log(msg) {
 	
 }
 
+function cleanSessions() {
+
+	log("cleanup: checking " + sessions.length + " sessions.");
+
+	var now = (new Date()).getDate();
+
+	for(var s in sessions) {
+
+		if(now == sessions[s].expirationDate) {
+
+			log("cleanup: session " + sessions[s].id + " expired.");
+			delete sessions[s];
+		}
+	}
+}
+
+function cleanPublications() {
+
+	log("cleanup: checking " + publications.length + "  publications.");
+
+	var dealine = (new Date()).getTime() - 3600000;
+
+	for(var s in publications) {
+
+		if(publications[s].publicationDate < deadline) {
+
+			log("cleanup: publication '" + publications[s].publicName + "' of " + publications[s].id + " expired.");
+			publications[s].unpublish();
+			delete publications[s];
+			// TODO: inform publisher?
+		}
+	}
+}
+
 function shutdown() {
 	
 	log("shutdown - dumping sessions.");
@@ -197,10 +237,13 @@ function shutdown() {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
+setInterval(cleanSessions,86400000); // every 24 hours
+setInterval(cleanPublications,900000); // every 15 minutes
+
 var server = http.createServer(onRequest);
 
 server.listen(80);
 
-socket.attachSocket(server,sessions,publicSessions);
+socket.attachSocket(server,sessions,publications);
 
-shell.createShell(5001,{s: sessions, ps: publicSessions, c: socket.clients, cache: cache});
+shell.createShell(5001,{s: sessions, p: publications, c: socket.clients, cache: cache});
