@@ -13,5 +13,6 @@ Ernesto:
 - spectator mode
 - favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
 PROBLEM: favicon wird für domain gecached?
+- "is public" indicator in play.html
 
 LIZENZ!

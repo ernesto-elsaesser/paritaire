@@ -114,10 +114,11 @@ function attachSocket(httpServer,sessions,publications) {
 			s.player[1].send("otherjoined",{side: 1, turn: s.nextTurn});
 			s.player[2].send("otherjoined",{side: 2, turn: s.nextTurn});
 			
-			if(s.publicName) {
+			if(publications[data.id]) {
 				
-				s.publicName = null;
-				delete publications[s.id];
+				publications[data.id].unpublish();
+				delete publications[data.id];
+				log(" - unpublished session " + data.id);
 			}
     	
 		});
@@ -224,27 +225,32 @@ function attachSocket(httpServer,sessions,publications) {
 	  
 	  socket.on('publish', function (data) {
 		  
-    	var c = clients[socket.id];
+    	// client object hasn't a session attribute yet
     	var s = sessions[data.id];
 		
-  		if(c.session != s) return;
-		
-		if(s.online) {
-			
-			for(var i in publications) {
-				if(publications[i].publicName == data.name) {
-					log("PUBLISH session " + data.id + " with used name from " + socket.id);
-					socket.emit("published", {success: false});
-					return;
-				}
+		// check if name is already in use
+		for(var i in publications) {
+			if(publications[i].publicName == data.name) {
+				log("PUBLISH session " + data.id + " with occupied name from " + socket.id);
+				socket.emit("published", {success: false});
+				return;
 			}
-			
-			log("PUBLISH session " + data.id + " from " + socket.id);
-	   		s.publish(data.name);
-			publications[s.id] = s;
+		}
+		
+   		var r = s.publish(data.name);
+   		if(r) {
+
+			publications[data.id] = s;
 
 			socket.emit("published", {success: true});
+			log("PUBLISH session " + data.id + " from " + socket.id);
 		}
+		else {
+
+			socket.emit("published", {success: false});
+			log("PUBLISH session " + data.id + " (invalid) from " + socket.id);
+		}
+		
 			
 	  });
 	  
@@ -266,16 +272,16 @@ function attachSocket(httpServer,sessions,publications) {
 				
 	        		if(other.connected) { // session was full
         
-	          			log("DISCONNECT side " + c.side + " in session " + s.id + " (was full) from " + socket.id);
+	          			log("DISCONNECT side " + c.side + " in before full session from " + socket.id);
 	          	  		other.send('otherleft');
            
 	        		}
-	        		else log("DISCONNECT side " + c.side + " in session " + s.id + " (now empty) from " + socket.id);
+	        		else log("DISCONNECT side " + c.side + " in now empty session from " + socket.id);
 					
 				}
 				else {
 					
-					log("DISCONNECT local session " + s.id + " (now empty) from " + socket.id);
+					log("DISCONNECT from local session from " + socket.id);
 					s.player[1].disconnect();
 				}
          
@@ -294,8 +300,8 @@ function attachSocket(httpServer,sessions,publications) {
 function log(msg) {
 	
 	var d = new Date();
-	console.log((1900+d.getYear()) + "/" + d.getMonth() + "/" + d.getDay() + "-" + d.getHours() + ":" + d.getMinutes()  + " socket: " + msg);
-	
+	console.log((1900+d.getYear()) + "/" + (1+d.getMonth()) + "/" + d.getDate() + "-" + d.getHours() + ":" + d.getMinutes()  + " socket: " + msg);
+
 }
 
 exports.clients = clients;

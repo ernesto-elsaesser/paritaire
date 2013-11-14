@@ -97,6 +97,8 @@ function createCanvas(container) {
 		
 		var ctx = this.getContext("2d");
 		var fontsize = parseInt(ctx.font.substr(0,2));
+
+		ctx.textAlign = "center";
 		
 		ctx.fillStyle = "#FFF";
 		ctx.fillRect(0,0,this.width,this.height);

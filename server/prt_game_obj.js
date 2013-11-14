@@ -172,11 +172,11 @@ Session.prototype.undo = function(side) {
 
 Session.prototype.surrender = function(side) {
 
-		if(!this.playing) return 0;
+	if(!this.playing) return 0;
 
-		this.endRound();
+	this.endRound();
 
-		var t = {stones: [],
+	var t = {stones: [],
 		points: [0,0],
 		side: side,
 		next: 0
@@ -192,8 +192,13 @@ Session.prototype.surrender = function(side) {
 
 Session.prototype.publish = function(name) {
 
+	if(!this.online) return 0;
+	if(this.player[1].connected && this.player[2].connected) return 0;
+
 	this.publicName = name;
 	this.publicationDate = (new Date()).getTime();
+
+	return 1;
 };
 
 Session.prototype.unpublish = function() {

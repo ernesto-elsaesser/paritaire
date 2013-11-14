@@ -7,7 +7,6 @@ function Session(ui,color1,color2) {
 	
 	this.ctx = this.canvas.getContext('2d');
 	this.ctx.font = Math.floor(this.canvas.width/12) + "px Georgia";
-	this.ctx.textAlign = "center";
 	
 	// canvas offset, used for mouse click mapping
 	this.offsetX = this.ui.main.offsetLeft;
@@ -91,8 +90,9 @@ function Session(ui,color1,color2) {
 		that.online = data.online;
 		that.bPlaying = data.playing;
 		
+
 		if(!that.online) {
-			
+				
 			that.ui.publish.style.display = "none";
 			that.currentSide = data.turn;
 			
@@ -129,7 +129,11 @@ function Session(ui,color1,color2) {
 			
 			if(data.alone) {
 			
-				if(!that.published) that.ui.publish.className = "btn btn-primary";
+				if(data.published) {
+					that.ui.publish.innerHTML = "Published";
+					that.ui.publish.style.backgroundColor = "green";
+				}
+				else that.ui.publish.className = "btn btn-primary";
 				that.colorPicker();
 			}
 				
@@ -152,7 +156,11 @@ function Session(ui,color1,color2) {
 		that.mySide = data.side;
 	
 		that.ui.info.innerHTML = "";
+
+		that.ui.publish.innerHTML = "Publish";
 		that.ui.publish.className = "btn btn-primary disabled";
+		that.ui.publish.style.backgroundColor = "#428bca";
+
 		that.ui.info.appendChild(document.createTextNode("Color:\u00A0\u00A0"));
 		that.ui.info.appendChild(that.player[that.mySide].icon.cloneNode());
 	
@@ -252,7 +260,10 @@ function Session(ui,color1,color2) {
   	this.socket.on('disconnect', function () {
 		
 		that.ui.info.innerHTML = "";
+		that.ui.publish.className = "btn btn-primary disabled";
+		that.ui.publish.style.backgroundColor = "#428bca";
 		that.ui.surrender.className = "btn btn-primary disabled";
+		that.ui.sessionUrl.className = "btn btn-primary disabled";
 		that.canvas.onclick = null;
 		that.bEnded = false;
 		delete that.mySide;
@@ -282,10 +293,11 @@ function Session(ui,color1,color2) {
 	
 	this.socket.on('published', function (data) {
 		
-		if(!data.success) alert("Publication failed because the name is already used!");
+		if(!data.success) alert("Publication failed! (Try a different name)");
 		else {
+			that.ui.publish.innerHTML = "Published";
+			that.ui.publish.style.backgroundColor = "green";
 			that.ui.publish.className = "btn btn-primary disabled";
-			alert("Session published.");
 		}
 		
   	});
@@ -348,7 +360,7 @@ function Session(ui,color1,color2) {
 		
 		var msg = "";
 		
-		if(this.winner) msg += "                  won! [";
+		if(this.winner) msg += "           won! [";
 		else msg += "Draw! [";
 		
 		msg += this.player[1].points + ":" + this.player[2].points + "]";
@@ -378,10 +390,9 @@ function Session(ui,color1,color2) {
 	};
 	
 	this.publish = function() {
-	
+
 		var name = prompt("Choose a name:","");
-		if(!name || name == "") alert("Please choose a name!");
-		else this.socket.emit("publish",{id: this.sid, name: name});
+		if(name && name != "") this.socket.emit("publish",{id: this.sid, name: name});
 	
 	};
 	

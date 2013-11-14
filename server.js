@@ -28,7 +28,7 @@ if(fs.existsSync("sessions.dump")) {// try to load old sessions
 		}
 
 
-		log("init: restored " + c + " sessions.");
+		log("init: restored " + c + " session(s).");
 	}
 
 var cache = {
@@ -164,7 +164,7 @@ function onRequest(request,response) {
 			response.write(doc);
 		}
 		else {
-			log("returned 404");
+			log("http: returned 404");
 			response.writeHead(404);
 			response.write(cache["/404"]);
 		}
@@ -182,7 +182,7 @@ function log(msg) {
 
 function cleanSessions() {
 
-	log("cleanup: checking " + sessions.length + " sessions.");
+	log("cleanup: checking for expired sessions.");
 
 	var now = (new Date()).getDate();
 
@@ -198,17 +198,17 @@ function cleanSessions() {
 
 function cleanPublications() {
 
-	log("cleanup: checking " + publications.length + "  publications.");
+	log("cleanup: checking for expired publications.");
 
-	var dealine = (new Date()).getTime() - 3600000;
+	var deadline = (new Date()).getTime() - 3600000;
 
-	for(var s in publications) {
+	for(var id in publications) {
 
-		if(publications[s].publicationDate < deadline) {
+		if(publications[id].publicationDate < deadline) {
 
-			log("cleanup: publication '" + publications[s].publicName + "' of " + publications[s].id + " expired.");
-			publications[s].unpublish();
-			delete publications[s];
+			log("cleanup: publication '" + publications[id].publicName + "' of ssession " + id + " expired.");
+			publications[id].unpublish();
+			delete publications[id];
 			// TODO: inform publisher?
 		}
 	}
