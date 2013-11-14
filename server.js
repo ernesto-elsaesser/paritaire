@@ -183,10 +183,10 @@ function shutdown() {
 	for(var id in sessions) {
 		sessions[id].player[1].disconnect();
 		sessions[id].player[2].disconnect();
-		dump += '"' + id + '":' + JSON.stringify(sessions[id].getState(true)) + ",";
+		dump += '"' + id + '":' + JSON.stringify(sessions[id].getState(true)) + ",\n";
 	}
 	
-	dump = "{" + dump.substr(0,dump.length-1) + "}\n";
+	dump = "{" + dump.substr(0,dump.length-2) + "}";
 	
 	fs.writeFileSync("sessions.dump", dump);
 	

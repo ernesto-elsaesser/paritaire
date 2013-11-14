@@ -204,6 +204,21 @@ function attachSocket(httpServer,sessions,publicSessions) {
 		}
 		
 	  });
+
+	  socket.on('surrender', function (data) {
+		  
+  		var c = clients[socket.id];
+  		var s = sessions[data.id];
+		
+		if(c.session != s) return;
+		
+		var r = 0;
+		if(s.online) r = s.surrender(c.side);
+		else r = s.surrender(data.side);
+		
+		if(r) log("SURRENDER from side " + c.side + " in session " + data.id + " from " + socket.id);
+
+	  });
 	  
 	  socket.on('publish', function (data) {
 		  

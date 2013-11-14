@@ -19,6 +19,8 @@ function Session(id,proto) {
 		this.logic = new GameLogic(this.field);
 		
 		if(this.playing) {
+			this.player[1].points = proto.points[0];
+			this.player[2].points = proto.points[1];
 			this.field.stones = proto.field;
 			this.logic.computeFuture();
 		}
@@ -102,18 +104,7 @@ function Session(id,proto) {
 		var thisTurn = this.nextTurn;
 	
 		if(this.logic.canTurn(other)) this.nextTurn = other;
-		else if(!this.logic.canTurn(side)) { // end of game
-			
-			var winner = null;
-		
-			if(this.player[1].points > this.player[2].points) winner = this.player[1];
-			else if(this.player[2].points > this.player[1].points) winner = this.player[2];
-		
-			if(winner) winner.wins++;
-			
-			this.nextTurn = 0;
-			this.playing = false;
-		}
+		else if(!this.logic.canTurn(side)) this.endRound();
 
 		var d = this.field.getDelta();
 
@@ -132,6 +123,20 @@ function Session(id,proto) {
 		return 1;
 	
    };
+
+   this.endRound = function() {
+
+   		var winner = null;
+		
+		if(this.player[1].points > this.player[2].points) winner = this.player[1];
+		else if(this.player[2].points > this.player[1].points) winner = this.player[2];
+	
+		if(winner) winner.wins++;
+		
+		this.nextTurn = 0;
+		this.playing = false;
+
+   };
    
    this.undo = function(side) {
    	
@@ -139,17 +144,7 @@ function Session(id,proto) {
 		if(!this.lastTurn) return 0;
 		if(this.online && this.lastTurn.side != side) return 0;
 		
-		var stones = [];
-		var t = this.lastTurn.stones;
-		
-		for(var i in t) {
-			
-			this.field.stones[t[i].x][t[i].y] = t[i].os;
-			this.logic.addFuture(1,t[i].x,t[i].y);
-			this.logic.addFuture(2,t[i].x,t[i].y);
-			stones.push({x:t[i].x,y:t[i].y,s:t[i].os});
-			
-		}
+		var stones = this.logic.undoTurn(this.lastTurn.stones);
 		
 		var t = {stones: stones,
 			points: this.lastTurn.points.map(function(a){return -a;}),
@@ -169,6 +164,26 @@ function Session(id,proto) {
 		return 1;
 	
    };
+
+   this.surrender = function(side) {
+
+   		if(!this.playing) return 0;
+
+   		this.endRound();
+
+   		var t = {stones: [],
+			points: [0,0],
+			side: side,
+			next: 0
+		};
+		
+		this.player[1].send("turn",t);
+		
+	   	if(this.online) this.player[2].send("turn",t);
+		
+		return 1;
+
+   };
    
    this.getState = function(dumping) {
 		
@@ -182,6 +197,7 @@ function Session(id,proto) {
 		
 		if(this.playing) {
 			state.field = this.field.stones;
+			state.points = [this.player[1].points, this.player[2].points];
 		}
 		else if(this.online) {
 			state.publicName = this.publicName;
@@ -420,6 +436,25 @@ function GameLogic(refField) {
 		return false;
 		
 	};
+
+	this.undoTurn = function(stones) {
+
+		var delta = [];
+		
+		for(var i in stones) {
+			
+			this.field.stones[stones[i].x][stones[i].y] = stones[i].os;
+			delta.push({x:stones[i].x,y:stones[i].y,s:stones[i].os});
+			
+		}
+
+		var turn = stones[stones.length-1];
+
+		this.addFuture(1,turn.x,turn.y);
+		this.addFuture(2,turn.x,turn.y);
+
+		return delta;
+	}
 	
 }
 

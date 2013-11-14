@@ -7,6 +7,7 @@ function Session(ui,color1,color2) {
 	
 	this.ctx = this.canvas.getContext('2d');
 	this.ctx.font = Math.floor(this.canvas.width/12) + "px Georgia";
+	this.ctx.textAlign = "center";
 	
 	// canvas offset, used for mouse click mapping
 	this.offsetX = this.ui.main.offsetLeft;
@@ -93,16 +94,21 @@ function Session(ui,color1,color2) {
 		if(!that.online) {
 			
 			that.ui.publish.style.display = "none";
-			that.currentSide = data.next;
+			that.currentSide = data.turn;
 			
 			if(data.playing) {
 			
+				that.player[1].points = data.points[0];
+				that.player[2].points = data.points[1];
+
 				that.field.stones = data.field;
 				that.field.draw();
 			
 				that.ui.info.innerHTML = "";
 				that.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 				that.ui.info.appendChild(that.player[data.turn].icon);
+
+				that.ui.surrender.className = "btn btn-primary";
 		
 			}
 			else {
@@ -114,7 +120,12 @@ function Session(ui,color1,color2) {
 		}
 		else{
 			
-			if(that.bPlaying) that.field.stones = data.field;
+			if(data.playing) {
+
+				that.player[1].points = data.points[0];
+				that.player[2].points = data.points[1];
+				that.field.stones = data.field;
+			}
 			
 			if(data.alone) {
 			
@@ -151,6 +162,7 @@ function Session(ui,color1,color2) {
 			
 			that.ui.info.appendChild(document.createTextNode("\u00A0\u00A0Next:\u00A0\u00A0"));
 			that.ui.info.appendChild(that.player[data.turn].icon);
+			that.ui.surrender.className = "btn btn-primary";
 		}
 		else {
 			if(that.mySide == that.nextStarter) {
@@ -192,6 +204,7 @@ function Session(ui,color1,color2) {
 		
 		that.ui.info.appendChild(that.player[data.next].icon);
 		that.ui.undo.className = "btn btn-primary disabled";
+		that.ui.surrender.className = "btn btn-primary";
   	
 	});
 	  
@@ -205,15 +218,24 @@ function Session(ui,color1,color2) {
 		that.field.update(data.stones); 
 		that.field.draw();
 		
-		// highlight placed stone
-		var l = data.stones[data.stones.length-1];
-		that.field.highlight(l.x,l.y);
-		
-		if(that.online && l.s != that.mySide) {
-			that.ui.undo.className = "btn btn-primary disabled";
+		var turn = data.stones[data.stones.length-1];
+
+		if(turn) { // on surrender turns, stones is empty
+
+			// highlight placed stone
+			that.field.highlight(turn.x,turn.y); 
+			
+			if(that.online && turn.s != that.mySide) {
+				that.ui.undo.className = "btn btn-primary disabled";
+			}
+			else if(turn.s != 0){ // if not already an undo turn
+				that.ui.undo.className = "btn btn-primary";
+			}
 		}
-		else if(l.s != 0){ // if not already an undo turn
-			that.ui.undo.className = "btn btn-primary";
+		else { // surrendered
+
+			that.player[data.side].points = 0;
+			that.player[(data.side == 1 ? 2 : 1)].points = that.field.xsize * that.field.ysize;
 		}
 		
 		if(data.next == 0) that.endGame();
@@ -230,6 +252,7 @@ function Session(ui,color1,color2) {
   	this.socket.on('disconnect', function () {
 		
 		that.ui.info.innerHTML = "";
+		that.ui.surrender.className = "btn btn-primary disabled";
 		that.canvas.onclick = null;
 		that.bEnded = false;
 		delete that.mySide;
@@ -242,6 +265,7 @@ function Session(ui,color1,color2) {
 		
 		that.ui.info.innerHTML = "";
 		that.ui.publish.className = "btn btn-primary";
+		that.ui.surrender.className = "btn btn-primary disabled";
 		that.mMyTurn = false;
 		that.bEnded = false;
 		that.canvas.drawText("Waiting for opponent ..."); // waiting for another init
@@ -258,7 +282,7 @@ function Session(ui,color1,color2) {
 	
 	this.socket.on('published', function (data) {
 		
-		if(!data.success) alert("Pubication failed because the name is already used!");
+		if(!data.success) alert("Publication failed because the name is already used!");
 		else {
 			that.ui.publish.className = "btn btn-primary disabled";
 			alert("Session published.");
@@ -286,6 +310,7 @@ function Session(ui,color1,color2) {
 		var n = this.ui.info.childNodes.length;
 		this.ui.info.removeChild(this.ui.info.childNodes[--n]);
 		this.ui.info.removeChild(this.ui.info.childNodes[--n]);
+		this.ui.surrender.className = "btn btn-primary disabled";
 		
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
 		
@@ -310,7 +335,7 @@ function Session(ui,color1,color2) {
 		else if(this.winner.stone == this.mySide) msg += "You won! [";
 		else msg += "You lost! [";
 		
-		msg += this.player[1].points + ":" + this.player[2].points + "]";
+		msg += this.player[this.mySide].points + ":" + this.player[(this.mySide == 1 ? 2 : 1)].points + "]";
 		
 		if(this.bMyTurn) {
 			this.canvas.drawText(msg,"Click to play!");
@@ -323,7 +348,7 @@ function Session(ui,color1,color2) {
 		
 		var msg = "";
 		
-		if(this.winner) msg += "               won! [";
+		if(this.winner) msg += "                  won! [";
 		else msg += "Draw! [";
 		
 		msg += this.player[1].points + ":" + this.player[2].points + "]";
@@ -337,9 +362,16 @@ function Session(ui,color1,color2) {
 		
 	};
 	
+	this.surrender = function() {
+	
+		if(this.online) this.socket.emit("surrender",{id: this.sid});
+		else this.socket.emit("surrender",{id: this.sid, side: this.currentSide});
+		this.ui.surrender.className = "btn btn-primary disabled";
+	
+	};
+	
 	this.undo = function() {
 	
-		// TODO: check enabled
 		this.socket.emit("undo",{id: this.sid});
 		this.ui.undo.className = "btn btn-primary disabled";
 	

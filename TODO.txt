@@ -6,13 +6,13 @@ Sophie:
 - coolerer Colorpicker (Farben diagonal)
 
 Ernesto:
-- undo
 - socketio websokcet 502
 - timeout timer
 - shell password
 - spectator mode
 - keep public list on restart
 - favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
+PROBLEM: favicon wird für domain gecached?
 - Delete session button
 - Give up button
 - delete session and publications after time period
