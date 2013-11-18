@@ -44,7 +44,7 @@ function Session(ui,color1,color2) {
 	
 	if(color1 == "#1") {
 		
-		this.ui.sessionUrl.className = "btn btn-primary disabled";
+		this.ui.share.className = "btn btn-primary disabled";
 		this.canvas.drawText("Invalid session link!");
 		return;
 	}
@@ -55,6 +55,7 @@ function Session(ui,color1,color2) {
 	
 	 // control flags
 	this.bPlaying = false;
+	this.bSpectating = false;
 	this.bEnded = false;
 	
 	this.field = null;
@@ -68,17 +69,9 @@ function Session(ui,color1,color2) {
 	
 	var that = this;
 	
-	this.socket.on('full', function () {
-	
-		that.ui.info.innerHTML = "";
-		that.ui.sessionUrl.className = "btn btn-primary disabled";
-		that.canvas.drawText("Session is full.");
-		
-	});
-	
 	this.socket.on('init', function (data) {
 		
-		that.ui.sessionUrl.className = "btn btn-primary";
+		that.ui.share.className = "btn btn-primary";
 		
 		that.nextStarter = data.round;
 		
@@ -91,10 +84,17 @@ function Session(ui,color1,color2) {
 		that.bPlaying = data.playing;
 		
 
-		if(!that.online) {
+		if(!that.online) { // local game
 				
 			that.ui.publish.style.display = "none";
-			that.currentSide = data.turn;
+
+			if(data.connections == 1) {
+
+				that.bSpectating = true;
+				that.canvas.drawText("Session is full.","Click to spectate!");
+
+			}
+			else that.currentSide = data.turn;
 			
 			if(data.playing) {
 			
@@ -102,24 +102,25 @@ function Session(ui,color1,color2) {
 				that.player[2].points = data.points[1];
 
 				that.field.stones = data.field;
-				that.field.draw();
+				if(!that.bSpectating) that.field.draw();
 			
 				that.ui.info.innerHTML = "";
+				if(that.bSpectating) that.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0\u00A0"));
 				that.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 				that.ui.info.appendChild(that.player[data.turn].icon);
 
-				that.ui.surrender.className = "btn btn-primary";
+				if(!that.bSpectating) that.ui.surrender.className = "btn btn-primary";
 		
 			}
 			else {
 			
 				that.field.clear();
-				that.canvas.drawText("Click to start!");
+				if(!that.bSpectating) that.canvas.drawText("Click to start!");
 		
 			}
 		}
 		else{
-			
+
 			if(data.playing) {
 
 				that.player[1].points = data.points[0];
@@ -127,7 +128,7 @@ function Session(ui,color1,color2) {
 				that.field.stones = data.field;
 			}
 			
-			if(data.alone) {
+			if(data.connections == 0) {
 			
 				if(data.published) {
 					that.ui.publish.innerHTML = "Published";
@@ -135,9 +136,23 @@ function Session(ui,color1,color2) {
 				}
 				else that.ui.publish.className = "btn btn-primary";
 				that.colorPicker();
+			} 
+			else if(data.connections == 2) {
+
+				that.bSpectating = true;
+				that.mySide = 0;
+				that.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0\u00A0"));
+				if(data.playing) {
+
+					that.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
+					that.ui.info.appendChild(that.player[data.turn].icon);
+
+				}
+				that.canvas.drawText("Session is full.","Click to spectate!");
+
 			}
 				
-		} // if not alone, otherjoined will follow
+		} // if there is one other player connected yet, "otherjoined" message will follow
 		
 	
 		that.canvas.onclick = that.clickHandler.bind(that);
@@ -212,7 +227,7 @@ function Session(ui,color1,color2) {
 		
 		that.ui.info.appendChild(that.player[data.next].icon);
 		that.ui.undo.className = "btn btn-primary disabled";
-		that.ui.surrender.className = "btn btn-primary";
+		if(!that.bSpectating) that.ui.surrender.className = "btn btn-primary";
   	
 	});
 	  
@@ -263,7 +278,7 @@ function Session(ui,color1,color2) {
 		that.ui.publish.className = "btn btn-primary disabled";
 		that.ui.publish.style.backgroundColor = "#428bca";
 		that.ui.surrender.className = "btn btn-primary disabled";
-		that.ui.sessionUrl.className = "btn btn-primary disabled";
+		that.ui.share.className = "btn btn-primary disabled";
 		that.canvas.onclick = null;
 		that.bEnded = false;
 		delete that.mySide;
@@ -279,7 +294,8 @@ function Session(ui,color1,color2) {
 		that.ui.surrender.className = "btn btn-primary disabled";
 		that.mMyTurn = false;
 		that.bEnded = false;
-		that.canvas.drawText("Waiting for opponent ..."); // waiting for another init
+		if(!that.bSpectating) that.canvas.drawText("Waiting for opponent ..."); // waiting for another init
+		else that.canvas.drawText("Player left the game.");
 		
 	});
 	
@@ -329,7 +345,8 @@ function Session(ui,color1,color2) {
 		if(this.online) {
 			
 			this.bMyTurn = (this.nextStarter == this.mySide);
-			this.drawOnlineWinner();
+			if(!this.bSpectating) this.drawOnlineWinner();
+			else this.drawSpectatingWinner();
 		}	
 		else {
 			
@@ -366,6 +383,24 @@ function Session(ui,color1,color2) {
 		msg += this.player[1].points + ":" + this.player[2].points + "]";
 		
 		this.canvas.drawText(msg,"Click to play!");
+		
+		if(this.winner) {
+			var w = this.canvas.width;
+			this.ctx.drawImage(this.winner.icon, w*0.10, w*0.17, w*0.20, w*0.20);
+		}
+		
+	};
+
+	this.drawSpectatingWinner = function() {
+		
+		var msg = "";
+		
+		if(this.winner) msg += "           won! [";
+		else msg += "Draw! [";
+		
+		msg += this.player[1].points + ":" + this.player[2].points + "]";
+		
+		this.canvas.drawText(msg);
 		
 		if(this.winner) {
 			var w = this.canvas.width;
@@ -416,7 +451,16 @@ function Session(ui,color1,color2) {
 	};
 	
 	this.clickHandler = function(event) {
-	
+
+		if(this.bSpectating) {
+
+				this.canvas.onclick = null;
+				if(this.bPlaying) this.field.draw();
+				else this.canvas.drawText("Waiting for player","to start ...");
+				this.socket.emit("spectate",{id: this.sid});
+				return;
+		}
+
 		if(this.online && !this.bMyTurn) return;
 	
 		// mouse position

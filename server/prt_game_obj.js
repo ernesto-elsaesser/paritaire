@@ -1,6 +1,7 @@
 function Session(proto) {
 	
 	this.lastTurn = null; // no undo for stored sessions
+	this.spectators = [];
 	
 	if(proto.wins) { // restore state
 		
@@ -75,7 +76,10 @@ Session.prototype.startGame = function() {
 	
 	this.player[1].send("start",t);
 	
-   	if(this.online) this.player[2].send("start",t);
+   	if(this.online) {
+   		this.player[2].send("start",t);
+   		for(var i in this.spectators) this.spectators[i].emit("start",t);
+   	}
 
     this.nextRound = (this.nextRound == 1 ? 2 : 1);
 };
@@ -122,9 +126,7 @@ Session.prototype.turn = function(side,x,y) {
 	
 	this.lastTurn.points[(side==1?1:0)] = -(d.length-1);
 	
-	this.player[1].send("turn",this.lastTurn);
-	
-   	if(this.online) this.player[2].send("turn",this.lastTurn);
+	this.broadcast("turn",this.lastTurn);
 	
 	return 1;
 };
@@ -162,9 +164,7 @@ Session.prototype.undo = function(side) {
 	this.player[2].points += t.points[1];
 	this.lastTurn = null;
 	
-	this.player[1].send("turn",t);
-	
-   	if(this.online) this.player[2].send("turn",t);
+	this.broadcast("turn",t);
 	
 	return 1;
 
@@ -182,11 +182,19 @@ Session.prototype.surrender = function(side) {
 		next: 0
 	};
 	
-	this.player[1].send("turn",t);
-	
-   	if(this.online) this.player[2].send("turn",t);
+	this.broadcast("turn",t);
 	
 	return 1;
+
+};
+
+Session.prototype.broadcast = function(msg,data) {
+
+	this.player[1].send(msg,data);
+	
+   	if(this.online) this.player[2].send(msg,data);
+   		
+   	for(var i in this.spectators) this.spectators[i].emit(msg,data);
 
 };
 
@@ -221,11 +229,11 @@ Session.prototype.getState = function(dumping) {
 		state.field = this.field.stones;
 		state.points = [this.player[1].points, this.player[2].points];
 	}
-	else if(this.online && this.publicName) {
-		state.published = true;
-	}
+
+	if(this.publicName) state.published = true;
 	
 	if(dumping) {
+		delete state.connections;
 		state.colors = [this.player[1].color, this.player[2].color];
 		state.expire = this.expirationDate;
 		if(this.publicName) {
@@ -233,8 +241,17 @@ Session.prototype.getState = function(dumping) {
 			state.pubdate = this.publicationDate;
 		}
 	}
+	else {
+
+		if(this.player[1].connected || this.player[2].connected) {
+			if(this.player[1].connected && this.player[2].connected) state.connections = 2;
+			else state.connections = 1;
+		} else state.connections = 0;
+
+	}
 		
 	return state;
+	
 };
 
 Session.prototype.isUsed = function() {

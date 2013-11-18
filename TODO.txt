@@ -1,11 +1,11 @@
 Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fÂr gute Note); am besten mit seinem Template
 - jquery.min.map ???
-- theme roller: graue buttons
+- theme roller: graue buttons - farbschema (rot,grün,ränder)
 - info: requires javascript
 - coolerer Colorpicker (Farben diagonal)
 - footer: margin, "eese", impressum page
-- rules: provide info: publication expires after 1 hour
+- dokumentierende Screenshots
 
 Ernesto:
 - socketio websokcet 502
@@ -13,6 +13,14 @@ Ernesto:
 - spectator mode
 - favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
 PROBLEM: favicon wird für domain gecached?
-- "is public" indicator in play.html
+- Supportmatrix: auf Devices/Browsern testen
+- ARCHITEKTURBESCHREIBUNG - 1 Blatt mit Diagramm: Schnittstellen, Komponenten, verwendete Tools ZUR RUNTIME (zB. RWD mit 3 Tools ...)
 
-LIZENZ!
+Someone:
+- Rules page überarbeiten: 
+	info: publication expires after 1 hour
+	sessions link -> "share" button
+
+DOKUMENTE:
+anstatt BEDIENUNGSANLEITUNG: Supportmatrix und Screenshots
+ARCHITEKTURBESCHREIBUNG
