@@ -9,8 +9,7 @@ Sophie:
 
 Ernesto:
 - socketio websokcet 502
-- shell password
-- spectator mode
+- disable shell
 - favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
 PROBLEM: favicon wird für domain gecached?
 - Supportmatrix: auf Devices/Browsern testen

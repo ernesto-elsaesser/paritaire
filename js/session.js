@@ -105,7 +105,7 @@ function Session(ui,color1,color2) {
 				if(!that.bSpectating) that.field.draw();
 			
 				that.ui.info.innerHTML = "";
-				if(that.bSpectating) that.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0\u00A0"));
+				if(that.bSpectating) that.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
 				that.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 				that.ui.info.appendChild(that.player[data.turn].icon);
 
@@ -141,7 +141,7 @@ function Session(ui,color1,color2) {
 
 				that.bSpectating = true;
 				that.mySide = 0;
-				that.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0\u00A0"));
+				that.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
 				if(data.playing) {
 
 					that.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
@@ -213,12 +213,17 @@ function Session(ui,color1,color2) {
   		that.field.update(data.stones); 
   		that.field.draw();
 		
-		if(that.online) {
+		if(that.bSpectating) {
+
+			that.ui.info.appendChild(document.createTextNode("\u00A0Next:\u00A0\u00A0"));
+
+		}
+		else if(that.online) {
 			
 			that.bMyTurn = (data.next == that.mySide);
 			that.ui.info.appendChild(document.createTextNode("\u00A0\u00A0Next:\u00A0\u00A0"));
 		}
-		else {
+		else { // local session
 			
 			that.currentSide = data.next;
 			that.ui.info.innerHTML = "";
@@ -342,11 +347,11 @@ function Session(ui,color1,color2) {
 		
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
 		
-		if(this.online) {
+		if(this.bSpectating) this.drawSpectatingWinner();
+		else if(this.online) {
 			
 			this.bMyTurn = (this.nextStarter == this.mySide);
-			if(!this.bSpectating) this.drawOnlineWinner();
-			else this.drawSpectatingWinner();
+			this.drawOnlineWinner();
 		}	
 		else {
 			

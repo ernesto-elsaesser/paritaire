@@ -74,12 +74,7 @@ Session.prototype.startGame = function() {
 		next:this.nextTurn
 	};
 	
-	this.player[1].send("start",t);
-	
-   	if(this.online) {
-   		this.player[2].send("start",t);
-   		for(var i in this.spectators) this.spectators[i].emit("start",t);
-   	}
+	this.broadcast("start",t);
 
     this.nextRound = (this.nextRound == 1 ? 2 : 1);
 };
