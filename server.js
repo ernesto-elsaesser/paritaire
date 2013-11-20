@@ -6,7 +6,7 @@ var url = require("url");
 var querystring = require("querystring");
 
 // custom modules
-var shell = require('./server/prt_shell');
+//var shell = require('./server/prt_shell'); - uncomment for debugging
 var socket = require('./server/prt_socket');
 var game = require('./server/prt_game_obj');
 
@@ -99,7 +99,11 @@ function onRequest(request,response) {
 		
 		var html = playPage;
 		var s = sessions[requrl.query["id"]];
-		if(s) html = html.replace("#1",s.player[1].color).replace("#2",s.player[2].color);
+
+		if(s) {
+			html = html.replace("#0",s.player[1].color + "_" + s.player[2].color);
+			html = html.replace("#1",s.player[1].color).replace("#2",s.player[2].color);
+		}
 		
 		response.writeHead(200, {"Content-Type": "text/html"});				
 		response.write(html);
@@ -245,4 +249,5 @@ server.listen(80);
 
 socket.attachSocket(server,sessions,publications);
 
-shell.createShell(5001,{s: sessions, p: publications, c: socket.clients, cache: cache});
+// uncomment for debugging
+//shell.createShell(5001,{s: sessions, p: publications, c: socket.clients, cache: cache});
