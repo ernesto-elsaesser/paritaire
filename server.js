@@ -164,9 +164,8 @@ function onRequest(request,response) {
 			response.write(doc);
 		}
 		else {
-			log("http: returned 404");
-			response.writeHead(404);
-			response.write(cache["/404"]);
+			log("http: - 404 page not found");
+			response.writeHead(302, {'Location': 'http://paritaire.servegame.com/404.html'});
 		}
 		
 		response.end();
