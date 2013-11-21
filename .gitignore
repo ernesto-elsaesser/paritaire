@@ -1,5 +1,8 @@
 # ignore session data
-sessions/*.php
+sessions.dump
+
+# ignore node modules
+node_modules/*
 
 # Ignore compiled docs
 _gh_pages
