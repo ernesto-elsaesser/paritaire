@@ -8,12 +8,11 @@ Sophie:
 - dokumentierende Screenshots
 
 Ernesto:
-- socketio websokcet 502
 - Supportmatrix: auf Devices/Browsern testen
 - ARCHITEKTURBESCHREIBUNG - 1 Blatt mit Diagramm: Schnittstellen, Komponenten, verwendete Tools ZUR RUNTIME (zB. RWD mit 3 Tools ...)
 
 Someone:
-- Rules page überarbeiten: 
+- Rules page überarbeiten:
 	info: publication expires after 1 hour
 	sessions link -> "share" button
 
