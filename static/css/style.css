@@ -106,8 +106,11 @@ body {
 }
 
 #surrender {
-
 	background-color: red;
+}
+
+#win-ratio {
+	
 }
 
 /* navbar */

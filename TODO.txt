@@ -3,7 +3,6 @@ Sophie:
 - jquery.min.map ???
 - theme roller: graue buttons - farbschema (rot,grün,ränder)
 - info: requires javascript
-- coolerer Colorpicker (Farben diagonal)
 - footer: margin, "eese", impressum page
 - dokumentierende Screenshots
 
