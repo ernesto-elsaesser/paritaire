@@ -210,7 +210,8 @@ function Session(ui,color1,color2) {
 		
   		that.bPlaying = true;
   		that.field.clear();
-  		that.field.update(data.stones); 
+  		that.field.update(data.stones);
+		that.field.highlighted = null;
   		that.field.draw();
 		
 		if(that.bSpectating) {

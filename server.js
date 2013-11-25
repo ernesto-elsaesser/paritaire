@@ -1,6 +1,5 @@
 // node.js modules
 var http = require("http");
-var net = require("net");
 var fs = require("fs");
 var url = require("url");
 var querystring = require("querystring");
@@ -206,9 +205,9 @@ setInterval(cleanPublications,900000); // every 15 minutes
 
 var server = http.createServer(onRequest);
 
-server.listen(80);
-
 socket.attachSocket(server,sessions,publications);
+
+server.listen(80);
 
 // uncomment for debugging
 shell.createShell(5001,{s: sessions, p: publications, c: socket.clients});
