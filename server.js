@@ -73,6 +73,7 @@ function onRequest(request,response) {
 			params += data; // TODO: 1e6 anti flooding
 			});
 		request.on("end", function() {
+		
 			var id = (new Date()).getTime();
 			sessions[id] = new game.Session(querystring.parse(params)); // create new session from post data
 			if(sessions[id]) {
@@ -164,6 +165,8 @@ function onRequest(request,response) {
 			var mime = mimeTypes[ext];
 			if(mime == undefined) mime = "text/" + ext;
 			
+			log("http: - sent " + doc.length + " byte");
+			
 			response.writeHead(200, {"Content-Type": mime});
 			response.write(doc);
 		}
@@ -250,4 +253,5 @@ server.listen(80);
 socket.attachSocket(server,sessions,publications);
 
 // uncomment for debugging
-//shell.createShell(5001,{s: sessions, p: publications, c: socket.clients, cache: cache});
+shell.createShell(5001,{s: sessions, p: publications, c: socket.clients, cache: cache});
+log("shell: running on port 5001");
