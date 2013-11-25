@@ -118,8 +118,10 @@ function onRequest(request,response) {
 	default:
 	
 		fileserver.serve(request, response,  function (e, res) {
-            if (e && (e.status === 404)) { // If the file wasn't found
-                fileserver.serveFile('/404.html', 404, {}, request, response);
+            if (e) {
+			
+				log ("http: file server status " + e.status);
+				if (e.status === 404)) fileserver.serveFile('/404.html', 404, {}, request, response);
             }
         });
 		
