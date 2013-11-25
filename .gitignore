@@ -1,5 +1,5 @@
 # ignore session data
-sessions/*.php
+sessions.dump
 
 # Ignore compiled docs
 _gh_pages

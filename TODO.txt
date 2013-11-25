@@ -1,9 +1,11 @@
 Sophie:
-- Licences Dokumentieren (Punkt aus seiner Excel f혺r gute Note); am besten mit seinem Template
+- Licences Dokumentieren (Punkt aus seiner Excel f횂혺r gute Note); am besten mit seinem Template
 - jquery.min.map ???
-- theme roller: graue buttons
+- theme roller: graue buttons - farbschema (rot,gr체n,r채nder)
 - info: requires javascript
 - coolerer Colorpicker (Farben diagonal)
+- footer: margin, "eese", impressum page
+- dokumentierende Screenshots
 
 Notiz: 
 	- orange: e18336
@@ -16,21 +18,14 @@ Notiz:
 
 
 Ernesto:
-- undo
-- socketio websokcet 502
-- timeout timer
-- shell password
-- spectator mode
-- keep public list on restart
-- favicon ist in play die Spielerfarbe (bei local beide farben); ueberall sonst ist es das allg. icon.png
-- Delete session button
-- Give up button
+- Supportmatrix: auf Devices/Browsern testen
+- ARCHITEKTURBESCHREIBUNG - 1 Blatt mit Diagramm: Schnittstellen, Komponenten, verwendete Tools ZUR RUNTIME (zB. RWD mit 3 Tools ...)
 
-LIZENZ!
+Someone:
+- Rules page 체berarbeiten:
+	info: publication expires after 1 hour
+	sessions link -> "share" button
 
-
-Allg. Sachen?
-- sollen Farben 둵derbar sein?
-- kann man bei jedem neuen spiel einer session die spielfeldgr슙e wieder 둵dern?
-- soll Game Mode (online/local) 둵derbar sein? Wenn ja, wer darf?
-- public session nach 1h/xxh... l쉝chen, damit keine Leichen da rumliegen?
+DOKUMENTE:
+anstatt BEDIENUNGSANLEITUNG: Supportmatrix und Screenshots
+ARCHITEKTURBESCHREIBUNG

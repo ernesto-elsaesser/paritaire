@@ -12,23 +12,29 @@ var game = require('./server/prt_game_obj');
 
 // global variables
 var sessions = {};
-var publicSessions = {};
+var publications = {};
 
 if(fs.existsSync("sessions.dump")) {// try to load old sessions
-	
+
 		var dump = JSON.parse(String(fs.readFileSync("sessions.dump")));
-			
+		var c = 0;
+
 		for(var id in dump) {
 			
-			sessions[id] = new game.Session(id,dump[id]);
+			sessions[id] = new game.Session(dump[id]);
+			if(dump[id].pubname) publications[id] = sessions[id];
+			c++;
 			
 		}
+
+
+		log("init: restored " + c + " session(s).");
 	}
 
 var cache = {
-	"/new": fs.readFileSync("new.html"),
-	"/rules": fs.readFileSync("rules.html"),
-	"/404": fs.readFileSync("404.html")
+	"/new": fs.readFileSync("new.html",{encoding:"utf8"}),
+	"/rules": fs.readFileSync("rules.html",{encoding:"utf8"}),
+	"/404": fs.readFileSync("404.html",{encoding:"utf8"})
 	};
 
 var indexPage = String(fs.readFileSync("index.html"));
@@ -67,8 +73,9 @@ function onRequest(request,response) {
 			params += data; // TODO: 1e6 anti flooding
 			});
 		request.on("end", function() {
+		
 			var id = (new Date()).getTime();
-			sessions[id] = new game.Session(id,querystring.parse(params)); // create new session from post data
+			sessions[id] = new game.Session(querystring.parse(params)); // create new session from post data
 			if(sessions[id]) {
 				
 				log("created new session (" + id + "): " + params);
@@ -93,7 +100,11 @@ function onRequest(request,response) {
 		
 		var html = playPage;
 		var s = sessions[requrl.query["id"]];
-		if(s) html = html.replace("#1",s.player[1].color).replace("#2",s.player[2].color);
+
+		if(s) {
+			html = html.replace("#0",s.player[1].color + "_" + s.player[2].color);
+			html = html.replace("#1",s.player[1].color).replace("#2",s.player[2].color);
+		}
 		
 		response.writeHead(200, {"Content-Type": "text/html"});				
 		response.write(html);
@@ -108,8 +119,8 @@ function onRequest(request,response) {
 		var html = (path == "/" ? indexPage : publicPage);
 		var list = "";
 		
-		for(var i in publicSessions) {
-			list += '<a href="/play?id=' + publicSessions[i].id + '" class="list-group-item">' + publicSessions[i].publicName + '</a>';
+		for(var id in publications) {
+			list += '<a href="/play?id=' + id + '" class="list-group-item">' + publications[id].publicName + '</a>';
 		}
 		
 		if(list == "") list = '<a href="#" class="list-group-item">No public sessions.</a>';
@@ -154,13 +165,14 @@ function onRequest(request,response) {
 			var mime = mimeTypes[ext];
 			if(mime == undefined) mime = "text/" + ext;
 			
+			log("http: - sent " + doc.length + " byte");
+			
 			response.writeHead(200, {"Content-Type": mime});
 			response.write(doc);
 		}
 		else {
-			log("returned 404");
-			response.writeHead(404);
-			response.write(cache["/404"]);
+			log("http: - 404 page not found");
+			response.writeHead(302, {'Location': 'http://paritaire.servegame.com/404.html'});
 		}
 		
 		response.end();
@@ -174,6 +186,40 @@ function log(msg) {
 	
 }
 
+function cleanSessions() {
+
+	log("cleanup: checking for expired sessions.");
+
+	var now = (new Date()).getDate();
+
+	for(var s in sessions) {
+
+		if(now == sessions[s].expirationDate) {
+
+			log("cleanup: session " + sessions[s].id + " expired.");
+			delete sessions[s];
+		}
+	}
+}
+
+function cleanPublications() {
+
+	log("cleanup: checking for expired publications.");
+
+	var deadline = (new Date()).getTime() - 3600000;
+
+	for(var id in publications) {
+
+		if(publications[id].publicationDate < deadline) {
+
+			log("cleanup: publication '" + publications[id].publicName + "' of ssession " + id + " expired.");
+			publications[id].unpublish();
+			delete publications[id];
+			// TODO: inform publisher?
+		}
+	}
+}
+
 function shutdown() {
 	
 	log("shutdown - dumping sessions.");
@@ -183,10 +229,10 @@ function shutdown() {
 	for(var id in sessions) {
 		sessions[id].player[1].disconnect();
 		sessions[id].player[2].disconnect();
-		dump += '"' + id + '":' + JSON.stringify(sessions[id].getState(true)) + ",";
+		dump += '"' + id + '":' + JSON.stringify(sessions[id].getState(true)) + ",\n";
 	}
 	
-	dump = "{" + dump.substr(0,dump.length-1) + "}";
+	dump = "{" + dump.substr(0,dump.length-2) + "}";
 	
 	fs.writeFileSync("sessions.dump", dump);
 	
@@ -197,10 +243,15 @@ function shutdown() {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
+setInterval(cleanSessions,86400000); // every 24 hours
+setInterval(cleanPublications,900000); // every 15 minutes
+
 var server = http.createServer(onRequest);
 
 server.listen(80);
 
-socket.attachSocket(server,sessions,publicSessions);
+socket.attachSocket(server,sessions,publications);
 
-shell.createShell(5001,{s: sessions, ps: publicSessions, c: socket.clients, cache: cache});
+// uncomment for debugging
+shell.createShell(5001,{s: sessions, p: publications, c: socket.clients, cache: cache});
+log("shell: running on port 5001");

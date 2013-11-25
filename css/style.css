@@ -111,6 +111,10 @@ body {
 	height: 44px;
 }
 
+#surrender {
+
+	background-color: red;
+}
 
 /* navbar */
 
@@ -121,6 +125,7 @@ body {
 .navbar-collapse {
 	float: right;
 	padding-left: 0;
+	padding-right: 5px;
 	border: 0;
 }
 

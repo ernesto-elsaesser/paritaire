@@ -93,23 +93,22 @@ function createCanvas(container) {
 	
 	canvas.height = canvas.width; // TODO: change for non-square fields
 	
-	canvas.drawText = function (text) {
+	canvas.drawText = function (text, moretext) {
 		
 		var ctx = this.getContext("2d");
 		var fontsize = parseInt(ctx.font.substr(0,2));
+
+		ctx.textAlign = "center";
 		
 		ctx.fillStyle = "#FFF";
 		ctx.fillRect(0,0,this.width,this.height);
 		
 		ctx.fillStyle = "#000";
-		var x = (this.width / 2) - (fontsize * 0.22 * text.length);
+		var x = (this.width / 2); // - (fontsize * 0.22 * text.length);
 		var y = this.height * 0.3;
 		ctx.fillText(text,x,y);
 		
-		if(arguments[1]) {
-			var x2 = (this.width / 2) - (fontsize * 0.22 * arguments[1].length);
-			ctx.fillText(arguments[1],x2,y*2);
-		}
+		if(moretext) ctx.fillText(moretext,x,y*2);
 		
 		this.lastText = text;
 		
