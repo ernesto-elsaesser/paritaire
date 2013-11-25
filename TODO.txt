@@ -5,6 +5,7 @@ Sophie:
 - info: requires javascript
 - footer: margin, "eese", impressum page
 - dokumentierende Screenshots
+- Public list: header andersfarbig, auf public.html seitlicher margin (als row?)
 
 Notiz: 
 	- orange: e18336
@@ -18,6 +19,7 @@ Notiz:
 
 Ernesto:
 - Supportmatrix: auf Devices/Browsern testen
+- IE Metro canvas size
 - ARCHITEKTURBESCHREIBUNG - 1 Blatt mit Diagramm: Schnittstellen, Komponenten, verwendete Tools ZUR RUNTIME (zB. RWD mit 3 Tools ...)
     2 kästchen 
 - Installationsanleitung
