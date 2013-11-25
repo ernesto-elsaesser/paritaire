@@ -32,9 +32,9 @@ if(fs.existsSync("sessions.dump")) {// try to load old sessions
 	}
 
 var cache = {
-	"/new": fs.readFileSync("new.html"),
-	"/rules": fs.readFileSync("rules.html"),
-	"/404": fs.readFileSync("404.html")
+	"/new": fs.readFileSync("new.html",{encoding:"utf8"}),
+	"/rules": fs.readFileSync("rules.html",{encoding:"utf8"}),
+	"/404": fs.readFileSync("404.html",{encoding:"utf8"})
 	};
 
 var indexPage = String(fs.readFileSync("index.html"));
@@ -151,7 +151,7 @@ function onRequest(request,response) {
 				file = path.substr(1,path.length); // strip "/" at start
 			
 				if(fs.existsSync(file)) {
-					doc = fs.readFileSync(file);
+					doc = fs.readFileSync(file,{encoding:"utf8"});
 					cache[path] = doc;
 				}
 				else bRespond = false;
