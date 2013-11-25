@@ -7,6 +7,16 @@ Sophie:
 - footer: margin, "eese", impressum page
 - dokumentierende Screenshots
 
+Notiz: 
+	- orange: e18336
+	- blau: 3d70b7
+	- rot: bd3434
+	- grün: 459f28
+	- cyan: 4bc5d0
+	- gelb: c8b439
+	- lila: 843fbd
+
+
 Ernesto:
 - Supportmatrix: auf Devices/Browsern testen
 - ARCHITEKTURBESCHREIBUNG - 1 Blatt mit Diagramm: Schnittstellen, Komponenten, verwendete Tools ZUR RUNTIME (zB. RWD mit 3 Tools ...)
