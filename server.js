@@ -4,11 +4,12 @@ var net = require("net");
 var fs = require("fs");
 var url = require("url");
 var querystring = require("querystring");
+var ns = require('node-static');
 
 // custom modules
-var shell = require('./server/prt_shell');
-var socket = require('./server/prt_socket');
-var game = require('./server/prt_game_obj');
+var shell = require('./modules/prt_shell');
+var socket = require('./modules/prt_socket');
+var game = require('./modules/prt_game_obj');
 
 // global variables
 var sessions = {};
@@ -31,30 +32,11 @@ if(fs.existsSync("sessions.dump")) {// try to load old sessions
 		log("init: restored " + c + " session(s).");
 	}
 
-var cache = {
-	"/new": fs.readFileSync("new.html",{encoding:"utf8"}),
-	"/rules": fs.readFileSync("rules.html",{encoding:"utf8"}),
-	"/404": fs.readFileSync("404.html",{encoding:"utf8"})
-	};
+var indexPage = String(fs.readFileSync("index.html",{encoding:"utf8"}));
+var publicPage = String(fs.readFileSync("public.html",{encoding:"utf8"}));
+var playPage = String(fs.readFileSync("play.html",{encoding:"utf8"}));
 
-var indexPage = String(fs.readFileSync("index.html"));
-var publicPage = String(fs.readFileSync("public.html"));
-var playPage = String(fs.readFileSync("play.html"));
-
-var filters = [ 
-	new RegExp(".+\/$"),
-	new RegExp("server","i"),
-	new RegExp("sessions.dump","i")
-	];
-	
-var mimeTypes = {
-	"html": "text/html",
-	"js": "text/javascript",
-	"png": "image/png",
-	"css": "text/css",
-	"/new": "text/html",
-	"/rules": "text/html"
-	};
+var fileserver = new ns.Server('./static');
 
 // web server callback
 function onRequest(request,response) {
@@ -134,7 +116,14 @@ function onRequest(request,response) {
 		break;
 		
 	default:
+	
+		fileserver.serve(request, response,  function (e, res) {
+            if (e && (e.status === 404)) { // If the file wasn't found
+                fileserver.serveFile('/404.html', 404, {}, request, response);
+            }
+        });
 		
+		/*
 		var bRespond = true;
 		
 		for(var i in filters) { // url filter
@@ -175,7 +164,9 @@ function onRequest(request,response) {
 			response.writeHead(302, {'Location': 'http://paritaire.servegame.com/404.html'});
 		}
 		
+		*/
 		response.end();
+		
 	}
 }
 
