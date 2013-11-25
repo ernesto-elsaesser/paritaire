@@ -244,5 +244,5 @@ server.listen(80);
 socket.attachSocket(server,sessions,publications);
 
 // uncomment for debugging
-shell.createShell(5001,{s: sessions, p: publications, c: socket.clients, cache: cache});
+shell.createShell(5001,{s: sessions, p: publications, c: socket.clients});
 log("shell: running on port 5001");
