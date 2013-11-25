@@ -37,7 +37,7 @@
 		
       <div class="row">
         
-		  
+			<div id="feedback" class="alert alert-info">Javascript disabled!</div>
 		  
        </div>
 
@@ -55,14 +55,18 @@
 	
 	<script type="text/javascript">
 	
+		var feed = document.getElementById("feedback");
+		
+		feed.innerHTML = "";
+	
 		var connection = new WebSocket('ws://paritaire.servegame.com/socket.io/1/websocket/pwBk8RbrCP-o97NDrY7S');
 		
 		connection.onopen = function () {
-			alert("websocket onopen");
+			feed.innerHTML = "Websocket: connected.";
 		};
 
 		connection.onerror = function (error) {
-			alert("websocket onerror");
+			feed.innerHTML = "Websocket: failed.";
 		};
 	
 	</script>
