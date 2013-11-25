@@ -245,13 +245,8 @@ function Session(ui,color1,color2) {
 		// update field	
 		that.field.update(data.stones); 
 		that.field.draw();
-		
-		var turn = data.stones[data.stones.length-1];
 
-		if(turn) { // on surrender turns, stones is empty
-
-			// highlight placed stone
-			that.field.highlight(turn.x,turn.y); 
+		if(data.stones.length) { // on surrender turns, stones is empty
 			
 			if(that.online && turn.s != that.mySide) {
 				that.ui.undo.className = "btn btn-primary disabled";

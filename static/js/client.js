@@ -27,6 +27,7 @@ function Field(refSession,columnNum,rowNum)
 	this.xsize = columnNum;
 	this.ysize = rowNum;
 	this.future = []; // future turn positions
+	this.highlighted = null;
 	
 	this.imgs = [img0, this.session.player[1].img, this.session.player[2].img, img3];
 	
@@ -42,15 +43,22 @@ function Field(refSession,columnNum,rowNum)
 			for (var y = 0; y < this.ysize; y++)
 					this.stones[x][y] = 0;
 		}
+		
+		this.highlighted = null;
 	
 	};
 	
 	this.update = function(data) {
 		
+		if(data.length == 0) return;
+		
 		for (var i in data) {
 			
 			var t = data[i];
 			this.stones[t.x][t.y] = t.s;
+			
+			if(i == (data.length-1)) 
+				this.highlighted = [t.x,t.y];
 		}
 		
 	};
@@ -64,13 +72,10 @@ function Field(refSession,columnNum,rowNum)
 			for (var y = 0; y < this.ysize; y++)
 				this.session.ctx.drawImage(this.imgs[this.stones[x][y]], x * side, y * side, side, side);
 		}
-	};
-	
-	this.highlight = function(x,y) {
 		
-		var side = this.session.canvas.width / this.xsize;
-		// TODO: non-square field?
-		this.session.ctx.drawImage(this.imgs[3], x * side, y * side, side, side);
+		// draw highlight
+		if(this.highlighted)
+			this.session.ctx.drawImage(this.imgs[3], this.highlighted[0] * side, this.highlighted[1] * side, side, side);
 	};
 	
 	return true;
