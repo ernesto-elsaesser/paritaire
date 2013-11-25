@@ -95,7 +95,6 @@ function onRequest(request,response) {
 		break;
 	
 	case "/":
-	case "/public":
 	case "/public.html":
 		
 		var html = (path == "/" ? indexPage : publicPage);
