@@ -6,7 +6,7 @@ var url = require("url");
 var querystring = require("querystring");
 
 // custom modules
-var shell = require('./server/prt_shell'); - uncomment for debugging
+var shell = require('./server/prt_shell');
 var socket = require('./server/prt_socket');
 var game = require('./server/prt_game_obj');
 
