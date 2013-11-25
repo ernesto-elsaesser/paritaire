@@ -151,7 +151,7 @@ function onRequest(request,response) {
 				file = path.substr(1,path.length); // strip "/" at start
 			
 				if(fs.existsSync(file)) {
-					doc = fs.readFileSync(file,{encoding:"utf8"});
+					doc = fs.readFileSync(file);
 					cache[path] = doc;
 				}
 				else bRespond = false;
