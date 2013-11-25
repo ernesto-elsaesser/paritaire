@@ -121,7 +121,7 @@ function onRequest(request,response) {
             if (e) {
 			
 				log ("http: file server status " + e.status);
-				if (e.status === 404)) fileserver.serveFile('/404.html', 404, {}, request, response);
+				if (e.status === 404) fileserver.serveFile('/404.html', 404, {}, request, response);
             }
         });
 		
