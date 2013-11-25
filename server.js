@@ -119,57 +119,14 @@ function onRequest(request,response) {
 		request.addListener('end', function () {
 		
 			fileserver.serve(request, response,  function (e, res) {
-				if (e) {
+				if (e && e.status === 404) {
 			
-					log ("http: file server status " + e.status);
-					if (e.status === 404) fileserver.serveFile('/404.html', 404, {}, request, response);
+					log ("http: - 404 page not found");
+					fileserver.serveFile('/404.html', 404, {}, request, response);
 				}
 			});
 			
 		}).resume();
-		
-		/*
-		var bRespond = true;
-		
-		for(var i in filters) { // url filter
-			
-			if(path.match(filters[i])) bRespond = false;
-		}
-		
-		if(bRespond) {
-			
-			var doc = cache[path];
-		
-			if(doc == undefined) { // document not in cache
-			
-				file = path.substr(1,path.length); // strip "/" at start
-			
-				if(fs.existsSync(file)) {
-					doc = fs.readFileSync(file);
-					cache[path] = doc;
-				}
-				else bRespond = false;
-			}
-		}
-
-		if(bRespond) {
-			// mime type
-			var frags = path.split(".");
-			var ext = frags[frags.length-1];
-			var mime = mimeTypes[ext];
-			if(mime == undefined) mime = "text/" + ext;
-			
-			log("http: - sent " + doc.length + " byte");
-			
-			response.writeHead(200, {"Content-Type": mime});
-			response.write(doc);
-		}
-		else {
-			log("http: - 404 page not found");
-			response.writeHead(302, {'Location': 'http://paritaire.servegame.com/404.html'});
-		}
-		
-		*/
 		
 	}
 }
@@ -177,7 +134,13 @@ function onRequest(request,response) {
 function log(msg) {
 	
 	var d = new Date();
-	console.log((1900+d.getYear()) + "/" + (1+d.getMonth()) + "/" + d.getDate() + "-" + d.getHours() + ":" + d.getMinutes()  + " " + msg);
+	
+	var h = d.getHours();
+	if(h < 10) h = "0" + h;
+	var m = d.getMinutes();
+	if(m < 10) m = "0" + m;
+	
+	console.log((1900+d.getYear()) + "/" + (1+d.getMonth()) + "/" + d.getDate() + "-" + h + ":" + m  + " " + msg);
 	
 }
 
