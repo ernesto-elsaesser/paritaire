@@ -97,6 +97,12 @@ body {
 
 /* play.html */
 
+#play-game-stat > div {
+	border: 1px solid green;
+	margin: 7px;
+	width: 30px;
+}
+
 #play-main #info{
 	width: 200px;
 	padding: 2px;

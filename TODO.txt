@@ -5,6 +5,16 @@ Sophie:
 - info: requires javascript
 - coolerer Colorpicker (Farben diagonal)
 
+Notiz: 
+	- orange: e18336
+	- blau: 3d70b7
+	- rot: bd3434
+	- grün: 459f28
+	- cyan: 4bc5d0
+	- gelb: c8b439
+	- lila: 843fbd
+
+
 Ernesto:
 - undo
 - socketio websokcet 502
