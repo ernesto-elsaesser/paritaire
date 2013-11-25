@@ -150,7 +150,7 @@ Session.prototype.undo = function(side) {
 	
 	var t = {stones: stones,
 		points: this.lastTurn.points.map(function(a){return -a;}),
-		side: this.lastTurn.side,
+		side: 0, // indicates undo turn
 		next: this.lastTurn.side
 	};
 	

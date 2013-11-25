@@ -247,16 +247,16 @@ function Session(ui,color1,color2) {
 		that.field.update(data.stones); 
 		that.field.draw();
 
-		if(data.stones.length) { // on surrender turns, stones is empty
+		if(data.stones.length) { // regular turn
 			
-			if(that.online && turn.s != that.mySide) {
+			if(that.online && data.side != that.mySide) {
 				that.ui.undo.className = "btn btn-primary disabled";
 			}
-			else if(turn.s != 0){ // if not already an undo turn
+			else if(data.side != 0){ // if not already an undo turn
 				that.ui.undo.className = "btn btn-primary";
 			}
 		}
-		else { // surrendered
+		else { // surrender turn
 
 			that.player[data.side].points = 0;
 			that.player[(data.side == 1 ? 2 : 1)].points = that.field.xsize * that.field.ysize;
