@@ -154,7 +154,7 @@ Session.prototype.undo = function(side) {
 		next: this.lastTurn.side
 	};
 	
-	this.nextTurn = t.side;
+	this.nextTurn = this.lastTurn.side;
 	this.player[1].points += t.points[0];
 	this.player[2].points += t.points[1];
 	this.lastTurn = null;
