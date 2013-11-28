@@ -113,6 +113,12 @@ body {
 	
 }
 
+#canvas-container {
+
+	margin: 0;
+	padding: 0;
+}
+
 /* navbar */
 
 .navbar-header {
