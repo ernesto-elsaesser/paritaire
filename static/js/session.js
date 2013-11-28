@@ -14,7 +14,7 @@ function Session(ui,color1,color2) {
 
 	this.resizeCanvas = function() {
 	
-		var w = this.ui.main.clientWidth - 30;
+		var w = this.ui.main.clientWidth;
 		this.canvas.width = w;
 		this.canvas.height = w; // TODO: change for non-square fields
 		this.ctx.font = Math.floor(w/12) + "px Georgia";
