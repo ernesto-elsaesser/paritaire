@@ -59,7 +59,8 @@
         
         <script type="text/javascript">
 			
-			$( document ).ready(function() {
+			function loadRatioBar(winsPl1, winsPl2) {
+
     			color = new Array();
 				color["blue"] = "#3d70b7";
 				color["cyan"] = "#4bc5d0";
@@ -72,9 +73,15 @@
 				cl1 = session.player[1].color;
 				cl2 = session.player[2].color;
 	
+				ratio = winsPl1 / (winsPl1 + winsPl2) * 100;	
+
 				document.getElementById("pl1-ratio").style.backgroundColor = color[cl1];
 				document.getElementById("pl2-ratio").style.backgroundColor = color[cl2];
-			});
+				document.getElementById("pl1-ratio").width = "" + ratio + "%";
+			}
+
+			
+
 		</script>
         
         <div id="play-side" class="col-md-6">
