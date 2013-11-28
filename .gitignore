@@ -1,3 +1,5 @@
+.metadata
+
 # ignore session data
 sessions.dump
 
