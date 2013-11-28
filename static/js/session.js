@@ -453,8 +453,10 @@ function Session(ui,color1,color2) {
 
 	this.updateRatioBar = function() {
 
-		var ratio = this.player[1].wins / (this.player[1].wins + this.player[2].wins) * 100;
-		this.ui.ratiocol1.style.width = ratio + "%";
+		//var ratio = this.player[1].wins / (this.player[1].wins + this.player[2].wins) * 100;
+		var d = this.player[1].wins - this.player[2].wins;
+		var w = 100 / (1 + Math.pow(Math.E, (-0.5 * d)));
+		this.ui.ratiocol1.style.width = w + "%";
 
 	}
 	
