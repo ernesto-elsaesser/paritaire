@@ -110,7 +110,34 @@ body {
 }
 
 #win-ratio {
-	
+        position: relative;
+}
+
+
+
+#pl1-ratio {
+        background-color: #bd3434;
+        height: 100%;
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        z-index: -1;
+}
+
+#pl2-ratio {
+        background-color: #3d70b7;
+        height: 100%;
+        position: absolute;
+        top: 0px;
+        width: 50%;
+        z-index: -1;
+}
+
+#ratio-bar {
+        display: block;
+        height: 100%;
+        max-height: 50px;
+        width: 100%;
 }
 
 #canvas-container {
