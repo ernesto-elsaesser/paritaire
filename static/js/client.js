@@ -85,8 +85,7 @@ function createCanvas(container) {
 
 	var canvas = document.createElement('canvas');
 	
-	canvas.width  = container.clientWidth - 30;
-	
+	canvas.width  = container.clientWidth;
 	canvas.height = canvas.width; // TODO: change for non-square fields
 	
 	canvas.drawText = function (text, moretext) {
