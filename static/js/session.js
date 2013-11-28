@@ -88,8 +88,8 @@ function Session(ui,color1,color2) {
 		that.player[1].wins = data.wins[0];
 		that.player[2].wins = data.wins[1];
 
-		that.ui.ratio-col1.style.backgroundColor = that.player[1].color;
-		that.ui.ratio-col2.style.backgroundColor = that.player[2].color;
+		that.ui.ratiocol1.style.backgroundColor = that.player[1].color;
+		that.ui.ratiocol2.style.backgroundColor = that.player[2].color;
 		that.updateRatioBar();
 		
 		that.online = data.online;
@@ -454,7 +454,7 @@ function Session(ui,color1,color2) {
 	this.updateRatioBar = function() {
 
 		var ratio = this.player[1].wins / (this.player[1].wins + this.player[2].wins) * 100;
-		this.ui.ratio-col1.style.width = ratio + "%";
+		this.ui.ratiocol1.style.width = ratio + "%";
 
 	}
 	
