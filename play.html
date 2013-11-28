@@ -51,7 +51,7 @@
             <!-- by default at 50%:50%, only changes on function call -->
 	        <div id="win-ratio">
 	        	<img alt="" src="img/bar.png" id="ratio-bar">
-	            <div id="pl1-ratio"></div>
+				<div id="pl1-ratio"></div>
 	            <div id="pl2-ratio"></div>
 	        </div>
                
@@ -77,7 +77,9 @@
 
 				document.getElementById("pl1-ratio").style.backgroundColor = color[cl1];
 				document.getElementById("pl2-ratio").style.backgroundColor = color[cl2];
-				document.getElementById("pl1-ratio").width = "" + ratio + "%";
+				document.getElementById("pl1-ratio").style.width = "" + ratio + "%";
+				document.getElementById("wins1").innerHTML = "winsPl1";
+				document.getElementById("wins2").innerHTML = "winsPl2";
 			}
 
 			
