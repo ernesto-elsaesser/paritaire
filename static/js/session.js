@@ -455,7 +455,7 @@ function Session(ui,color1,color2) {
 
 		//var ratio = this.player[1].wins / (this.player[1].wins + this.player[2].wins) * 100;
 		var d = this.player[1].wins - this.player[2].wins;
-		var w = 100 / (1 + Math.pow(Math.E, (-0.5 * d)));
+		var w = 100 / (1 + Math.pow(Math.E, (-0.3 * d)));
 		this.ui.ratiocol1.style.width = w + "%";
 
 	}
