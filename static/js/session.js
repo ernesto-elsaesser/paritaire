@@ -88,8 +88,8 @@ function Session(ui,color1,color2) {
 		that.player[1].wins = data.wins[0];
 		that.player[2].wins = data.wins[1];
 
-		that.ui.ratiocol1.style.backgroundColor = that.player[1].color;
-		that.ui.ratiocol2.style.backgroundColor = that.player[2].color;
+		that.ui.ratiocol1.style.backgroundColor = that.colorList[that.player[1].color];
+		that.ui.ratiocol2.style.backgroundColor = that.colorList[that.player[2].color];
 		that.updateRatioBar();
 		
 		that.online = data.online;
