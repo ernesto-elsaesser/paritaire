@@ -59,7 +59,7 @@
         
         <script type="text/javascript">
 			
-			function loadRatioBar(winsPl1, winsPl2) {
+			function updateRatioBar(winsPl1, winsPl2) {
 
     			color = new Array();
 				color["blue"] = "#3d70b7";
@@ -78,8 +78,6 @@
 				document.getElementById("pl1-ratio").style.backgroundColor = color[cl1];
 				document.getElementById("pl2-ratio").style.backgroundColor = color[cl2];
 				document.getElementById("pl1-ratio").style.width = "" + ratio + "%";
-				document.getElementById("wins1").innerHTML = "winsPl1";
-				document.getElementById("wins2").innerHTML = "winsPl2";
 			}
 
 			
