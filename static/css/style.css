@@ -117,7 +117,7 @@ body {
         height: 100%;
         position: absolute;
         top: 0px;
-        width: 100%;
+        width: 50%;
         z-index: -2;
 }
 
@@ -125,7 +125,7 @@ body {
         height: 100%;
         position: absolute;
         top: 0px;
-        width: 50%;
+        width: 100%;
         z-index: -1;
 }
 
