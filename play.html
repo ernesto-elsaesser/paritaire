@@ -57,33 +57,6 @@
                
         </div>
         
-        <script type="text/javascript">
-			
-			function updateRatioBar(winsPl1, winsPl2) {
-
-    			color = new Array();
-				color["blue"] = "#3d70b7";
-				color["cyan"] = "#4bc5d0";
-				color["green"] = "#459f28";
-				color["orange"] = "#e18336";
-				color["red"] = "#bd3434";
-				color["violet"] = "#843fbd";
-				color["yellow"] = "#c8b439";
-	
-				cl1 = session.player[1].color;
-				cl2 = session.player[2].color;
-	
-				ratio = winsPl1 / (winsPl1 + winsPl2) * 100;	
-
-				document.getElementById("pl1-ratio").style.backgroundColor = color[cl1];
-				document.getElementById("pl2-ratio").style.backgroundColor = color[cl2];
-				document.getElementById("pl1-ratio").style.width = "" + ratio + "%";
-			}
-
-			
-
-		</script>
-        
         <div id="play-side" class="col-md-6">
 			
     		  <div class="center">
@@ -129,7 +102,9 @@
 		share: document.getElementById('share'),
     surrender: document.getElementById('surrender'),
 		publish: document.getElementById('publish'),
-		undo: document.getElementById('undo')
+		undo: document.getElementById('undo'),
+    ratio-col1: document.getElementById("pl1-ratio"),
+    ratio-col2: document.getElementById("pl2-ratio")
 	};
 	
 	var session = new Session(ui,"#1","#2");

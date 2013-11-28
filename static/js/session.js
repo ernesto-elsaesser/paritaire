@@ -2,6 +2,14 @@ function Session(ui,color1,color2) {
 
 	// GRAPHICS
 
+	this.colorList = {blue: "#3d70b7",
+				cyan: "#4bc5d0",
+				green: "#459f28",
+				orange: "#e18336",
+				red: "#bd3434",
+				violet: "#843fbd",
+				yellow: "#c8b439" };
+
 	this.ui = ui;
 	this.canvas = createCanvas(this.ui.main);
 	
@@ -79,6 +87,10 @@ function Session(ui,color1,color2) {
 
 		that.player[1].wins = data.wins[0];
 		that.player[2].wins = data.wins[1];
+
+		that.ui.ratio-col1.style.backgroundColor = that.player[1].color;
+		that.ui.ratio-col2.style.backgroundColor = that.player[2].color;
+		that.updateRatioBar();
 		
 		that.online = data.online;
 		that.bPlaying = data.playing;
@@ -340,6 +352,7 @@ function Session(ui,color1,color2) {
 		this.ui.info.removeChild(this.ui.info.childNodes[--n]);
 		this.ui.info.removeChild(this.ui.info.childNodes[--n]);
 		this.ui.surrender.className = "btn btn-primary disabled";
+		this.updateRatioBar();
 		
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
 		
@@ -437,6 +450,13 @@ function Session(ui,color1,color2) {
 		prompt("Permanent link to this session:","http://paritaire.servegame.com/play?id=" + this.sid);
 	
 	};
+
+	this.updateRatioBar = function() {
+
+		var ratio = this.player[1].wins / (this.player[1].wins + this.player[2].wins) * 100;
+		this.ui.ratio-col1.style.width = ratio + "%";
+
+	}
 	
 	this.colorPicker = function() {
 		
