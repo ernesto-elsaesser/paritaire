@@ -120,7 +120,10 @@ function onRequest(request,response) {
 			fileserver.serve(request, response,  function (e, res) {
 				if (e && e.status === 404) {
 			
-					log ("http: - 404 page not found");
+					var ip = request.headers['X-Forwarded-For'];
+					if(!ip) ip = request.connection.remoteAddress;
+
+					log ("http: - 404 page not found (" + ip + ")");
 					fileserver.serveFile('/404.html', 404, {}, request, response);
 				}
 			});
@@ -132,14 +135,7 @@ function onRequest(request,response) {
 
 function log(msg) {
 	
-	var d = new Date();
-	
-	var h = d.getHours();
-	if(h < 10) h = "0" + h;
-	var m = d.getMinutes();
-	if(m < 10) m = "0" + m;
-	
-	console.log((1900+d.getYear()) + "/" + (1+d.getMonth()) + "/" + d.getDate() + "-" + h + ":" + m  + " " + msg);
+	console.log((new Date()).toISOString() + " " + msg);
 	
 }
 
