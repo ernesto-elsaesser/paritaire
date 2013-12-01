@@ -3,9 +3,7 @@ Sophie:
 - jquery.min.map ???
 - theme roller: graue buttons - farbschema (rot,grün,ränder)
 - info: requires javascript
-- footer: margin, "eese", impressum page
 - dokumentierende Screenshots
-- Public list: header andersfarbig, auf public.html seitlicher margin (als row?)
 
 Notiz: 
 	- orange: e18336
