@@ -136,8 +136,8 @@ body {
 
 #more-buttons a {
 
-	float: right;
-	margin-left: 5px;
+	float: left;
+	margin-right: 5px;
 }
 
 #surrender {
@@ -192,14 +192,6 @@ body {
 #chat-messages td:first-child {
 
 	width: 30px;
-
-}
-
-#message-text {
-
-}
-
-#message-send {
 
 }
 
