@@ -281,8 +281,7 @@ function attachSocket(httpServer,sessions,publications) {
 		
 		if(s.online && s.player[1].connected && s.player[2].connected) {
 
-			s.player[1].send("chat",{side: data.side, msg: data.msg});
-			s.player[2].send("chat",{side: data.side, msg: data.msg});
+			s.broadcast("chat",{side: data.side, msg: data.msg});
 			log("CHAT from side " + data.side + " in session " + data.id + " from " + socket.id);
 		}
 
