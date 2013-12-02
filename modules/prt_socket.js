@@ -125,6 +125,7 @@ function attachSocket(httpServer,sessions,publications) {
 			}
     	
 		});
+
 	socket.on("spectate", function(data) {
 
 		var s = sessions[data.id];
@@ -133,6 +134,7 @@ function attachSocket(httpServer,sessions,publications) {
 		if(!s) return; 
 
 		c.session = s;
+		c.side = 0;
 		s.spectators.push(socket);
 
 	});	
@@ -274,7 +276,7 @@ function attachSocket(httpServer,sessions,publications) {
   		var c = clients[socket.id];
   		var s = sessions[data.id];
 		
-		if(c.session != s) return;
+		if(!s || c.session != s) return;
 		if(data.side != 0 && c.side != data.side) return; // side == 0 -> spectator
 		
 		if(s.online && s.player[1].connected && s.player[2].connected) {
@@ -301,7 +303,8 @@ function attachSocket(httpServer,sessions,publications) {
 				
 					if(c.side != 0) {
 
-						s.player[c.side].disconnect();
+						s.player[c.side].disconnect(); // TODO: why is this sometimes 0?
+
 						var other = s.player[(c.side == 1 ? 2 : 1)];
 				
 		        		if(other.connected) { // session was full
