@@ -179,7 +179,7 @@ body {
 
 #chat-messages {
 
-	height: 150px;
+	height: 120px;
 	overflow: auto;
 	margin-bottom: 5px;
 }
