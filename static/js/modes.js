@@ -366,7 +366,7 @@ function OnlineHandler(session) {
 			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.6, w*0.2, w*0.2);
 			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.6, w*0.2, w*0.2);
 		}
-		else if(this.s.bPlaying && !this.waiting) this.field.draw();
+		else if(this.s.bPlaying && !this.waiting) this.s.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
@@ -492,8 +492,8 @@ function SpectatorDecorator(handler) {
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
-	this.sendMessage = h.sendMessage;
-	this.receivedMessage = h.receivedMessage;
+	this.sendMessage = this.h.sendMessage;
+	this.receivedMessage = this.h.receivedMessage;
 
 }
 
