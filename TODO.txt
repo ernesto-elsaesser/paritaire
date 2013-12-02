@@ -2,7 +2,6 @@ Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fÂr gute Note); am besten mit seinem Template
 - jquery.min.map ???
 - theme roller: graue buttons - farbschema (rot,grün,ränder)
-- info: requires javascript
 - dokumentierende Screenshots
 - Gewinn-Count bei/in ratio bar anzeigen
 
@@ -23,10 +22,6 @@ Ernesto:
     2 k�stchen 
 - Installationsanleitung
 
-Someone:
-- Rules page überarbeiten:
-	info: publication expires after 1 hour
-	sessions link -> "share" button
 
 DOKUMENTE:
 anstatt BEDIENUNGSANLEITUNG: Supportmatrix und Screenshots
