@@ -410,7 +410,7 @@ function SpectatorDecorator(handler) {
 		this.s.canvas.onclick = null;
 		if(this.s.bPlaying) this.s.field.draw();
 		else this.s.canvas.drawText("Waiting for player","to start ...");
-		this.s.socket.emit("spectate",{id: s.sid});
+		this.s.socket.emit("spectate",{id: this.s.sid});
 		
 	};
 
