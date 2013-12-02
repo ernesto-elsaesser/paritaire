@@ -395,7 +395,7 @@ function SpectatorDecorator(handler) {
 
 	this.turn = this.h.turn;
 
-	this.published = function(data) {};
+	//this.published = function(data) ...
 
 	this.drawWinner = function() {
 		
