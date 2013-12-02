@@ -160,9 +160,9 @@ function OnlineHandler(session) {
 				}
 				else this.s.ui.publish.className = "btn btn-primary";
 				
-				this.s.canvathis.s.drawText("Choose your color!");
+				this.s.canvas.s.drawText("Choose your color!");
 
-				var w = this.s.canvathis.s.width;
+				var w = this.s.canvas.width;
 		
 				this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.6, w*0.2, w*0.2);
 				this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.6, w*0.2, w*0.2);
@@ -238,9 +238,9 @@ function OnlineHandler(session) {
 		if(!this.s.mySide) {
 			
  			this.s.bMyTurn = false;
-			this.s.mySide = (mx > (this.s.canvathis.s.clientWidth / 2) ? 2 : 1);
+			this.s.mySide = (mx > (this.s.canvas.clientWidth / 2) ? 2 : 1);
 			this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
-			this.s.canvathis.s.drawText("Waiting for opponent ...");
+			this.s.canvas.drawText("Waiting for opponent ...");
 			return;
 		
 		}
