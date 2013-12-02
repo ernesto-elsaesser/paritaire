@@ -201,6 +201,8 @@ function OnlineHandler(session) {
 		this.s.ui.publish.className = "btn btn-primary disabled";
 		this.s.ui.publish.style.backgroundColor = "#428bca";
 
+		this.s.ui.msgsend.className = "btn btn-default";
+
 		this.s.ui.info.appendChild(document.createTextNode("Color:\u00A0\u00A0"));
 		this.s.ui.info.appendChild(this.s.player[this.s.mySide].icon.cloneNode());
 	
@@ -236,6 +238,7 @@ function OnlineHandler(session) {
 		this.s.bEnded = false;
 		this.s.canvas.drawText("Waiting for opponent ..."); // waiting for another init
 		this.waiting = true;
+		this.s.ui.msgsend.className = "btn btn-default disabled";
 
 	};
 
@@ -340,6 +343,7 @@ function OnlineHandler(session) {
 		this.s.ui.publish.style.backgroundColor = "#428bca";
 		this.s.ui.surrender.className = "btn btn-primary disabled";
 		this.s.ui.share.className = "btn btn-primary disabled";
+		this.s.ui.msgsend.className = "btn btn-default disabled";
 		this.s.canvas.onclick = null;
 		this.s.bEnded = false;
   		this.s.canvas.drawText("Connection problems ...");
@@ -374,7 +378,9 @@ function OnlineHandler(session) {
 
 	this.sendMessage = function() {
 
-		this.s.socket.emit('chat',{id: this.s.sid, msg: this.s.ui.msgtext.value, side: this.s.mySide})
+		var msg = this.s.ui.msgtext.value;
+		if (msg == "") return;
+		this.s.socket.emit('chat',{id: this.s.sid, msg: msg, side: this.s.mySide})
 		this.s.ui.msgtext.value = "";
 
 	};
@@ -405,6 +411,8 @@ function SpectatorDecorator(handler) {
 		this.s.ui.undo.style.display = "none";
 		this.s.ui.surrender.style.display = "none";
 
+		this.s.ui.msgsend.className = "btn btn-default";
+
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
 
@@ -423,10 +431,23 @@ function SpectatorDecorator(handler) {
 
 		this.s.ui.info.innerHTML = "";
 		this.s.bEnded = false;
-		this.s.canvas.drawText("Player left the game.");
+		this.s.ui.msgsend.className = "btn btn-default disabled";
+		this.s.canvas.drawText("Player disconnected ...");
 	};
 
-	this.otherjoined = function() {};
+	this.otherjoined = function() {
+
+		this.s.ui.info.innerHTML = "";
+		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
+
+		if(this.s.bPlaying) {
+			
+			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
+			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
+
+			this.s.field.draw();
+		}
+	};
 
 	this.start = function(data) {
 
@@ -439,7 +460,7 @@ function SpectatorDecorator(handler) {
 
 		this.s.canvas.onclick = null;
 		if(this.s.bPlaying) this.s.field.draw();
-		else this.s.canvas.drawText("Waiting for player","to start ...");
+		else this.s.canvas.drawText("Player will start ...");
 		this.s.socket.emit("spectate",{id: this.s.sid});
 		
 	};
@@ -474,6 +495,7 @@ function SpectatorDecorator(handler) {
 
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.share.className = "btn btn-primary disabled";
+		this.s.ui.msgsend.className = "btn btn-default disabled";
 		this.s.bEnded = false;
   		this.s.canvas.drawText("Connection problems ...");
 		this.s.socket.socket.reconnect(); // should happen automatically
@@ -495,7 +517,9 @@ function SpectatorDecorator(handler) {
 
 	this.sendMessage = function() {
 
-		this.s.socket.emit('chat',{id: this.s.sid, msg: this.s.ui.msgtext.value, side: 0})
+		var msg = this.s.ui.msgtext.value;
+		if (msg == "") return;
+		this.s.socket.emit('chat',{id: this.s.sid, msg: msg, side: 0})
 		this.s.ui.msgtext.value = "";
 
 	};
