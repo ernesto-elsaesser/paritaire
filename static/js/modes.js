@@ -367,7 +367,7 @@ function OnlineHandler(session) {
 
 	};
 
-	this.receiveMessage = function(data) {
+	this.receivedMessage = function(data) {
 
 		var tr = document.createElement("tr");
 		var l = tr.insertCell(0);
@@ -494,7 +494,7 @@ function SpectatorDecorator(handler) {
 
 	};
 
-	this.receiveMessage = function(data) {
+	this.receivedMessage = function(data) {
 
 		var tr = document.createElement("tr");
 		var l = tr.insertCell(0);
