@@ -268,6 +268,24 @@ function attachSocket(httpServer,sessions,publications) {
 		
 			
 	  });
+
+	 socket.on('chat', function (data) {
+		  
+  		var c = clients[socket.id];
+  		var s = sessions[data.id];
+		
+		if(c.session != s) return;
+		if(data.side != 0 && c.side != data.side) return; // side == 0 -> spectator
+		
+		if(s.online && s.player[1].connected && s.player[2].connected) {
+
+			s.player[1].send("chat",{side: data.side, msg: data.msg});
+			s.player[2].send("chat",{side: data.side, msg: data.msg});
+			log("CHAT from side " + data.side + " in session " + data.id + " from " + socket.id);
+		}
+
+	  });
+	  
 	  
 	  socket.on('disconnect', function () {
   

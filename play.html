@@ -68,7 +68,7 @@
           <div id="chat-panel" class="panel panel-primary clear">
             <div class="panel-heading">Chat</div>
             <div id="chat" class="panel-body">
-              <div id="chat-history">
+              <div id="chat-messages">
                 <table class="table table-condensed">
                   <tbody>
                     <tr><td>RED:</td><td>haha</td></tr>
@@ -127,7 +127,8 @@
       ratiocol1: document.getElementById('pl1-ratio'),
       ratiocol2: document.getElementById('pl2-ratio'),
       msgtext: document.getElementById('message-text'),
-      msgsend: document.getElementById('message-send')
+      msgsend: document.getElementById('message-send'),
+      chat: document.getElementById('chat-messages')
   	};
   	
   	var session = new Session(ui,"#1","#2");

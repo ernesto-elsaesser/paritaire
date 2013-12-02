@@ -177,7 +177,7 @@ body {
 	padding: 5px;
 }
 
-#chat-history {
+#chat-messages {
 
 	height: 150px;
 	overflow: auto;

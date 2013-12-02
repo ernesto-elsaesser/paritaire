@@ -360,6 +360,24 @@ function OnlineHandler(session) {
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
+	this.sendMessage = function() {
+
+		this.s.socket.emit('chat',{id: this.s.sid, msg: this.s.ui.msgtext.value, side: this.s.mySide})
+		this.s.ui.msgtext.value = "";
+
+	};
+
+	this.receiveMessage = function(data) {
+
+		var tr = document.createElement("tr");
+		var l = tr.insertCell(0);
+		l.appendChild(this.s.player[data.side].icon.cloneNode());
+		tr.insertCell(1).innerHTML = data.msg;
+		this.s.ui.chat.firstElementChild.firstElementChild.appendChild(tr);
+		this.s.ui.chat.scrollTop = this.s.ui.chat.scrollHeight;
+
+	};
+
 }
 
 function SpectatorDecorator(handler) {
@@ -383,6 +401,12 @@ function SpectatorDecorator(handler) {
 			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
 		}
+
+		var icon = new Image();
+		icon.src = 'img/highlight.png'; // TODO: own icon?
+		icon.width = 30;
+		icon.height = 30;
+		this.s.player[0] = {icon: icon};
 
 		if(this.reconnecting) this.click();
 		else this.s.canvas.drawText("Session is full.","Click to spectate!");
@@ -461,6 +485,24 @@ function SpectatorDecorator(handler) {
 
 		if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
+	};
+
+	this.sendMessage = function() {
+
+		this.s.socket.emit('chat',{id: this.s.sid, msg: this.s.ui.msgtext.value, side: 0})
+		this.s.ui.msgtext.value = "";
+
+	};
+
+	this.receiveMessage = function(data) {
+
+		var tr = document.createElement("tr");
+		var l = tr.insertCell(0);
+		l.appendChild(this.s.player[data.side].icon.cloneNode());
+		tr.insertCell(1).innerHTML = data.msg;
+		this.s.ui.chat.firstElementChild.firstElementChild.appendChild(tr);
+		this.s.ui.chat.scrollTop = this.s.ui.chat.scrollHeight;
+
 	};
 
 }
