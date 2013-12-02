@@ -385,7 +385,7 @@ function SpectatorDecorator(handler) {
 		}
 
 		if(this.reconnecting) this.click();
-		else s.canvas.drawText("Session is full.","Click to spectate!");
+		else this.s.canvas.drawText("Session is full.","Click to spectate!");
 
 	};
 
