@@ -103,11 +103,11 @@ function Session(ui,color1,color2) {
 		that.ui.share.onclick = that.sessionUrl.bind(that);
 
 		// set socket event handlers
-		that.socket.on('disconnect', that.modeHandler.disconnect);
-		that.socket.on('otherjoined', that.modeHandler.otherjoined);
-		that.socket.on('otherleft', that.modeHandler.otherleft);
-		that.socket.on('reconnect', that.modeHandler.reconnect);
-		that.socket.on('published', that.modeHandler.published);
+		that.socket.on('disconnect', that.modeHandler.disconnect.bind(that.modeHandler));
+		that.socket.on('otherjoined', that.modeHandler.otherjoined.bind(that.modeHandler));
+		that.socket.on('otherleft', that.modeHandler.otherleft.bind(that.modeHandler));
+		that.socket.on('reconnect', that.modeHandler.reconnect.bind(that.modeHandler));
+		that.socket.on('published', that.modeHandler.published.bind(that.modeHandler));
 
 		that.modeHandler.init(data);
 	
