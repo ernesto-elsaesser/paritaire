@@ -4,6 +4,7 @@ Sophie:
 - theme roller: graue buttons - farbschema (rot,grün,ränder)
 - info: requires javascript
 - dokumentierende Screenshots
+- Gewinn-Count bei/in ratio bar anzeigen
 
 Notiz: 
 	- orange: e18336
