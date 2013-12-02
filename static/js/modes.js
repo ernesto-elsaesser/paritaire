@@ -293,7 +293,7 @@ function OnlineHandler(session) {
 		var msg = "";
 		
 		if (!this.s.winner) msg = "Draw! [";
-		else if(tthis.s.winner.stone == this.s.mySide) msg += "You won! [";
+		else if(this.s.winner.stone == this.s.mySide) msg += "You won! [";
 		else msg += "You lost! [";
 		
 		msg += this.s.player[this.s.mySide].points + ":" + this.s.player[(this.s.mySide == 1 ? 2 : 1)].points + "]";
