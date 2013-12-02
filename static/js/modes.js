@@ -156,7 +156,7 @@ function OnlineHandler(session) {
 			
 		if(data.connections == 0) {
 		
-			this.waiting = true:
+			this.waiting = true;
 
 			if(data.published) {
 				this.s.ui.publish.innerHTML = "Published";
@@ -212,7 +212,7 @@ function OnlineHandler(session) {
 			}
 		}
 
-		this.waiting = false:
+		this.waiting = false;
 	};
 
 	this.otherleft = function() {
@@ -223,7 +223,7 @@ function OnlineHandler(session) {
 		this.s.mMyTurn = false;
 		this.s.bEnded = false;
 		this.s.canvas.drawText("Waiting for opponent ..."); // waiting for another init
-		this.waiting = true:
+		this.waiting = true;
 
 	};
 
