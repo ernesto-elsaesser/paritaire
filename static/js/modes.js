@@ -130,7 +130,8 @@ function LocalHandler(session) {
 
 	this.resize = function() {
 
-		if (this.s.bEnded) this.drawWinner();
+		if(this.bPlaying) this.field.draw();
+		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
@@ -141,6 +142,7 @@ function OnlineHandler(session) {
 	this.s = session;
 
 	this.reconnecting = false;
+	this.waiting = false;
 
 	this.init = function(data) {
 
@@ -148,11 +150,14 @@ function OnlineHandler(session) {
 
 			this.s.bMyTurn = false;
 			this.s.canvas.drawText("Waiting for opponent ...");
+			this.waiting = true:
 			return;
 		} 
 			
 		if(data.connections == 0) {
 		
+			this.waiting = true:
+
 			if(data.published) {
 				this.s.ui.publish.innerHTML = "Published";
 				this.s.ui.publish.style.backgroundColor = "green";
@@ -206,6 +211,8 @@ function OnlineHandler(session) {
 				this.s.canvas.drawText("Opponent begins ...");
 			}
 		}
+
+		this.waiting = false:
 	};
 
 	this.otherleft = function() {
@@ -216,6 +223,7 @@ function OnlineHandler(session) {
 		this.s.mMyTurn = false;
 		this.s.bEnded = false;
 		this.s.canvas.drawText("Waiting for opponent ..."); // waiting for another init
+		this.waiting = true:
 
 	};
 
@@ -347,6 +355,7 @@ function OnlineHandler(session) {
 			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.6, w*0.2, w*0.2);
 			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.6, w*0.2, w*0.2);
 		}
+		else if(this.s.bPlaying && !this.waiting) this.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};

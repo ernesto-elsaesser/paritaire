@@ -29,8 +29,7 @@ function Session(ui,color1,color2) {
 		this.canvas.height = w; // TODO: change for non-square fields
 		this.ctx.font = Math.floor(w/12) + "px Georgia";
 		
-		if(this.bPlaying) this.field.draw();
-		else this.modeHandler.resize();
+		this.modeHandler.resize();
 		 
 	};
 	
