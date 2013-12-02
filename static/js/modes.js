@@ -140,29 +140,37 @@ function OnlineHandler(session) {
 
 	this.s = session;
 
+	this.reconnecting = false;
+
 	this.init = function(data) {
 
-			
-			if(data.connections == 0) {
-			
-				if(data.published) {
-					this.s.ui.publish.innerHTML = "Published";
-					this.s.ui.publish.style.backgroundColor = "green";
-				}
-				else this.s.ui.publish.className = "btn btn-primary";
-				
-				this.s.canvas.drawText("Choose your color!");
+		if(this.reconnecting) {
 
-				var w = this.s.canvas.width;
+			this.s.bMyTurn = false;
+			this.s.canvas.drawText("Waiting for opponent ...");
+			return;
+		} 
+			
+		if(data.connections == 0) {
 		
-				this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.6, w*0.2, w*0.2);
-				this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.6, w*0.2, w*0.2);
+			if(data.published) {
+				this.s.ui.publish.innerHTML = "Published";
+				this.s.ui.publish.style.backgroundColor = "green";
+			}
+			else this.s.ui.publish.className = "btn btn-primary";
+			
+			this.s.canvas.drawText("Choose your color!");
 
-				this.s.bMyTurn = true;
-			} 
+			var w = this.s.canvas.width;
+	
+			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.6, w*0.2, w*0.2);
+			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.6, w*0.2, w*0.2);
+
+			this.s.bMyTurn = true;
+		} 
 				
-			// if there is one other player connected yet, "otherjoined" message will follow
-			// if the session is already full, the SpectatorDecorator intercepted the init call
+		// if there is one other player connected yet, "otherjoined" message will follow
+		// if the session is already full, the SpectatorDecorator intercepted the init call
 
 	}; 
 
@@ -324,6 +332,8 @@ function OnlineHandler(session) {
 		var data = {id: this.s.sid};
 		if(this.s.mySide) data.oldside = this.s.mySide;
 		this.s.socket.emit('init',data);
+
+		this.reconnecting = true;
 
 	};
 

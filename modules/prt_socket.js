@@ -93,10 +93,10 @@ function attachSocket(httpServer,sessions,publications) {
 				if(data.oldside && s.player[data.oldside].connected) { // old zombie connection
 					
 					log("INIT to old side " + data.oldside + " in empty session " + data.id + " from " + socket.id);
-					
-					socket.emit('init',s.getState());
 
 					s.player[data.oldside].disconnect();
+
+					socket.emit('init',s.getState());
 					
 					return;
 				
