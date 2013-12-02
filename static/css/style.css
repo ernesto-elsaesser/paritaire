@@ -184,14 +184,14 @@ body {
 	margin-bottom: 5px;
 }
 
-#chat-history table {
+#chat-messages table {
 
 	margin-bottom: 0;
 }
 
-#chat-history td:first-child {
+#chat-messages td:first-child {
 
-	width: 50px;
+	width: 30px;
 
 }
 

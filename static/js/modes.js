@@ -16,6 +16,7 @@ function LocalHandler(session) {
 	this.init = function(data) {
 				
 			this.s.ui.publish.style.display = "none";
+			this.s.ui.chat.parentElement.parentElement.style.display = "none";
 
 			this.s.currentSide = data.turn;
 			
