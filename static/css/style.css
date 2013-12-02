@@ -57,9 +57,13 @@ body {
 
 /* index.html */
 
-
 .intro a {
   font-size: 1.1em;
+}
+
+#req-js > .alert {
+	margin: 0px;
+	margin-bottom: 2em;
 }
 
 /* new.html */
@@ -106,12 +110,34 @@ body {
 
 /* play.html */
 
-#play-main #info{
+#play-main, #play-side {
+
+	margin-bottom: 10px;
+}
+
+#play-main #info {
 	width: 200px;
 	padding: 2px;
 }
-#play-side {
-	height: 44px;
+
+
+#canvas-container {
+	margin: 0;
+	padding-top: 10px;
+	clear: both;
+}
+
+#more-buttons {
+
+	height: 34px;
+	clear: both;
+	margin-bottom: 20px;
+}
+
+#more-buttons a {
+
+	float: right;
+	margin-left: 5px;
 }
 
 #surrender {
@@ -119,7 +145,8 @@ body {
 }
 
 #win-ratio {
-        position: relative;
+	margin-bottom: 20px;
+    position: relative;
 }
 
 #pl1-ratio {
@@ -145,10 +172,35 @@ body {
         width: 100%;
 }
 
-#canvas-container {
-	margin: 0;
-	padding: 10px 0;
-	clear: both;
+#chat {
+
+	padding: 5px;
+}
+
+#chat-history {
+
+	height: 150px;
+	overflow: auto;
+	margin-bottom: 5px;
+}
+
+#chat-history table {
+
+	margin-bottom: 0;
+}
+
+#chat-history td:first-child {
+
+	width: 50px;
+
+}
+
+#message-text {
+
+}
+
+#message-send {
+
 }
 
 /* navbar */
