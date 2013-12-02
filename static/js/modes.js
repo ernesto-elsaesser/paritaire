@@ -146,6 +146,14 @@ function OnlineHandler(session) {
 
 	this.init = function(data) {
 
+		this.waiting = true;
+
+		if(data.published) {
+			this.s.ui.publish.innerHTML = "Published";
+			this.s.ui.publish.style.backgroundColor = "green";
+		}
+		else this.s.ui.publish.className = "btn btn-primary";
+
 		if(this.reconnecting) {
 
 			this.s.bMyTurn = false;
@@ -155,14 +163,6 @@ function OnlineHandler(session) {
 		} 
 			
 		if(data.connections == 0) {
-		
-			this.waiting = true;
-
-			if(data.published) {
-				this.s.ui.publish.innerHTML = "Published";
-				this.s.ui.publish.style.backgroundColor = "green";
-			}
-			else this.s.ui.publish.className = "btn btn-primary";
 			
 			this.s.canvas.drawText("Choose your color!");
 
