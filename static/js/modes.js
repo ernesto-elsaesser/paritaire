@@ -492,7 +492,13 @@ function SpectatorDecorator(handler) {
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
-	this.sendMessage = this.h.sendMessage;
+	this.sendMessage = function() {
+
+		this.s.socket.emit('chat',{id: this.s.sid, msg: this.s.ui.msgtext.value, side: 0})
+		this.s.ui.msgtext.value = "";
+
+	};
+
 	this.receivedMessage = this.h.receivedMessage;
 
 }
