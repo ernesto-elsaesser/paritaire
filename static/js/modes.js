@@ -499,8 +499,9 @@ function SpectatorDecorator(handler) {
 
 	};
 
-	this.receivedMessage = this.h.receivedMessage;
-
+	this.receivedMessage = function(data) {
+		this.h.receivedMessage(data);
+	};
 }
 
 
