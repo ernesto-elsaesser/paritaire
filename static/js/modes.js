@@ -418,6 +418,8 @@ function SpectatorDecorator(handler) {
 
 	this.published = function(data) {};
 
+	this.surrender = function() {};
+
 	this.drawWinner = function() {
 		
 		var msg = "";
