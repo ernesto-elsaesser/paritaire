@@ -6,7 +6,6 @@ var querystring = require("querystring");
 var ns = require('node-static');
 
 // custom modules
-var shell = require('./modules/prt_shell');
 var socket = require('./modules/prt_socket');
 var game = require('./modules/prt_game_obj');
 
@@ -205,6 +204,6 @@ socket.attachSocket(server,sessions,publications);
 
 server.listen(80);
 
-// uncomment for debugging
-shell.createShell(5001,{s: sessions, p: publications, c: socket.clients});
-log("shell: running on port 5001");
+// "node debug" is far better
+// shell.createShell(5001,{s: sessions, p: publications, c: socket.clients});
+// log("shell: running on port 5001");
