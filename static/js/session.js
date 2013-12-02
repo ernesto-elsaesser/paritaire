@@ -96,23 +96,24 @@ function Session(ui,color1,color2) {
 			if(data.connections == 1) that.modeHandler = new SpecatorDecorator(that.modeHandler);
 		}
 
+		// set key event handler
 		that.ui.surrender.onclick = that.modeHandler.surrender.bind(that.modeHandler);
 		that.ui.undo.onclick = that.undo.bind(that);
 		that.ui.publish.onclick = that.publish.bind(that);
 		that.ui.share.onclick = that.sessionUrl.bind(that);
+
+		// set socket event handlers
+		that.socket.on('disconnect', that.modeHandler.disconnect);
+		that.socket.on('otherjoined', that.modeHandler.otherjoined);
+		that.socket.on('otherleft', that.modeHandler.otherleft);
+		that.socket.on('reconnect', that.modeHandler.reconnect);
+		that.socket.on('published', that.modeHandler.published);
 
 		that.modeHandler.init(data);
 	
 		that.canvas.onclick = that.clickHandler.bind(that);
 		
 	  });
-	
-	this.socket.on('otherjoined', function(data) {
-
-		alert("otherjoined");
-		that.modeHandler.otherjoined(data);
-
-	});
 	 
   	this.socket.on('start', function (data) {
 		
@@ -158,11 +159,6 @@ function Session(ui,color1,color2) {
 		// TODO: info that player if he can't turn
 		
 	});
-	
-  	this.socket.on('disconnect', this.modeHandler.disconnect);
-	this.socket.on('otherleft', this.modeHandler.otherleft);
-	this.socket.on('reconnect', this.modeHandler.reconnect);
-	this.socket.on('published', this.modeHandler.published);
 	
 	this.socket.emit('init', {id: this.sid});
 	
