@@ -30,7 +30,7 @@ function Session(ui,color1,color2) {
 		this.ctx.font = Math.floor(w/12) + "px Georgia";
 		
 		this.modeHandler.resize();
-		
+
 		 
 	};
 	
@@ -92,24 +92,25 @@ function Session(ui,color1,color2) {
 			if(data.online) {
 				that.modeHandler = new OnlineHandler(that);
 				if(data.connections == 2) that.modeHandler = new SpecatorDecorator(that.modeHandler);
+
+				that.socket.on('otherjoined', that.modeHandler.otherjoined.bind(that.modeHandler));
+				that.socket.on('otherleft', that.modeHandler.otherleft.bind(that.modeHandler));
+				that.socket.on('published', that.modeHandler.published.bind(that.modeHandler));
 			}
 			else {
 				that.modeHandler = new LocalHandler(that);
 				if(data.connections == 1) that.modeHandler = new SpecatorDecorator(that.modeHandler);
 			}
 
+			// set socket event handlers
+			that.socket.on('disconnect', that.modeHandler.disconnect.bind(that.modeHandler));
+			that.socket.on('reconnect', that.modeHandler.reconnect.bind(that.modeHandler));
+
 			// set key event handler
 			that.ui.surrender.onclick = that.modeHandler.surrender.bind(that.modeHandler);
 			that.ui.undo.onclick = that.undo.bind(that);
 			that.ui.publish.onclick = that.publish.bind(that);
 			that.ui.share.onclick = that.sessionUrl.bind(that);
-
-			// set socket event handlers
-			that.socket.on('disconnect', that.modeHandler.disconnect.bind(that.modeHandler));
-			that.socket.on('otherjoined', that.modeHandler.otherjoined.bind(that.modeHandler));
-			that.socket.on('otherleft', that.modeHandler.otherleft.bind(that.modeHandler));
-			that.socket.on('reconnect', that.modeHandler.reconnect.bind(that.modeHandler));
-			that.socket.on('published', that.modeHandler.published.bind(that.modeHandler));
 
 		}
 

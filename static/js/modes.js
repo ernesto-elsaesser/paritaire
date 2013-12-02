@@ -396,6 +396,8 @@ function SpectatorDecorator(handler) {
 		this.s.canvas.drawText("Player left the game.");
 	};
 
+	this.otherjoined = function() {};
+
 	this.start = function(data) {
 
 		this.s.ui.info.appendChild(document.createTextNode("\u00A0Next:\u00A0\u00A0"));
@@ -414,7 +416,7 @@ function SpectatorDecorator(handler) {
 
 	this.turn = this.h.turn;
 
-	//this.published = function(data) ...
+	this.published = function(data) {};
 
 	this.drawWinner = function() {
 		
