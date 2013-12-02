@@ -282,9 +282,9 @@ function OnlineHandler(session) {
 		this.s.ui.undo.className = "btn btn-primary disabled";
 		this.s.ui.surrender.className = "btn btn-primary disabled";
 
-		this.drawWinner();
-
 		this.s.bMyTurn = (this.s.nextStarter == this.s.mySide);
+
+		this.drawWinner();
 		
 	};
 
