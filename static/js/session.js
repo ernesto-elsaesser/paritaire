@@ -123,7 +123,7 @@ function Session(ui,color1,color2) {
 		that.field.highlighted = null;
   		that.field.draw();
 		
-		that.modeHandler.start();
+		that.modeHandler.start(data);
 
 		that.bPlaying = true;
   	
