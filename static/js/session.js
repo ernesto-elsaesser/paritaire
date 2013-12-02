@@ -91,7 +91,7 @@ function Session(ui,color1,color2) {
 
 			if(data.online) {
 				that.modeHandler = new OnlineHandler(that);
-				if(data.connections == 2) that.modeHandler = new SpecatorDecorator(that.modeHandler);
+				if(data.connections == 2) that.modeHandler = new SpectatorDecorator(that.modeHandler);
 
 				that.socket.on('otherjoined', that.modeHandler.otherjoined.bind(that.modeHandler));
 				that.socket.on('otherleft', that.modeHandler.otherleft.bind(that.modeHandler));
@@ -99,7 +99,7 @@ function Session(ui,color1,color2) {
 			}
 			else {
 				that.modeHandler = new LocalHandler(that);
-				if(data.connections == 1) that.modeHandler = new SpecatorDecorator(that.modeHandler);
+				if(data.connections == 1) that.modeHandler = new SpectatorDecorator(that.modeHandler);
 			}
 
 			// set socket event handlers
