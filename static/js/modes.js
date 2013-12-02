@@ -144,6 +144,17 @@ function OnlineHandler(session) {
 	this.reconnecting = false;
 	this.waiting = false;
 
+	this.chatIcons = [new Image(), new Image(), new Image()];
+	this.chatIcons[0].src = 'img/highlight.png'; // TODO: own icon?
+	this.chatIcons[0].width = 20;
+	this.chatIcons[0].height = 20;
+	this.chatIcons[1].src = this.s.player[1].icon.src;
+	this.chatIcons[1].width = 20;
+	this.chatIcons[1].height = 20;
+	this.chatIcons[2].src = this.s.player[2].icon.src;
+	this.chatIcons[2].width = 20;
+	this.chatIcons[2].height = 20;
+
 	this.init = function(data) {
 
 		this.waiting = true;
@@ -371,7 +382,7 @@ function OnlineHandler(session) {
 
 		var tr = document.createElement("tr");
 		var l = tr.insertCell(0);
-		l.appendChild(this.s.player[data.side].icon.cloneNode());
+		l.appendChild(this.chatIcons[data.side].cloneNode());
 		tr.insertCell(1).innerHTML = data.msg;
 		this.s.ui.chat.firstElementChild.firstElementChild.appendChild(tr);
 		this.s.ui.chat.scrollTop = this.s.ui.chat.scrollHeight;
@@ -401,12 +412,6 @@ function SpectatorDecorator(handler) {
 			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
 		}
-
-		var icon = new Image();
-		icon.src = 'img/highlight.png'; // TODO: own icon?
-		icon.width = 30;
-		icon.height = 30;
-		this.s.player[0] = {icon: icon};
 
 		if(this.reconnecting) this.click();
 		else this.s.canvas.drawText("Session is full.","Click to spectate!");
@@ -487,23 +492,8 @@ function SpectatorDecorator(handler) {
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
-	this.sendMessage = function() {
-
-		this.s.socket.emit('chat',{id: this.s.sid, msg: this.s.ui.msgtext.value, side: 0})
-		this.s.ui.msgtext.value = "";
-
-	};
-
-	this.receivedMessage = function(data) {
-
-		var tr = document.createElement("tr");
-		var l = tr.insertCell(0);
-		l.appendChild(this.s.player[data.side].icon.cloneNode());
-		tr.insertCell(1).innerHTML = data.msg;
-		this.s.ui.chat.firstElementChild.firstElementChild.appendChild(tr);
-		this.s.ui.chat.scrollTop = this.s.ui.chat.scrollHeight;
-
-	};
+	this.sendMessage = h.sendMessage;
+	this.receivedMessage = h.receivedMessage;
 
 }
 
