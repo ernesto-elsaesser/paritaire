@@ -230,7 +230,11 @@ function Session(ui,color1,color2) {
 		// click inside canvas?
 		if(mx > 0 && mx < this.canvas.clientWidth && my > 0 && my < this.canvas.clientHeight) {
 		
-			this.modeHandler.click();
+			var sideLength = this.canvas.width / this.field.xsize;
+			var x = parseInt(mx/sideLength);
+			var y = parseInt(my/sideLength);
+
+			this.modeHandler.click(x,y);
 			
 		}
 			

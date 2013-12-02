@@ -50,21 +50,12 @@ function LocalHandler(session) {
 		this.s.ui.undo.className = "btn btn-primary disabled"; // nothing to undo yet
 	};
 
-	this.click = function() {
+	this.click = function(x,y) {
 
 
-		if(!this.s.bPlaying) {
-				this.s.socket.emit('start', {id: this.s.sid});
+		if(!this.s.bPlaying) this.s.socket.emit('start', {id: this.s.sid});
 				
-		}
-		else {	
-			
-		    var sideLength = this.s.canvas.width / this.s.field.xsize;
-			var x = parseInt(mx/sideLength);
-			var y = parseInt(my/sideLength);
-			
-			this.s.socket.emit('turn', {id: this.s.sid, x: x, y: y});
-		}
+		else this.s.socket.emit('turn', {id: this.s.sid, x: x, y: y});
 
 	};
 
@@ -230,7 +221,7 @@ function OnlineHandler(session) {
 
 	};
 
-	this.click = function() {
+	this.click = function(x,y) {
 
 
 		if(!this.s.bMyTurn) return;
@@ -238,25 +229,15 @@ function OnlineHandler(session) {
 		if(!this.s.mySide) {
 			
  			this.s.bMyTurn = false;
-			this.s.mySide = (mx > (this.s.canvas.clientWidth / 2) ? 2 : 1);
+			this.s.mySide = (x > (this.s.field.xsize / 2) ? 2 : 1);
 			this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
 			this.s.canvas.drawText("Waiting for opponent ...");
 			return;
 		
 		}
 
-		if(!this.s.bPlaying) {
-				this.s.socket.emit('start', {id: this.s.sid});
-				
-		}
-		else {	
-
-		    var sideLength = this.s.canvas.width / this.s.field.xsize;
-			var x = parseInt(mx/sideLength);
-			var y = parseInt(my/sideLength);
-			
-			this.s.socket.emit('turn', {id: this.s.sid, x: x, y: y});
-		}
+		if(!this.s.bPlaying) this.s.socket.emit('start', {id: this.s.sid});
+		else this.s.socket.emit('turn', {id: this.s.sid, x: x, y: y});
 
 	};
 
@@ -403,7 +384,7 @@ function SpectatorDecorator(handler) {
 
 	};
 
-	this.click = function() {
+	this.click = function(x,y) {
 
 		this.s.canvas.onclick = null;
 		if(this.s.bPlaying) this.s.field.draw();
