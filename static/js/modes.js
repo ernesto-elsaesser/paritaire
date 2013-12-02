@@ -273,7 +273,7 @@ function OnlineHandler(session) {
 	this.surrender = function() {
 	
 		this.s.socket.emit("surrender",{id: this.s.sid});
-		this.ui.surrender.className = "btn btn-primary disabled";
+		this.s.ui.surrender.className = "btn btn-primary disabled";
 	
 	};
 

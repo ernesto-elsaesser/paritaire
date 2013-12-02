@@ -214,8 +214,8 @@ function Session(ui,color1,color2) {
 
 	this.updateRatioBar = function() {
 
-		var v1 = this.player[1].wins + 3;
-		var v2 = this.player[2].wins + 3;
+		var v1 = this.player[1].wins + 2;
+		var v2 = this.player[2].wins + 2;
 		//var d = this.player[1].wins - this.player[2].wins;
 		//var w = 100 / (1 + Math.pow(Math.E, (-0.3 * d)));
 		this.ui.ratiocol1.style.width = (( 100 * v1 )/( v1 + v2 ) ) + "%";
