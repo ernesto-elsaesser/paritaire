@@ -488,7 +488,7 @@ function Session(ui,color1,color2) {
 		if(this.online && !this.bMyTurn) return;
 	
 		// mouse position
-		var mx = event.clientX-this.ui.main.offsetLeft+pageXOffset;
+		var mx = event.clientX-this.ui.main.offsetLeft-this.ui.main.offsetParent.offsetLeft+pageXOffset;
 		var my = event.clientY-this.ui.main.offsetTop-this.ui.main.offsetParent.offsetTop-10+pageYOffset;
 		
 		// click inside canvas?
