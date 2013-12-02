@@ -45,7 +45,7 @@ function attachSocket(httpServer,sessions,publications) {
 						return;
 					} 
 					
-					s.player[1].disconnect();
+					s.player[1].disconnect(); // reconnecting
 					
 				}
 			
@@ -331,8 +331,7 @@ function attachSocket(httpServer,sessions,publications) {
 
 function log(msg) {
 	
-	var d = new Date();
-	console.log((1900+d.getYear()) + "/" + (1+d.getMonth()) + "/" + d.getDate() + "-" + d.getHours() + ":" + d.getMinutes()  + " socket: " + msg);
+	console.log((new Date()).toISOString() + " socket: " + msg);
 
 }
 
