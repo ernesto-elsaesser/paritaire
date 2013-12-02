@@ -150,7 +150,7 @@ function OnlineHandler(session) {
 
 			this.s.bMyTurn = false;
 			this.s.canvas.drawText("Waiting for opponent ...");
-			this.waiting = true:
+			this.waiting = true;
 			return;
 		} 
 			
