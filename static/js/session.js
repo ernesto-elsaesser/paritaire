@@ -96,7 +96,7 @@ function Session(ui,color1,color2) {
 			if(data.connections == 1) that.modeHandler = new SpecatorDecorator(that.modeHandler);
 		}
 
-		that.ui.surrender.onclick = that.modeHandler.surrender.bind(that);
+		that.ui.surrender.onclick = that.modeHandler.surrender.bind(that.modeHandler);
 		that.ui.undo.onclick = that.undo.bind(that);
 		that.ui.publish.onclick = that.publish.bind(that);
 		that.ui.share.onclick = that.sessionUrl.bind(that);
