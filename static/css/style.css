@@ -57,9 +57,13 @@ body {
 
 /* index.html */
 
-
 .intro a {
   font-size: 1.1em;
+}
+
+#req-js > .alert {
+	margin: 0px;
+	margin-bottom: 2em;
 }
 
 /* new.html */
@@ -166,11 +170,6 @@ body {
         height: 100%;
         max-height: 50px;
         width: 100%;
-}
-
-#chat-panel {
-
-	display: none;
 }
 
 #chat {
