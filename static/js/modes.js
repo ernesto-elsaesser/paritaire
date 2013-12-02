@@ -96,7 +96,7 @@ function LocalHandler(session) {
 
 		var msg = "";
 		
-		if(s.winner) msg += "           won! [";
+		if(this.s.winner) msg += "           won! [";
 		else msg += "Draw! [";
 		
 		msg += this.s.player[1].points + ":" + this.s.player[2].points + "]";
