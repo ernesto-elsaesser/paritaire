@@ -97,13 +97,17 @@ function createCanvas(container) {
 		
 		ctx.fillStyle = "#FFF";
 		ctx.fillRect(0,0,this.width,this.height);
+
+		ctx.lineWidth = 5;
+		ctx.strokeRect(0,0,this.width,this.height);
+		ctx.lineWidth = 1;
 		
 		ctx.fillStyle = "#000";
-		var x = (this.width / 2); // - (fontsize * 0.22 * text.length);
-		var y = this.height * 0.3;
-		ctx.fillText(text,x,y);
+		var x = (this.width / 2);
+		ctx.fillText(text,x,this.height * 0.4);
+		if(moretext) ctx.fillText(moretext,x,this.height * 0.6);
+
 		
-		if(moretext) ctx.fillText(moretext,x,y*2);
 		
 		this.lastText = text;
 		
