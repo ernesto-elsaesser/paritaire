@@ -30,6 +30,7 @@ function Session(ui,color1,color2) {
 		this.ctx.font = Math.floor(w/12) + "px Georgia";
 		
 		this.modeHandler.resize();
+		
 		 
 	};
 	
