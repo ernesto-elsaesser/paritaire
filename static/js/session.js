@@ -81,9 +81,9 @@ function Session(ui,color1,color2) {
 		that.updateRatioBar();
 
 		if(that.bPlaying) {
-			s.player[1].points = data.points[0];
-			s.player[2].points = data.points[1];
-			s.field.stones = data.field;
+			that.player[1].points = data.points[0];
+			that.player[2].points = data.points[1];
+			that.field.stones = data.field;
 		}
 		
 		// create event handlers
