@@ -64,6 +64,11 @@ body {
 
 /* new.html */
 
+#req-js {
+	margin: 0px;
+	margin-bottom: 2em;
+}
+
 #settings-controls {
 	margin-bottom: 40px;
 }
