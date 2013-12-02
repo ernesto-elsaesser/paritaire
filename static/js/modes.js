@@ -106,7 +106,7 @@ function LocalHandler(session) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.17, w*0.20, w*0.20);
+			this.s.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.27, w*0.20, w*0.20);
 		}
 
 	};
@@ -484,7 +484,7 @@ function SpectatorDecorator(handler) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.17, w*0.20, w*0.20);
+			this.s.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.27, w*0.20, w*0.20);
 		}
 		
 	};
