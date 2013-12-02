@@ -160,7 +160,7 @@ function OnlineHandler(session) {
 				}
 				else this.s.ui.publish.className = "btn btn-primary";
 				
-				this.s.canvas.s.drawText("Choose your color!");
+				this.s.canvas.drawText("Choose your color!");
 
 				var w = this.s.canvas.width;
 		
