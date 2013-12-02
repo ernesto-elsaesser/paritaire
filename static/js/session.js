@@ -107,7 +107,12 @@ function Session(ui,color1,color2) {
 		
 	  });
 	
-	this.socket.on('otherjoined', this.modeHandler.otherjoined);
+	this.socket.on('otherjoined', function(data) {
+
+		alert("otherjoined");
+		that.modeHandler.otherjoined(data);
+
+	});
 	 
   	this.socket.on('start', function (data) {
 		
