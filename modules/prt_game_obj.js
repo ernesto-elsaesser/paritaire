@@ -186,9 +186,8 @@ Session.prototype.surrender = function(side) {
 
 Session.prototype.broadcast = function(msg,data) {
 
-	this.player[1].send(msg,data);
-	
-   	if(this.online) this.player[2].send(msg,data);
+	if(this.player[1].connected) this.player[1].send(msg,data);
+	if(this.player[2].connected) this.player[2].send(msg,data);
    		
    	for(var i in this.spectators) this.spectators[i].emit(msg,data);
 

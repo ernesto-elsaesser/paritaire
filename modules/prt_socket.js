@@ -267,20 +267,16 @@ function attachSocket(httpServer,sessions,publications) {
 				
 					if(c.side != 0) {
 
-						s.player[c.side].disconnect(); // TODO: why is this sometimes 0?
+						if(s.player[c.side].connected) { // possibly already kicked out
 
-						var other = s.player[(c.side == 1 ? 2 : 1)];
-				
-		        		if(other.connected) { // session was full
-	        
-		          			log("DISCONNECT side " + c.side + " in before full session from " + socket.id);
-		          	  		other.send('otherleft');
-	           
-		        		}
-		        		else log("DISCONNECT side " + c.side + " in now empty session from " + socket.id);
+							s.player[c.side].disconnect(); // TODO: why is this sometimes 0?
+
+		          			log("DISCONNECT side " + c.side + " in online session from " + socket.id);
+		          	  		s.broadcast('playerleft');
+		          	  	}
 
 					}
-					else {
+					else { // spectator
 
 						for(var i in s.spectators) {
 
@@ -293,14 +289,15 @@ function attachSocket(httpServer,sessions,publications) {
 
 						}
 					}
-    
-					
 					
 				}
 				else {
 					
-					log("DISCONNECT from local session from " + socket.id);
-					s.player[1].disconnect();
+					if(s.player[1].connected) { // possibly already kicked out
+						log("DISCONNECT from local session from " + socket.id);
+						s.player[1].disconnect();
+						s.broadcast('playerleft');
+					}
 				}
          
 	      	}
@@ -322,8 +319,9 @@ function validationOver(args) {
 	var c = args[0]; // client
 	var s = args[1]; // session
 
-	s.player[1].check();
-	s.player[2].check();
+	if(s.player[1].check() || s.player[2].check()) 
+		s.broadcast("playerleft");
+
 	c.socket.emit("init",s.getState());
 	var players = s.countCon();
 
@@ -338,7 +336,7 @@ function validationOver(args) {
 					
 			s.player[c.side].connect(c.socket);
 			
-			s.broadcast("otherjoined",{side: c.side, turn: s.nextTurn});
+			s.broadcast("playerjoined",{side: c.side, turn: s.nextTurn});
 			
 			var publications = args[2];
 

@@ -184,12 +184,12 @@ function OnlineHandler(session) {
 			this.s.bMyTurn = true;
 		} 
 				
-		// if there is one other player connected yet, "otherjoined" message will follow
+		// if there is one other player connected yet, "playerjoined" message will follow
 		// if the session is already full, the SpectatorDecorator intercepted the init call
 
 	}; 
 
-	this.otherjoined = function(data) {
+	this.playerjoined = function(data) {
 
 		if(!this.s.mySide) this.s.mySide = data.side;
 	
@@ -228,7 +228,7 @@ function OnlineHandler(session) {
 		this.waiting = false;
 	};
 
-	this.otherleft = function() {
+	this.playerleft = function() {
 
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.publish.className = "btn btn-primary";
@@ -432,7 +432,7 @@ function SpectatorDecorator(handler) {
 
 	};
 
-	this.otherleft = function() {
+	this.playerleft = function() {
 
 		this.s.ui.info.innerHTML = "";
 		this.s.bEnded = false;
@@ -440,7 +440,7 @@ function SpectatorDecorator(handler) {
 		this.s.canvas.drawText("Player disconnected ...");
 	};
 
-	this.otherjoined = function() {
+	this.playerjoined = function() {
 
 		this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
