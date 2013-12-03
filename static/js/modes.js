@@ -6,7 +6,7 @@ function PreHandler(session) {
 	this.resize = function() {
 
 		this.s.canvas.drawText(this.s.canvas.lastText);
-	}
+	};
 }
 
 function LocalHandler(session) {
@@ -102,11 +102,11 @@ function LocalHandler(session) {
 		
 		msg += this.s.player[1].points + ":" + this.s.player[2].points + "]";
 		
-		this.s.canvas.drawText(msg,"Click to play!");
+		this.s.canvas.drawText([msg,"Click to play!"]);
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.17, w*0.27, w*0.20, w*0.20);
+			this.s.ctx.drawImage(this.s.winner.icon, w*0.14, w*0.27, w*0.20, w*0.20);
 		}
 
 	};
@@ -131,7 +131,7 @@ function LocalHandler(session) {
 
 	this.resize = function() {
 
-		if(this.bPlaying) this.field.draw();
+		if(this.s.bPlaying) this.s.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
@@ -180,8 +180,8 @@ function OnlineHandler(session) {
 
 			var w = this.s.canvas.width;
 	
-			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.6, w*0.2, w*0.2);
-			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.6, w*0.2, w*0.2);
+			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
+			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
 
 			this.s.bMyTurn = true;
 		} 
@@ -330,7 +330,7 @@ function OnlineHandler(session) {
 		msg += this.s.player[this.s.mySide].points + ":" + this.s.player[(this.s.mySide == 1 ? 2 : 1)].points + "]";
 		
 		if(this.s.bMyTurn) {
-			this.s.canvas.drawText(msg,"Click to play!");
+			this.s.canvas.drawText([msg,"Click to play!"]);
       	}
 		else this.s.canvas.drawText(msg);
 
@@ -368,8 +368,8 @@ function OnlineHandler(session) {
 
 			var w = this.s.canvas.width;
 		
-			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.6, w*0.2, w*0.2);
-			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.6, w*0.2, w*0.2);
+			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
+			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
 		}
 		else if(this.s.bPlaying && !this.waiting) this.s.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
@@ -404,6 +404,7 @@ function SpectatorDecorator(handler) {
 	this.s = handler.s;
 
 	this.reconnecting = false;
+	this.splash = true;
 
 	this.init = function(data) {
 
@@ -423,7 +424,10 @@ function SpectatorDecorator(handler) {
 		}
 
 		if(this.reconnecting) this.click();
-		else this.s.canvas.drawText("Session is full.","Click to spectate!");
+		else {
+			this.s.canvas.drawText(["Session is full.","Click to spectate!"]);
+			this.splash = true;
+		}
 
 	};
 
@@ -462,6 +466,7 @@ function SpectatorDecorator(handler) {
 		if(this.s.bPlaying) this.s.field.draw();
 		else this.s.canvas.drawText("Player will start ...");
 		this.s.socket.emit("spectate",{id: this.s.sid});
+		this.splash = false;
 		
 	};
 
@@ -484,7 +489,7 @@ function SpectatorDecorator(handler) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.17, w*0.27, w*0.20, w*0.20);
+			this.s.ctx.drawImage(this.s.winner.icon, w*0.14, w*0.27, w*0.20, w*0.20);
 		}
 		
 	};
@@ -511,7 +516,8 @@ function SpectatorDecorator(handler) {
 
 	this.resize = function() {
 
-		if (this.s.bEnded) this.drawWinner();
+		if(this.s.bPlaying && !this.splash) this.s.field.draw();
+		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
