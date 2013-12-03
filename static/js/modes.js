@@ -476,7 +476,6 @@ function SpectatorDecorator(handler) {
 	this.turn = this.h.turn;
 
 	this.published = function(data) {};
-
 	this.surrender = function() {};
 
 	this.drawWinner = function() {
