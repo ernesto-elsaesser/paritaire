@@ -249,11 +249,9 @@ function attachSocket(httpServer,sessions,publications) {
 	 socket.on('alive', function (data) {
 		  
   		var c = clients[socket.id];
-  		var s = sessions[data.id];
+  		var s = c.session;
 		
-		if(c.session != s) return;
-		
-		s.player[c.side].revalidate();
+		if(s && c.side != 0) s.player[c.side].revalidate();
 
 	  }); 
 	  
