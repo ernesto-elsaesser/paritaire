@@ -36,8 +36,6 @@ function attachSocket(httpServer,sessions,publications) {
 			
 			var players = s.countCon();
 
-			
-
 			if(s.online) { // online game
 
 				if(players == 0) { // session empty

@@ -412,6 +412,9 @@ function SpectatorDecorator(handler) {
 		this.s.ui.undo.style.display = "none";
 		this.s.ui.surrender.style.display = "none";
 
+		if(this.h.otherjoined == undefined) // local session
+			this.s.ui.chat.parentElement.parentElement.style.display = "none";
+
 		this.s.ui.msgsend.className = "btn btn-default";
 
 		this.s.ui.info.innerHTML = "";
@@ -473,7 +476,6 @@ function SpectatorDecorator(handler) {
 	this.turn = this.h.turn;
 
 	this.published = function(data) {};
-
 	this.surrender = function() {};
 
 	this.drawWinner = function() {
