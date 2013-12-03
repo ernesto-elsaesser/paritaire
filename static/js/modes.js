@@ -28,7 +28,7 @@ function LocalHandler(session) {
 				this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 				this.s.ui.info.appendChild(this.s.player[data.turn].icon);
 
-				this.s.ui.surrender.className = "btn btn-primary";
+				this.s.ui.surrender.className = "btn btn-danger";
 		
 			}
 			else {
@@ -46,7 +46,7 @@ function LocalHandler(session) {
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
-		this.s.ui.surrender.className = "btn btn-primary";
+		this.s.ui.surrender.className = "btn btn-danger";
 		this.s.ui.undo.className = "btn btn-primary disabled"; // nothing to undo yet
 	};
 
@@ -77,14 +77,14 @@ function LocalHandler(session) {
 	this.surrender = function() {
 	
 		this.s.socket.emit("surrender",{id: this.s.sid, side: this.s.currentSide});
-		this.s.ui.surrender.className = "btn btn-primary disabled";
+		this.s.ui.surrender.className = "btn btn-danger disabled";
 	
 	};
 
 	this.endGame = function() {
 		
 		this.s.ui.undo.className = "btn btn-primary disabled";
-		this.s.ui.surrender.className = "btn btn-primary disabled";
+		this.s.ui.surrender.className = "btn btn-danger disabled";
 
 		this.drawWinner();
 
@@ -113,11 +113,11 @@ function LocalHandler(session) {
 	this.disconnect = function() {
 
 		this.s.ui.info.innerHTML = "";
-		this.s.ui.surrender.className = "btn btn-primary disabled";
+		this.s.ui.surrender.className = "btn btn-danger disabled";
 		this.s.ui.share.className = "btn btn-primary disabled";
 		this.s.canvas.onclick = null;
 		this.s.bEnded = false;
-  		this.s.canvas.drawText("Connection problems ...");
+  		this.s.canvas.drawText(["Connection","problems ..."]);
 		this.s.socket.socket.reconnect(); // should happen automatically
 
 	};
@@ -170,7 +170,7 @@ function OnlineHandler(session) {
 		if(this.reconnecting) {
 
 			this.s.bMyTurn = false;
-			this.s.canvas.drawText("Waiting for opponent ...");
+			this.s.canvas.drawText(["Waiting for","opponent ..."]);
 			this.waiting = true;
 			return;
 		} 
@@ -200,7 +200,6 @@ function OnlineHandler(session) {
 
 		this.s.ui.publish.innerHTML = "Publish";
 		this.s.ui.publish.className = "btn btn-primary disabled";
-		this.s.ui.publish.style.backgroundColor = "#428bca";
 
 		this.s.ui.msgsend.className = "btn btn-default";
 
@@ -213,7 +212,7 @@ function OnlineHandler(session) {
 			
 			this.s.ui.info.appendChild(document.createTextNode("\u00A0\u00A0Next:\u00A0\u00A0"));
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
-			this.s.ui.surrender.className = "btn btn-primary";
+			this.s.ui.surrender.className = "btn btn-danger";
 		}
 		else {
 
@@ -234,10 +233,10 @@ function OnlineHandler(session) {
 
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.publish.className = "btn btn-primary";
-		this.s.ui.surrender.className = "btn btn-primary disabled";
+		this.s.ui.surrender.className = "btn btn-danger disabled";
 		this.s.mMyTurn = false;
 		this.s.bEnded = false;
-		this.s.canvas.drawText("Waiting for opponent ..."); // waiting for another init
+		this.s.canvas.drawText(["Waiting for","opponent ..."]); // waiting for another init
 		this.waiting = true;
 		this.s.ui.msgsend.className = "btn btn-default disabled";
 
@@ -248,7 +247,7 @@ function OnlineHandler(session) {
 		this.s.bMyTurn = (data.next == this.s.mySide);
 		this.s.ui.info.appendChild(document.createTextNode("\u00A0\u00A0Next:\u00A0\u00A0"));
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
-		this.s.ui.surrender.className = "btn btn-primary";
+		this.s.ui.surrender.className = "btn btn-danger";
 		this.s.ui.undo.className = "btn btn-primary disabled"; // nothing to undo yet
 
 	};
@@ -297,22 +296,21 @@ function OnlineHandler(session) {
 		if(!data.success) alert("Publication failed! (Try a different name)");
 		else {
 			this.s.ui.publish.innerHTML = "Published";
-			this.s.ui.publish.style.backgroundColor = "green";
-			this.s.ui.publish.className = "btn btn-primary disabled";
+			this.s.ui.publish.className = "btn btn-success disabled";
 		}
 	};
 
 	this.surrender = function() {
 	
 		this.s.socket.emit("surrender",{id: this.s.sid});
-		this.s.ui.surrender.className = "btn btn-primary disabled";
+		this.s.ui.surrender.className = "btn btn-danger disabled";
 	
 	};
 
 	this.endGame = function() {
 		
 		this.s.ui.undo.className = "btn btn-primary disabled";
-		this.s.ui.surrender.className = "btn btn-primary disabled";
+		this.s.ui.surrender.className = "btn btn-danger disabled";
 
 		this.s.bMyTurn = (this.s.nextStarter == this.s.mySide);
 
@@ -342,12 +340,12 @@ function OnlineHandler(session) {
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.publish.className = "btn btn-primary disabled";
 		this.s.ui.publish.style.backgroundColor = "#428bca";
-		this.s.ui.surrender.className = "btn btn-primary disabled";
+		this.s.ui.surrender.className = "btn btn-danger disabled";
 		this.s.ui.share.className = "btn btn-primary disabled";
 		this.s.ui.msgsend.className = "btn btn-default disabled";
 		this.s.canvas.onclick = null;
 		this.s.bEnded = false;
-  		this.s.canvas.drawText("Connection problems ...");
+  		this.s.canvas.drawText(["Connection","problems ..."]);
 		this.s.socket.socket.reconnect(); // should happen automatically
 
 	};
@@ -505,7 +503,7 @@ function SpectatorDecorator(handler) {
 		this.s.ui.share.className = "btn btn-primary disabled";
 		this.s.ui.msgsend.className = "btn btn-default disabled";
 		this.s.bEnded = false;
-  		this.s.canvas.drawText("Connection problems ...");
+  		this.s.canvas.drawText(["Connection","problems ..."]);
 		this.s.socket.socket.reconnect(); // should happen automatically
 
 	};
