@@ -96,7 +96,7 @@ a.list-group-item.active:focus {
 /* new.html */
 
 #settings-controls {
-	margin-bottom: 40px;
+	margin-bottom: 30px;
 }
 
 #settings-vs {
@@ -106,11 +106,10 @@ a.list-group-item.active:focus {
 	padding: 0px;
 }
 
-#settings-taptext {
+#settings-controls .carousel {
 
-	padding-top: 10px;
+	margin-bottom: 10px;
 }
-
 
 #settings h3 {
 	margin-top: 30px;
