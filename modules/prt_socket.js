@@ -117,8 +117,6 @@ function attachSocket(httpServer,sessions,publications) {
 	  });
   		
 	  socket.on('start', function (data) {
-		
-	  	debugger;
 
 		var s = sessions[data.id];
 		var c = clients[socket.id];
@@ -255,6 +253,8 @@ function attachSocket(httpServer,sessions,publications) {
 	  
 	  socket.on('disconnect', function () {
   
+	  	debugger;
+
 	    var c = clients[socket.id];
   
 	    if(c) {
