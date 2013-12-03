@@ -101,7 +101,7 @@ function onRequest(request,response) {
 		var count = 0;
 		
 		for(var id in publications) {
-			if(count == 6) break;
+			if(path == "/" && count == 6) break;
 			list += '<a href="/play?id=' + id + '" class="list-group-item">' + publications[id].publicName + '</a>';
 			count++;
 		}
