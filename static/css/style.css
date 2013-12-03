@@ -103,6 +103,12 @@ a.list-group-item.active:focus {
 	font-size: 22px;
 	font-weight: bold;
 	margin-top: 50px;
+	padding: 0px;
+}
+
+#settings-taptext {
+
+	margin-top: 5px;
 }
 
 
