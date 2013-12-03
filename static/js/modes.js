@@ -439,7 +439,7 @@ function SpectatorDecorator(handler) {
 	};
 
 	/* TODO: what should happen in this case?*/
-	this.full = function() {
+	this.full = function(data) {
 
 		this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
