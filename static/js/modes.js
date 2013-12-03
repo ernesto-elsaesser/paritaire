@@ -261,7 +261,7 @@ function OnlineHandler(session) {
  			this.s.bMyTurn = false;
 			this.s.mySide = (x > (this.s.field.xsize / 2) ? 2 : 1);
 			this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
-			this.s.canvas.drawText("Waiting for opponent ...");
+			this.s.canvas.drawText(["Waiting for","opponent ..."]);
 			return;
 		
 		}
