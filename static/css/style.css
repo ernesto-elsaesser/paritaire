@@ -69,6 +69,15 @@ body {
 	margin-bottom: 2em;
 }
 
+.btn-primary {
+	background-color: #999;
+	border-color: #777;
+}
+
+.btn-primary.disabled {
+	background-color: #ccc;
+}
+
 /* new.html */
 
 #settings-controls {

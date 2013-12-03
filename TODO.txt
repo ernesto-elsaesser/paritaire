@@ -2,7 +2,6 @@ Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fÃ‚ÂŸr gute Note); am besten mit seinem Template
 - theme roller: graue buttons - farbschema (rot,grÃ¼n,rÃ¤nder)
 - dokumentierende Screenshots
-- Chat: Enter = senden
 
 Notiz: 
         - orange: e18336
@@ -21,6 +20,7 @@ Ernesto:
     2 kästchen 
 - Installationsanleitung
 - sanatize chat text?
+- Chat: Enter = senden --> in html von input feld: onkeyup="if(event.keyCode == 13) ..."
 
 
 DOKUMENTE:
