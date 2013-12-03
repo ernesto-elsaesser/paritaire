@@ -1,6 +1,6 @@
 function Session(ui,color1,color2) {
 
-	this.modeHandler = new PreHandler(); // object that handles events for local, online or spectator mode
+	this.modeHandler = new PreHandler(this); // object that handles events for local, online or spectator mode
 
 	// GRAPHICS
 

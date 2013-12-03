@@ -6,7 +6,7 @@ function PreHandler(session) {
 	this.resize = function() {
 
 		this.s.canvas.drawText(this.s.canvas.lastText);
-	}
+	};
 }
 
 function LocalHandler(session) {
