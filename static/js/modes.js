@@ -168,6 +168,7 @@ function OnlineHandler(session) {
 		if(this.reconnecting) {
 
 			this.s.bMyTurn = false;
+			this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
 			this.s.canvas.drawText(["Waiting for","opponent ..."]);
 			return;
 		} 
@@ -402,7 +403,6 @@ function SpectatorDecorator(handler) {
 
 	this.splash = true;
 	this.online = false;
-	this.
 
 	this.init = function(data) {
 
