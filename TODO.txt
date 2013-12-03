@@ -1,27 +1,29 @@
 Sophie:
-- Licences Dokumentieren (Punkt aus seiner Excel fÂr gute Note); am besten mit seinem Template
+- Licences Dokumentieren (Punkt aus seiner Excel fÃ‚ÂŸr gute Note); am besten mit seinem Template
 - jquery.min.map ???
-- theme roller: graue buttons - farbschema (rot,grün,ränder)
+- theme roller: graue buttons - farbschema (rot,grÃ¼n,rÃ¤nder)
 - dokumentierende Screenshots
 - Gewinn-Count bei/in ratio bar anzeigen
+- Frage: footer unten in rechte col bei index.html und play.html?
+- public.html und 404.html jeweils nur eine schmale Spalte, mit seiten margin auch auf kleinen screens
 
 Notiz: 
-	- orange: e18336
-	- blau: 3d70b7
-	- rot: bd3434
-	- gr�n: 459f28
-	- cyan: 4bc5d0
-	- gelb: c8b439
-	- lila: 843fbd
+        - orange: e18336
+        - blau: 3d70b7
+        - rot: bd3434
+        - grŸn: 459f28
+        - cyan: 4bc5d0
+        - gelb: c8b439
+        - lila: 843fbd
 
 
 Ernesto:
 - Supportmatrix: auf Devices/Browsern testen
 - IE Metro canvas size
 - ARCHITEKTURBESCHREIBUNG - 1 Blatt mit Diagramm: Schnittstellen, Komponenten, verwendete Tools ZUR RUNTIME (zB. RWD mit 3 Tools ...)
-    2 k�stchen 
+    2 kästchen 
 - Installationsanleitung
-- undo nach init in running game
+- sanatize chat text
 
 
 DOKUMENTE:

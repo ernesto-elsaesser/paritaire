@@ -172,6 +172,12 @@ body {
         width: 100%;
 }
 
+#win-counter {	
+				background-color: white;
+				text-align: center;
+				font-size: 1.4em;	
+}
+
 #chat {
 
 	padding: 5px;

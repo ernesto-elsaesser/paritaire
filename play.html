@@ -52,17 +52,22 @@
         
         <div id="play-side" class="col-md-6">
 			
-    		  <div id="more-buttons">
-            <a id="surrender" class="btn btn-primary disabled" href="#" >Surrender</a>
-            <a id="publish" class="btn btn-primary disabled" href="#" >Publish</a>
+    		<div id="more-buttons">
+            	<a id="surrender" class="btn btn-primary disabled" href="#" >Surrender</a>
+            	<a id="publish" class="btn btn-primary disabled" href="#" >Publish</a>
     		  	<a id="share" class="btn btn-primary disabled" href="#" >Share</a>
-    		  </div>
+    		</div>
 
             <!-- by default at 50%:50%, only changes on function call -->
           <div id="win-ratio">
             <img alt="" src="img/bar.png" id="ratio-bar" />
             <div id="pl1-ratio"></div>
-             <div id="pl2-ratio"></div>
+            <div id="pl2-ratio"></div>
+            <div id="win-counter"></div>
+            <script type="text/javascript">
+            	document.getElementById('win-counter').innerHTML = 
+            		session.player[1].wins + " : " + session.player[2].wins;
+            </script>
           </div>
 		
           <div id="chat-panel" class="panel panel-primary clear">
