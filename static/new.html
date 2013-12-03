@@ -114,7 +114,7 @@
 		  				</div>
   			  	</div>
 				
-						<div id="settings-taptext" class="center"> <i>(tap to change)</i> </div>
+						<div id="settings-taptext" class="center clear"> <i>(tap to change)</i> </div>
 					
 					</div>
 										
@@ -154,6 +154,17 @@
  			  				$.post("create", postData, callback);
  			  			}
  			  		}
+
+ 			  		var vs = document.getElementById("settings-vs");
+ 			  		var c1 = document.getElementById("carousel-player-1");
+
+ 			  		vs.style.marginTop = (c1.clientHeight / 3) + "px";
+
+ 			  		window.onresize = function() {
+
+ 			  			vs.style.marginTop = (c1.clientHeight / 3) + "px";
+						
+ 			  		};
 			  	</script>
  			  	
 		  		<div class="row">
