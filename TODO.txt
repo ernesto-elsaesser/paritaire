@@ -2,7 +2,6 @@ Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fÃ‚ÂŸr gute Note); am besten mit seinem Template
 - theme roller: graue buttons - farbschema (rot,grÃ¼n,rÃ¤nder)
 - dokumentierende Screenshots
-- public.html und 404.html jeweils nur eine schmale Spalte, mit seiten margin auch auf kleinen screens
 - Chat: Enter = senden
 
 Notiz: 
