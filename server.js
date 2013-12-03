@@ -97,12 +97,16 @@ function onRequest(request,response) {
 		
 		var html = (path == "/" ? indexPage : publicPage);
 		var list = "";
+
+		var count = 0;
 		
 		for(var id in publications) {
+			if(path == "/" && count == 6) break;
 			list += '<a href="/play?id=' + id + '" class="list-group-item">' + publications[id].publicName + '</a>';
+			count++;
 		}
 		
-		if(list == "") list = '<a href="#" class="list-group-item">No public sessions.</a>';
+		if(count == 0) list = '<a href="#" class="list-group-item">No public sessions.</a>';
 		
 		html = html.replace("##",list);
 		
