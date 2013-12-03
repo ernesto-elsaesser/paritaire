@@ -73,7 +73,6 @@ body {
 a.list-group-item.active, 
 a.list-group-item.active:hover, 
 a.list-group-item.active:focus,
-.panel-primary,
 .panel-primary>.panel-heading {
 	background-color: #999;
 	border-color: #777;
