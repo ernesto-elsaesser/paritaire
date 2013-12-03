@@ -106,7 +106,7 @@ function LocalHandler(session) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.17, w*0.27, w*0.20, w*0.20);
+			this.s.ctx.drawImage(this.s.winner.icon, w*0.14, w*0.27, w*0.20, w*0.20);
 		}
 
 	};
@@ -131,7 +131,7 @@ function LocalHandler(session) {
 
 	this.resize = function() {
 
-		if(this.bPlaying) this.field.draw();
+		if(this.s.bPlaying) this.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
@@ -180,8 +180,8 @@ function OnlineHandler(session) {
 
 			var w = this.s.canvas.width;
 	
-			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.6, w*0.2, w*0.2);
-			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.6, w*0.2, w*0.2);
+			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
+			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
 
 			this.s.bMyTurn = true;
 		} 
@@ -368,8 +368,8 @@ function OnlineHandler(session) {
 
 			var w = this.s.canvas.width;
 		
-			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.6, w*0.2, w*0.2);
-			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.6, w*0.2, w*0.2);
+			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
+			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
 		}
 		else if(this.s.bPlaying && !this.waiting) this.s.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
@@ -484,7 +484,7 @@ function SpectatorDecorator(handler) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.17, w*0.27, w*0.20, w*0.20);
+			this.s.ctx.drawImage(this.s.winner.icon, w*0.14, w*0.27, w*0.20, w*0.20);
 		}
 		
 	};
