@@ -76,6 +76,11 @@ body {
 
 .btn-primary.disabled {
 	background-color: #ccc;
+	border-color: #999;
+}
+
+.btn-primary:hover {
+	background-color: #888;
 	border-color: #777;
 }
 
