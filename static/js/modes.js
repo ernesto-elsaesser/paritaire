@@ -337,8 +337,8 @@ function OnlineHandler(session) {
 	this.disconnect = function() {
 
 		this.s.ui.info.innerHTML = "";
+		this.s.ui.publish.innerHTML = "Publish";
 		this.s.ui.publish.className = "btn btn-primary disabled";
-		this.s.ui.publish.style.backgroundColor = "#428bca";
 		this.s.ui.surrender.className = "btn btn-danger disabled";
 		this.s.ui.share.className = "btn btn-primary disabled";
 		this.s.ui.chat.parentElement.parentElement.style.display = "none";
