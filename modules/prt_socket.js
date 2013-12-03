@@ -327,11 +327,11 @@ function validationOver(args) {
 	s.player[1].check();
 	s.player[2].check();
 	c.socket.emit("init",s.getState());
-	var c = s.countCon();
+	var players = s.countCon();
 
 	if(s.online) {
 		
-		if(c == 1) { // second to join
+		if(players == 1) { // second to join
 
 			if(s.player[1].connected) c.side = 2;
 			else c.side = 1;
@@ -355,7 +355,7 @@ function validationOver(args) {
 	}
 	else {
 
-		if(c == 0) { // empty session, connection was a zombie
+		if(players == 0) { // empty session, connection was a zombie
 
 			c.session = s;
 			c.side = 1; 
