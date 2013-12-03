@@ -34,13 +34,13 @@ function attachSocket(httpServer,sessions,publications) {
 
 			s.isUsed(); // increase expiration date
 			
-			var c = s.countCon();
+			var players = s.countCon();
 
-			// local game
+			
 
-			if(s.online) {
+			if(s.online) { // online game
 
-				if(c == 0) { // session empty
+				if(players == 0) { // session empty
 				
 					socket.emit("init",s.getState());
 					
@@ -55,14 +55,14 @@ function attachSocket(httpServer,sessions,publications) {
 						s.player[2].invalidate();
 						s.player[2].send("check");
 					}
-					setTimeout(validationOver,1000,[c,s]);
+					setTimeout(validationOver,1000,[c,s,publications]);
 					
 				}
 
 			}
-			else {
+			else { // local game
 				
-				if(c == 0) { // session empty
+				if(players == 0) { // session empty
 					
 					c.session = s;
 					c.side = 1; 
@@ -249,11 +249,9 @@ function attachSocket(httpServer,sessions,publications) {
 	 socket.on('alive', function (data) {
 		  
   		var c = clients[socket.id];
-  		var s = sessions[data.id];
+  		var s = c.session;
 		
-		if(c.session != s) return;
-		
-		s.player[c.side].revalidate();
+		if(s && c.side != 0) s.player[c.side].revalidate();
 
 	  }); 
 	  
@@ -329,11 +327,11 @@ function validationOver(args) {
 	s.player[1].check();
 	s.player[2].check();
 	c.socket.emit("init",s.getState());
-	var c = s.countCon();
+	var players = s.countCon();
 
 	if(s.online) {
 		
-		if(c == 1) { // second to join
+		if(players == 1) { // second to join
 
 			if(s.player[1].connected) c.side = 2;
 			else c.side = 1;
@@ -344,6 +342,7 @@ function validationOver(args) {
 			
 			s.broadcast("otherjoined",{side: c.side, turn: s.nextTurn});
 			
+			var publications = args[2];
 
 			if(publications[s.id]) {
 				
@@ -357,7 +356,7 @@ function validationOver(args) {
 	}
 	else {
 
-		if(c == 0) { // empty session, connection was a zombie
+		if(players == 0) { // empty session, connection was a zombie
 
 			c.session = s;
 			c.side = 1; 

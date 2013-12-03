@@ -300,7 +300,7 @@ Player.prototype.check = function() {
 
 Player.prototype.invalidate = function() {
 	
-	this.alive = true;
+	this.alive = false;
 	
 };
 
