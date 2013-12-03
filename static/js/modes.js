@@ -404,6 +404,7 @@ function SpectatorDecorator(handler) {
 	this.s = handler.s;
 
 	this.reconnecting = false;
+	this.splash = true;
 
 	this.init = function(data) {
 
@@ -423,7 +424,10 @@ function SpectatorDecorator(handler) {
 		}
 
 		if(this.reconnecting) this.click();
-		else this.s.canvas.drawText(["Session is full.","Click to spectate!"]);
+		else {
+			this.s.canvas.drawText(["Session is full.","Click to spectate!"]);
+			this.splash = true;
+		}
 
 	};
 
@@ -462,6 +466,7 @@ function SpectatorDecorator(handler) {
 		if(this.s.bPlaying) this.s.field.draw();
 		else this.s.canvas.drawText("Player will start ...");
 		this.s.socket.emit("spectate",{id: this.s.sid});
+		this.splash = false;
 		
 	};
 
@@ -511,7 +516,7 @@ function SpectatorDecorator(handler) {
 
 	this.resize = function() {
 
-		if(this.s.bPlaying) this.s.field.draw();
+		if(this.s.bPlaying && !this.splash) this.s.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
