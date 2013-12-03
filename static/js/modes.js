@@ -487,7 +487,7 @@ function SpectatorDecorator(handler) {
 		
 		msg += this.s.player[1].points + ":" + this.s.player[2].points + "]";
 		
-		this.s.canvas.drawText(msg);
+		this.s.canvas.drawText([msg,"Player will start ..."]);
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
