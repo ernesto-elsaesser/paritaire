@@ -54,6 +54,9 @@ body {
 	margin-top: 20px;
 }
 
+#margin-lr-10 {
+	margin: 0 10px;
+}
 
 /* index.html */
 
@@ -244,4 +247,10 @@ body {
 
 #rules-image-row img {
 	width: 12%;
+}
+
+/* 404.html */
+
+#404 {
+	width: 100%;
 }
