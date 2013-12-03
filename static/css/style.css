@@ -76,6 +76,7 @@ body {
 
 .btn-primary.disabled {
 	background-color: #ccc;
+	border-color: #777;
 }
 
 /* new.html */
