@@ -20,6 +20,7 @@ function attachSocket(httpServer,sessions,publications) {
 
 		socket.on('init', function (data) {
   
+  			debugger;
 			var c = clients[socket.id];
 			var s = sessions[data.id];
 			
@@ -317,6 +318,8 @@ function attachSocket(httpServer,sessions,publications) {
 }
 
 function validationOver(args) {
+
+	debugger;
 
 	var c = args[0]; // client
 	var s = args[1]; // session
