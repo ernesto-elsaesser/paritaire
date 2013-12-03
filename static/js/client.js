@@ -88,7 +88,7 @@ function createCanvas(container) {
 	canvas.width  = container.clientWidth;
 	canvas.height = canvas.width; // TODO: change for non-square fields
 	
-	canvas.drawText = function (text, moretext) {
+	canvas.drawText = function (text) {
 		
 		var ctx = this.getContext("2d");
 		var fontsize = parseInt(ctx.font.substr(0,2));
@@ -104,10 +104,8 @@ function createCanvas(container) {
 		
 		ctx.fillStyle = "#000";
 		var x = (this.width / 2);
-		ctx.fillText(text,x,this.height * 0.4);
-		if(moretext) ctx.fillText(moretext,x,this.height * 0.6);
-
-		
+		ctx.fillText(text[0],x,this.height * 0.4);
+		if(text[1]) ctx.fillText(text[1],x,this.height * 0.6);
 		
 		this.lastText = text;
 		

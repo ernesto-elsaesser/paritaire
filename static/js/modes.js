@@ -102,7 +102,7 @@ function LocalHandler(session) {
 		
 		msg += this.s.player[1].points + ":" + this.s.player[2].points + "]";
 		
-		this.s.canvas.drawText(msg,"Click to play!");
+		this.s.canvas.drawText([msg,"Click to play!"]);
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
@@ -330,7 +330,7 @@ function OnlineHandler(session) {
 		msg += this.s.player[this.s.mySide].points + ":" + this.s.player[(this.s.mySide == 1 ? 2 : 1)].points + "]";
 		
 		if(this.s.bMyTurn) {
-			this.s.canvas.drawText(msg,"Click to play!");
+			this.s.canvas.drawText([msg,"Click to play!"]);
       	}
 		else this.s.canvas.drawText(msg);
 
@@ -423,7 +423,7 @@ function SpectatorDecorator(handler) {
 		}
 
 		if(this.reconnecting) this.click();
-		else this.s.canvas.drawText("Session is full.","Click to spectate!");
+		else this.s.canvas.drawText(["Session is full.","Click to spectate!"]);
 
 	};
 
@@ -511,7 +511,8 @@ function SpectatorDecorator(handler) {
 
 	this.resize = function() {
 
-		if (this.s.bEnded) this.drawWinner();
+		if(this.s.bPlaying) this.field.draw();
+		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
