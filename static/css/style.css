@@ -176,9 +176,15 @@ body {
 }
 
 #win-counter {	
+
+	height: 34px;
 	background-color: white;
 	text-align: center;
 	font: bold 2em Verdana;
+}
+
+#chat-panel {
+	display: none;
 }
 
 #chat {

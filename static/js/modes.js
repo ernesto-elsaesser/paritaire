@@ -16,7 +16,6 @@ function LocalHandler(session) {
 	this.init = function(data) {
 				
 			this.s.ui.publish.style.display = "none";
-			this.s.ui.chat.parentElement.parentElement.style.display = "none";
 
 			this.s.currentSide = data.turn;
 			
@@ -165,6 +164,8 @@ function OnlineHandler(session) {
 			this.s.ui.publish.style.backgroundColor = "green";
 		}
 		else this.s.ui.publish.className = "btn btn-primary";
+
+		this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
 		if(this.reconnecting) {
 
@@ -412,8 +413,8 @@ function SpectatorDecorator(handler) {
 		this.s.ui.undo.style.display = "none";
 		this.s.ui.surrender.style.display = "none";
 
-		if(this.h.otherjoined == undefined) // local session
-			this.s.ui.chat.parentElement.parentElement.style.display = "none";
+		if(this.h.otherjoined) // online session
+			this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
 		this.s.ui.msgsend.className = "btn btn-default";
 
