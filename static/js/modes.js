@@ -161,11 +161,9 @@ function OnlineHandler(session) {
 
 		if(data.published) {
 			this.s.ui.publish.innerHTML = "Published";
-			this.s.ui.publish.style.backgroundColor = "green";
+			this.s.ui.publish.className = "btn btn-success disabled";
 		}
 		else this.s.ui.publish.className = "btn btn-primary";
-
-		this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
 		if(this.reconnecting) {
 
@@ -200,6 +198,8 @@ function OnlineHandler(session) {
 		this.s.ui.publish.innerHTML = "Publish";
 		this.s.ui.publish.className = "btn btn-primary disabled";
 
+		this.s.ui.chat.parentElement.parentElement.style.display = "block";
+
 		this.s.ui.msgsend.className = "btn btn-default";
 
 		this.s.ui.info.appendChild(document.createTextNode("Color:\u00A0\u00A0"));
@@ -233,11 +233,11 @@ function OnlineHandler(session) {
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.publish.className = "btn btn-primary";
 		this.s.ui.surrender.className = "btn btn-danger disabled";
+		this.s.ui.chat.parentElement.parentElement.style.display = "none";
 		this.s.mMyTurn = false;
 		this.s.bEnded = false;
 		this.s.canvas.drawText(["Waiting for","opponent ..."]); // waiting for another init
 		this.waiting = true;
-		this.s.ui.msgsend.className = "btn btn-default disabled";
 
 	};
 
@@ -341,7 +341,7 @@ function OnlineHandler(session) {
 		this.s.ui.publish.style.backgroundColor = "#428bca";
 		this.s.ui.surrender.className = "btn btn-danger disabled";
 		this.s.ui.share.className = "btn btn-primary disabled";
-		this.s.ui.msgsend.className = "btn btn-default disabled";
+		this.s.ui.chat.parentElement.parentElement.style.display = "none";
 		this.s.canvas.onclick = null;
 		this.s.bEnded = false;
   		this.s.canvas.drawText(["Connection","problems ..."]);
@@ -403,6 +403,7 @@ function SpectatorDecorator(handler) {
 
 	this.reconnecting = false;
 	this.splash = true;
+	this.online = false;
 
 	this.init = function(data) {
 
@@ -410,8 +411,7 @@ function SpectatorDecorator(handler) {
 		this.s.ui.undo.style.display = "none";
 		this.s.ui.surrender.style.display = "none";
 
-		if(this.h.otherjoined) // online session
-			this.s.ui.chat.parentElement.parentElement.style.display = "block";
+		this.online = true;
 
 		this.s.ui.msgsend.className = "btn btn-default";
 
@@ -436,11 +436,13 @@ function SpectatorDecorator(handler) {
 
 		this.s.ui.info.innerHTML = "";
 		this.s.bEnded = false;
-		this.s.ui.msgsend.className = "btn btn-default disabled";
+		this.s.ui.chat.parentElement.parentElement.style.display = "none";
 		this.s.canvas.drawText("Player disconnected ...");
 	};
 
 	this.otherjoined = function() {
+
+		this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
@@ -464,6 +466,7 @@ function SpectatorDecorator(handler) {
 	this.click = function(x,y) {
 
 		this.s.canvas.onclick = null;
+		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
 		if(this.s.bPlaying) this.s.field.draw();
 		else this.s.canvas.drawText("Player will start ...");
 		this.s.socket.emit("spectate",{id: this.s.sid});
@@ -500,7 +503,7 @@ function SpectatorDecorator(handler) {
 
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.share.className = "btn btn-primary disabled";
-		this.s.ui.msgsend.className = "btn btn-default disabled";
+		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "none";
 		this.s.bEnded = false;
   		this.s.canvas.drawText(["Connection","problems ..."]);
 		this.s.socket.socket.reconnect(); // should happen automatically
