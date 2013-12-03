@@ -1,10 +1,7 @@
 Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fÃ‚ÂŸr gute Note); am besten mit seinem Template
-- jquery.min.map ???
 - theme roller: graue buttons - farbschema (rot,grÃ¼n,rÃ¤nder)
 - dokumentierende Screenshots
-- Gewinn-Count bei/in ratio bar anzeigen
-- Frage: footer unten in rechte col bei index.html und play.html?
 - public.html und 404.html jeweils nur eine schmale Spalte, mit seiten margin auch auf kleinen screens
 
 Notiz: 
