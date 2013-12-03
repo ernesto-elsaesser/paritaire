@@ -101,6 +101,8 @@ function Session(ui,color1,color2) {
 
 				that.ui.publish.onclick = that.publish.bind(that);
 				that.ui.msgsend.onclick = that.modeHandler.sendMessage.bind(that.modeHandler);
+				that.ui.msgtext.onkeyup = function(event) { 
+					if(event.keyCode == 13) session.modeHandler.sendMessage(); };
 			}
 			else {
 				that.modeHandler = new LocalHandler(that);
