@@ -318,9 +318,10 @@ function attachSocket(httpServer,sessions,publications) {
 
 function validationOver(c,s) {
 
+	debugger;
 	s.player[1].check();
 	s.player[2].check();
-	socket.emit("init",s.getState());
+	c.socket.emit("init",s.getState());
 	var c = s.countCon();
 
 	if(s.online) {
