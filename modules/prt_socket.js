@@ -54,7 +54,8 @@ function attachSocket(httpServer,sessions,publications) {
 						s.player[2].invalidate();
 						s.player[2].send("check");
 					}
-					setTimeout(validationOver(c,s),1000);
+					log("debug: validationOver: " + validationOver);
+					setTimeout(validationOver,1000,[c,s]);
 					
 				}
 
@@ -73,7 +74,7 @@ function attachSocket(httpServer,sessions,publications) {
 
 					s.player[1].invalidate();
 					s.player[1].send("check");
-					setTimeout(validationOver(c,s),1000);
+					setTimeout(validationOver,1000,[c,s]);
 
 				}
 			}
@@ -316,7 +317,10 @@ function attachSocket(httpServer,sessions,publications) {
 	
 }
 
-function validationOver(c,s) {
+function validationOver(args) {
+
+	var c = args[0]; // client
+	var s = args[0]; // session
 
 	debugger;
 	s.player[1].check();
