@@ -36,9 +36,9 @@ function attachSocket(httpServer,sessions,publications) {
 			
 			var players = s.countCon();
 
-			// local game
+			
 
-			if(s.online) {
+			if(s.online) { // online game
 
 				if(players == 0) { // session empty
 				
@@ -55,12 +55,12 @@ function attachSocket(httpServer,sessions,publications) {
 						s.player[2].invalidate();
 						s.player[2].send("check");
 					}
-					setTimeout(validationOver,1000,[c,s]);
+					setTimeout(validationOver,1000,[c,s,publications]);
 					
 				}
 
 			}
-			else {
+			else { // local game
 				
 				if(players == 0) { // session empty
 					
@@ -342,6 +342,7 @@ function validationOver(args) {
 			
 			s.broadcast("otherjoined",{side: c.side, turn: s.nextTurn});
 			
+			var publications = args[2];
 
 			if(publications[s.id]) {
 				
