@@ -319,8 +319,10 @@ function validationOver(args) {
 	var c = args[0]; // client
 	var s = args[1]; // session
 
-	if(s.player[1].check() || s.player[2].check()) 
-		s.broadcast("playerleft");
+	var r1 = s.player[1].check();
+	var r2 = s.player[2].check();
+
+	if(r1 || r2) s.broadcast("playerleft");
 
 	c.socket.emit("init",s.getState());
 	var players = s.countCon();
@@ -333,10 +335,9 @@ function validationOver(args) {
 			else c.side = 1;
 
 			c.session = s;
-					
-			s.player[c.side].connect(c.socket);
 			
-			s.broadcast("playerjoined",{side: c.side, turn: s.nextTurn});
+			s.broadcast("playerjoined",{side: c.side, turn: s.nextTurn});		
+			s.player[c.side].connect(c.socket);
 			
 			var publications = args[2];
 
@@ -356,6 +357,8 @@ function validationOver(args) {
 
 			c.session = s;
 			c.side = 1; 
+
+			s.broadcast("playerjoined");
 			s.player[1].connect(c.socket);
 
 		}

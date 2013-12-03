@@ -169,7 +169,6 @@ function OnlineHandler(session) {
 
 			this.s.bMyTurn = false;
 			this.s.canvas.drawText(["Waiting for","opponent ..."]);
-			this.waiting = true;
 			return;
 		} 
 			
@@ -401,9 +400,9 @@ function SpectatorDecorator(handler) {
 	this.h = handler;
 	this.s = handler.s;
 
-	this.reconnecting = false;
 	this.splash = true;
 	this.online = false;
+	this.
 
 	this.init = function(data) {
 
@@ -411,7 +410,7 @@ function SpectatorDecorator(handler) {
 		this.s.ui.undo.style.display = "none";
 		this.s.ui.surrender.style.display = "none";
 
-		this.online = true;
+		if(this.h.published) this.online = true;
 
 		this.s.ui.msgsend.className = "btn btn-default";
 
@@ -424,11 +423,9 @@ function SpectatorDecorator(handler) {
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
 		}
 
-		if(this.reconnecting) this.click();
-		else {
-			this.s.canvas.drawText(["Session is full.","Click to spectate!"]);
-			this.splash = true;
-		}
+		this.s.canvas.drawText(["Session is full.","Click to spectate!"]);
+		this.splash = true;
+		
 
 	};
 
@@ -440,6 +437,7 @@ function SpectatorDecorator(handler) {
 		this.s.canvas.drawText("Player disconnected ...");
 	};
 
+	/* TODO: what should happen in this case?
 	this.playerjoined = function() {
 
 		this.s.ui.chat.parentElement.parentElement.style.display = "block";
@@ -454,7 +452,9 @@ function SpectatorDecorator(handler) {
 
 			this.s.field.draw();
 		}
-	};
+	};*/
+
+	this.playerjoined = function() {};
 
 	this.start = function(data) {
 
@@ -513,7 +513,6 @@ function SpectatorDecorator(handler) {
 	this.reconnect = function() {
 
 		this.s.socket.emit('init',{id: this.s.sid});
-		this.reconnecting = true;
 
 	};
 

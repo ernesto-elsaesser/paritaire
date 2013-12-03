@@ -292,9 +292,12 @@ Player.prototype.disconnect = function() {
 
 Player.prototype.check = function() {
 	
-	if(this.connected && !this.alive)
+	if(this.connected && !this.alive) {
 		this.disconnect();
+		return true;
+	}
 	
+	return false;
 };
 
 Player.prototype.invalidate = function() {
