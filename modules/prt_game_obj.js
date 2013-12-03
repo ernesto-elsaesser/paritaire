@@ -284,9 +284,9 @@ Player.prototype.connect = function(socket) {
 
 Player.prototype.disconnect = function() {
 	
-	this.socket = null;
 	this.connected = false;
 	this.alive = false;
+	this.socket = null;
 	
 };
 

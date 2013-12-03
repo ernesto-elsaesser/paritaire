@@ -336,8 +336,8 @@ function validationOver(args) {
 
 			c.session = s;
 			
-			s.broadcast("playerjoined",{side: c.side, turn: s.nextTurn});		
 			s.player[c.side].connect(c.socket);
+			s.broadcast("playerjoined",{side: c.side, turn: s.nextTurn});
 			
 			var publications = args[2];
 
@@ -358,7 +358,7 @@ function validationOver(args) {
 			c.session = s;
 			c.side = 1; 
 
-			s.broadcast("playerjoined");
+			//s.broadcast("playerjoined");
 			s.player[1].connect(c.socket);
 
 		}
