@@ -200,7 +200,6 @@ function OnlineHandler(session) {
 
 		this.s.ui.publish.innerHTML = "Publish";
 		this.s.ui.publish.className = "btn btn-primary disabled";
-		this.s.ui.publish.style.backgroundColor = "#428bca";
 
 		this.s.ui.msgsend.className = "btn btn-default";
 
@@ -297,8 +296,7 @@ function OnlineHandler(session) {
 		if(!data.success) alert("Publication failed! (Try a different name)");
 		else {
 			this.s.ui.publish.innerHTML = "Published";
-			this.s.ui.publish.style.backgroundColor = "green";
-			this.s.ui.publish.className = "btn btn-primary disabled";
+			this.s.ui.publish.className = "btn btn-success disabled";
 		}
 	};
 
