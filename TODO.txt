@@ -3,6 +3,7 @@ Sophie:
 - theme roller: graue buttons - farbschema (rot,grÃ¼n,rÃ¤nder)
 - dokumentierende Screenshots
 - no javascript warning in new und play
+- "rules" -> "help"?
 
 Notiz: 
         - orange: e18336
