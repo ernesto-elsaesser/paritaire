@@ -90,7 +90,7 @@ function createCanvas(container) {
 	
 	canvas.drawText = function (text) {
 		
-		if(!text.length) text = [text];
+		if(typeof text == "string") text = [text];
 
 		var ctx = this.getContext("2d");
 		var fontsize = parseInt(ctx.font.substr(0,2));
