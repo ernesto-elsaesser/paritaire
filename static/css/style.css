@@ -177,7 +177,8 @@ body {
 
 #win-counter {	
 
-	height: 34px;
+	padding-top: 10px;
+	height: 44px;
 	background-color: white;
 	text-align: center;
 	font: bold 2em Verdana;
