@@ -34,13 +34,13 @@ function attachSocket(httpServer,sessions,publications) {
 
 			s.isUsed(); // increase expiration date
 			
-			var c = s.countCon();
+			var players = s.countCon();
 
 			// local game
 
 			if(s.online) {
 
-				if(c == 0) { // session empty
+				if(players == 0) { // session empty
 				
 					socket.emit("init",s.getState());
 					
@@ -62,7 +62,7 @@ function attachSocket(httpServer,sessions,publications) {
 			}
 			else {
 				
-				if(c == 0) { // session empty
+				if(players == 0) { // session empty
 					
 					c.session = s;
 					c.side = 1; 
