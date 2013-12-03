@@ -193,7 +193,7 @@ function OnlineHandler(session) {
 
 	this.otherjoined = function(data) {
 
-		this.s.mySide = data.side;
+		if(!this.s.mySide) this.s.mySide = data.side;
 	
 		this.s.ui.info.innerHTML = "";
 

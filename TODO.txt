@@ -24,6 +24,8 @@ Ernesto:
     2 kästchen 
 - Installationsanleitung
 - sanatize chat text
+- spectating local kein chat
+- index public list limit
 
 
 DOKUMENTE:

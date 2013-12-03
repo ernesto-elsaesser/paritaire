@@ -20,7 +20,7 @@ if(fs.existsSync("sessions.dump")) {// try to load old sessions
 
 		for(var id in dump) {
 			
-			sessions[id] = new game.Session(dump[id]);
+			sessions[id] = new game.Session(id,dump[id]);
 			if(dump[id].pubname) publications[id] = sessions[id];
 			c++;
 			
@@ -55,7 +55,7 @@ function onRequest(request,response) {
 		request.on("end", function() {
 		
 			var id = (new Date()).getTime();
-			sessions[id] = new game.Session(querystring.parse(params)); // create new session from post data
+			sessions[id] = new game.Session(id,querystring.parse(params)); // create new session from post data
 			if(sessions[id]) {
 				
 				log("created new session (" + id + "): " + params);

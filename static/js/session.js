@@ -167,6 +167,12 @@ function Session(ui,color1,color2) {
 		// TODO: info that player if he can't turn
 		
 	});
+
+	this.socket.on('check', function () {
+		
+		that.socket.emit('alive');
+  	
+	});
 	
 	this.socket.emit('init', {id: this.sid});
 	
