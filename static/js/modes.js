@@ -131,7 +131,7 @@ function LocalHandler(session) {
 
 	this.resize = function() {
 
-		if(this.s.bPlaying) this.field.draw();
+		if(this.s.bPlaying) this.s.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
@@ -511,7 +511,7 @@ function SpectatorDecorator(handler) {
 
 	this.resize = function() {
 
-		if(this.s.bPlaying) this.field.draw();
+		if(this.s.bPlaying) this.s.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
