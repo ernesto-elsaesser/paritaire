@@ -105,11 +105,9 @@ a.list-group-item.active:focus {
 	margin-top: 50px;
 }
 
-#settings h1 {
-	margin-bottom: 20px;
-}
 
 #settings h3 {
+	margin-top: 30px;
 	margin-bottom: 20px;
 }
 
