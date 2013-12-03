@@ -16,7 +16,6 @@ function LocalHandler(session) {
 	this.init = function(data) {
 				
 			this.s.ui.publish.style.display = "none";
-			this.s.ui.chat.parentElement.parentElement.style.display = "none";
 
 			this.s.currentSide = data.turn;
 			
@@ -97,7 +96,7 @@ function LocalHandler(session) {
 
 		var msg = "";
 		
-		if(this.s.winner) msg += "           won! [";
+		if(this.s.winner) msg += "        won! [";
 		else msg += "Draw! [";
 		
 		msg += this.s.player[1].points + ":" + this.s.player[2].points + "]";
@@ -106,7 +105,7 @@ function LocalHandler(session) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.14, w*0.27, w*0.20, w*0.20);
+			this.s.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.27, w*0.20, w*0.20);
 		}
 
 	};
@@ -165,6 +164,8 @@ function OnlineHandler(session) {
 			this.s.ui.publish.style.backgroundColor = "green";
 		}
 		else this.s.ui.publish.className = "btn btn-primary";
+
+		this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
 		if(this.reconnecting) {
 
@@ -412,8 +413,8 @@ function SpectatorDecorator(handler) {
 		this.s.ui.undo.style.display = "none";
 		this.s.ui.surrender.style.display = "none";
 
-		if(this.h.otherjoined == undefined) // local session
-			this.s.ui.chat.parentElement.parentElement.style.display = "none";
+		if(this.h.otherjoined) // online session
+			this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
 		this.s.ui.msgsend.className = "btn btn-default";
 
@@ -482,7 +483,7 @@ function SpectatorDecorator(handler) {
 		
 		var msg = "";
 		
-		if(this.s.winner) msg += "           won! [";
+		if(this.s.winner) msg += "        won! [";
 		else msg += "Draw! [";
 		
 		msg += this.s.player[1].points + ":" + this.s.player[2].points + "]";
@@ -491,7 +492,7 @@ function SpectatorDecorator(handler) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.14, w*0.27, w*0.20, w*0.20);
+			this.s.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.27, w*0.20, w*0.20);
 		}
 		
 	};

@@ -172,9 +172,16 @@ body {
 }
 
 #win-counter {	
-				background-color: white;
-				text-align: center;
-				font-size: 1.4em;	
+
+	padding-top: 10px;
+	height: 44px;
+	background-color: white;
+	text-align: center;
+	font: bold 2em Verdana;
+}
+
+#chat-panel {
+	display: none;
 }
 
 #chat {

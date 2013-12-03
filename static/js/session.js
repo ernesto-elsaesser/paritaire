@@ -16,7 +16,7 @@ function Session(ui,color1,color2) {
 	this.canvas = createCanvas(this.ui.main);
 	
 	this.ctx = this.canvas.getContext('2d');
-	this.ctx.font = Math.floor(this.canvas.width/12) + "px Georgia";
+	this.ctx.font = Math.floor(this.canvas.width/12) + "px Verdana";
 	
 	// canvas offset, used for mouse click mapping
 	this.offsetX = this.ui.main.offsetLeft;
@@ -27,7 +27,7 @@ function Session(ui,color1,color2) {
 		var w = this.ui.main.clientWidth;
 		this.canvas.width = w;
 		this.canvas.height = w; // TODO: change for non-square fields
-		this.ctx.font = Math.floor(w/12) + "px Georgia";
+		this.ctx.font = Math.floor(w/12) + "px Verdana";
 		
 		this.modeHandler.resize();
 
@@ -233,6 +233,7 @@ function Session(ui,color1,color2) {
 		//var d = this.player[1].wins - this.player[2].wins;
 		//var w = 100 / (1 + Math.pow(Math.E, (-0.3 * d)));
 		this.ui.ratiocol1.style.width = (( 100 * v1 )/( v1 + v2 ) ) + "%";
+		this.ui.wincount.innerHTML = this.player[1].wins + " : " + this.player[2].wins;
 
 	}
 	

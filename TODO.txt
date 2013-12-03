@@ -21,7 +21,6 @@ Ernesto:
     2 kästchen 
 - Installationsanleitung
 - sanatize chat text?
-- index public list limit
 
 
 DOKUMENTE:

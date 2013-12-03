@@ -64,10 +64,6 @@
             <div id="pl1-ratio"></div>
             <div id="pl2-ratio"></div>
             <div id="win-counter"></div>
-            <script type="text/javascript">
-            	document.getElementById('win-counter').innerHTML = 
-            		session.player[1].wins + " : " + session.player[2].wins;
-            </script>
           </div>
 		
           <div id="chat-panel" class="panel panel-primary clear">
@@ -122,6 +118,7 @@
   		undo: document.getElementById('undo'),
       ratiocol1: document.getElementById('pl1-ratio'),
       ratiocol2: document.getElementById('pl2-ratio'),
+      wincount: document.getElementById('win-counter'),
       msgtext: document.getElementById('message-text'),
       msgsend: document.getElementById('message-send'),
       chat: document.getElementById('chat-messages')
