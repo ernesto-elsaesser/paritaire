@@ -233,6 +233,7 @@ function Session(ui,color1,color2) {
 		//var d = this.player[1].wins - this.player[2].wins;
 		//var w = 100 / (1 + Math.pow(Math.E, (-0.3 * d)));
 		this.ui.ratiocol1.style.width = (( 100 * v1 )/( v1 + v2 ) ) + "%";
+		this.ui.wincount.innerHTML = this.player[1].wins + " : " + this.player[2].wins;
 
 	}
 	
