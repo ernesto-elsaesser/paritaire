@@ -20,7 +20,6 @@ Ernesto:
     2 kästchen 
 - Installationsanleitung
 - sanatize chat text?
-- Chat: Enter = senden --> in html von input feld: onkeyup="if(event.keyCode == 13) ..."
 
 
 DOKUMENTE:
