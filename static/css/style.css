@@ -87,6 +87,10 @@ a.list-group-item.active:focus {
 	border-color: #777;
 }
 
+.panel-primary {
+border-color: #999;
+}
+
 .panel-primary>.panel-heading {
 color: #fff;
 background-color: #999;
