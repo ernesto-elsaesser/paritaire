@@ -16,12 +16,12 @@ function attachSocket(httpServer,sessions,publications) {
 
 		log("CONNECTION " + socket.id);
 
-		clients[socket.id] = {};
+		clients[socket.id] = {socket: socket};
 
 		socket.on('init', function (data) {
   
+  			debugger;
 			var c = clients[socket.id];
-			//c.socket = socket;
 			var s = sessions[data.id];
 			
 			if(s == undefined) {
@@ -30,98 +30,53 @@ function attachSocket(httpServer,sessions,publications) {
 				return;
 			}
 
+			log("INIT to session " + data.id + " from " + socket.id);
+
 			s.isUsed(); // increase expiration date
 			
+			var c = s.countCon();
+
 			// local game
 
-			if(!s.online) {
-				
-				if(s.player[1].connected) {
-					
-					if(!data.oldside) {
-						
-						log("INIT to full local session " + data.id + " from " + socket.id);
-						socket.emit("init",s.getState());
-						return;
-					} 
-					
-					s.player[1].disconnect(); // reconnecting
-					
-				}
-			
-				log("INIT to local session " + data.id + " from " + socket.id);
-				c.session = s;
-				socket.emit("init",s.getState());
-				s.player[1].connect(socket);
-				return;
-			}
-		
-			// online game
+			if(s.online) {
 
-			if(!s.player[1].connected && !s.player[2].connected) { // first to enter session
-					
-				log("INIT to empty session " + data.id + " from " + socket.id);
+				if(c == 0) { // session empty
 				
-				var state = s.getState();
-				socket.emit('init',state);
-				return;
-				
-			} 
-			else if(s.player[1].connected && s.player[2].connected) { // full session
-			
-				if(!data.oldside) { // possible spectator mode
-					
-					log("INIT to full session " + data.id + " from " + socket.id);
-					
 					socket.emit("init",s.getState());
+					
+				} 
+				else { 
 
-					return;
+					if(s.player[1].connected) {
+						s.player[1].invalidate();
+						s.player[1].send("check");
+					}
+					if(s.player[2].connected) {
+						s.player[2].invalidate();
+						s.player[2].send("check");
+					}
+					setTimeout(validationOver,1000,[c,s]);
 					
 				}
-				else { // reconnect
-					
-					log("INIT to old side " + data.oldside + " in session " + data.id + " from " + socket.id);
-					
-					c.side = data.oldside;
-					s.player[c.side].disconnect();
-					
-				}
-				
-			} 
-			else { // second to join session
-				
-				if(data.oldside && s.player[data.oldside].connected) { // old zombie connection
-					
-					log("INIT to old side " + data.oldside + " in empty session " + data.id + " from " + socket.id);
 
-					s.player[data.oldside].disconnect();
-
-					socket.emit('init',s.getState());
-					
-					return;
-				
-				}
-			
-				if(s.player[1].connected) c.side = 2;
-				else c.side = 1;
-
-				log("INIT to session " + data.id + ", assigned side " + c.side + " to " + socket.id);
-				
 			}
-			
-			c.session = s;
+			else {
 				
-			socket.emit("init",s.getState());
-			s.player[c.side].connect(socket);
-			
-			s.player[1].send("otherjoined",{side: 1, turn: s.nextTurn});
-			s.player[2].send("otherjoined",{side: 2, turn: s.nextTurn});
-			
-			if(publications[data.id]) {
-				
-				publications[data.id].unpublish();
-				delete publications[data.id];
-				log(" - unpublished session " + data.id);
+				if(c == 0) { // session empty
+					
+					c.session = s;
+					c.side = 1; 
+					socket.emit("init",s.getState());
+					s.player[1].connect(socket);
+					
+				}
+				else { // session full
+
+					s.player[1].invalidate();
+					s.player[1].send("check");
+					setTimeout(validationOver,1000,[c,s]);
+
+				}
 			}
     	
 		});
@@ -144,6 +99,8 @@ function attachSocket(httpServer,sessions,publications) {
 		var s = sessions[data.id];
 		var c = clients[socket.id];
 		
+		// TODO: still good?
+
 		// this if-clause handles the special case when a second player enters a session
 		// before the first has chosen his color - we then disconnect the second player 
 		// right after his (discarded) decision, so that he will reconnect and resend 
@@ -163,6 +120,8 @@ function attachSocket(httpServer,sessions,publications) {
   		
 	  socket.on('start', function (data) {
 		
+	  	debugger;
+
 		var s = sessions[data.id];
 		var c = clients[socket.id];
 		
@@ -286,7 +245,17 @@ function attachSocket(httpServer,sessions,publications) {
 		}
 
 	  });
-	  
+
+	 socket.on('alive', function (data) {
+		  
+  		var c = clients[socket.id];
+  		var s = sessions[data.id];
+		
+		if(c.session != s) return;
+		
+		s.player[c.side].revalidate();
+
+	  }); 
 	  
 	  socket.on('disconnect', function () {
   
@@ -348,6 +317,56 @@ function attachSocket(httpServer,sessions,publications) {
 	  });
 	});
 	
+}
+
+function validationOver(args) {
+
+	debugger;
+
+	var c = args[0]; // client
+	var s = args[1]; // session
+
+	s.player[1].check();
+	s.player[2].check();
+	c.socket.emit("init",s.getState());
+	var c = s.countCon();
+
+	if(s.online) {
+		
+		if(c == 1) { // second to join
+
+			if(s.player[1].connected) c.side = 2;
+			else c.side = 1;
+
+			c.session = s;
+					
+			s.player[c.side].connect(c.socket);
+			
+			s.broadcast("otherjoined",{side: c.side, turn: s.nextTurn});
+			
+
+			if(publications[s.id]) {
+				
+				publications[s.id].unpublish();
+				delete publications[s.id];
+				log(" - unpublished session " + s.id);
+			}
+			
+		}
+
+	}
+	else {
+
+		if(c == 0) { // empty session, connection was a zombie
+
+			c.session = s;
+			c.side = 1; 
+			s.player[1].connect(c.socket);
+
+		}
+
+	}
+
 }
 
 function log(msg) {

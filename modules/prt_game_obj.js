@@ -1,5 +1,6 @@
-function Session(proto) {
+function Session(id,proto) {
 	
+	this.id = id;
 	this.lastTurn = null; // no undo for stored sessions
 	this.spectators = [];
 	
@@ -209,6 +210,15 @@ Session.prototype.unpublish = function() {
 	this.publicName = null;
 	this.publicationDate = 0;
 };
+
+Session.prototype.countCon = function() {
+
+	var c = 0;
+	if(this.player[1].connected) c++;
+	if(this.player[2].connected) c++;
+	return c;
+
+};
    
 Session.prototype.getState = function(dumping) {
 		
@@ -237,12 +247,7 @@ Session.prototype.getState = function(dumping) {
 		}
 	}
 	else {
-
-		if(this.player[1].connected || this.player[2].connected) {
-			if(this.player[1].connected && this.player[2].connected) state.connections = 2;
-			else state.connections = 1;
-		} else state.connections = 0;
-
+		state.connections = this.countCon();
 	}
 		
 	return state;
@@ -266,6 +271,7 @@ function Player(stone, color, wins) {
 	this.wins = wins;
 	this.socket = null;
 	this.connected = false;
+	this.alive = false;
 
 }
 	
@@ -273,6 +279,7 @@ Player.prototype.connect = function(socket) {
 		
 	this.socket = socket;
 	this.connected = true;
+	this.alive = true;
 	
 };
 
@@ -280,6 +287,26 @@ Player.prototype.disconnect = function() {
 	
 	this.socket = null;
 	this.connected = false;
+	this.alive = false;
+	
+};
+
+Player.prototype.check = function() {
+	
+	if(this.connected && !this.alive)
+		this.disconnect();
+	
+};
+
+Player.prototype.invalidate = function() {
+	
+	this.alive = true;
+	
+};
+
+Player.prototype.revalidate = function() {
+	
+	this.alive = true;
 	
 };
 
