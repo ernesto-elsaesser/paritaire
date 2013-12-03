@@ -183,12 +183,12 @@ function OnlineHandler(session) {
 			this.s.bMyTurn = true;
 		} 
 				
-		// if there is one other player connected yet, "playerjoined" message will follow
+		// if there is one other player connected yet, "full" message will follow
 		// if the session is already full, the SpectatorDecorator intercepted the init call
 
 	}; 
 
-	this.playerjoined = function(data) {
+	this.full = function(data) {
 
 		if(!this.s.mySide) this.s.mySide = data.side;
 	
@@ -438,7 +438,7 @@ function SpectatorDecorator(handler) {
 	};
 
 	/* TODO: what should happen in this case?
-	this.playerjoined = function() {
+	this.full = function() {
 
 		this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
@@ -454,7 +454,7 @@ function SpectatorDecorator(handler) {
 		}
 	};*/
 
-	this.playerjoined = function() {};
+	this.full = function() {};
 
 	this.start = function(data) {
 

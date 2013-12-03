@@ -94,7 +94,7 @@ function Session(ui,color1,color2) {
 				if(data.connections == 2) that.modeHandler = new SpectatorDecorator(that.modeHandler);
 
 				// online specific event handler
-				that.socket.on('playerjoined', that.modeHandler.playerjoined.bind(that.modeHandler));
+				that.socket.on('full', that.modeHandler.full.bind(that.modeHandler));
 				that.socket.on('playerleft', that.modeHandler.playerleft.bind(that.modeHandler));
 				that.socket.on('published', that.modeHandler.published.bind(that.modeHandler));
 				that.socket.on('chat', that.modeHandler.receivedMessage.bind(that.modeHandler));

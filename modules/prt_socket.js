@@ -53,7 +53,7 @@ function attachSocket(httpServer,sessions,publications) {
 						s.player[2].invalidate();
 						s.player[2].send("check");
 					}
-					setTimeout(validationOver,1000,[c,s,publications]);
+					setTimeout(validationOver,3000,[c,s,publications]);
 					
 				}
 
@@ -72,7 +72,7 @@ function attachSocket(httpServer,sessions,publications) {
 
 					s.player[1].invalidate();
 					s.player[1].send("check");
-					setTimeout(validationOver,1000,[c,s]);
+					setTimeout(validationOver,3000,[c,s]);
 
 				}
 			}
@@ -244,6 +244,8 @@ function attachSocket(httpServer,sessions,publications) {
 
 	 socket.on('alive', function (data) {
 		  
+	 	debugger;
+
   		var c = clients[socket.id];
   		var s = c.session;
 		
@@ -319,10 +321,8 @@ function validationOver(args) {
 	var c = args[0]; // client
 	var s = args[1]; // session
 
-	var r1 = s.player[1].check();
-	var r2 = s.player[2].check();
-
-	if(r1 || r2) s.broadcast("playerleft");
+	s.player[1].checkDrop();
+	s.player[2].checkDrop();
 
 	c.socket.emit("init",s.getState());
 	var players = s.countCon();
@@ -337,7 +337,10 @@ function validationOver(args) {
 			c.session = s;
 			
 			s.player[c.side].connect(c.socket);
-			s.broadcast("playerjoined",{side: c.side, turn: s.nextTurn});
+
+			// inform both the new and the waiting player that the session
+			// is full and who's turn it is (important if the game is runnung)
+			s.broadcast("full",{side: c.side, turn: s.nextTurn});
 			
 			var publications = args[2];
 
@@ -358,7 +361,7 @@ function validationOver(args) {
 			c.session = s;
 			c.side = 1; 
 
-			//s.broadcast("playerjoined");
+			//s.broadcast("full");
 			s.player[1].connect(c.socket);
 
 		}
