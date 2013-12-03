@@ -170,7 +170,7 @@ function OnlineHandler(session) {
 		if(this.reconnecting) {
 
 			this.s.bMyTurn = false;
-			this.s.canvas.drawText("Waiting for opponent ...");
+			this.s.canvas.drawText(["Waiting for","opponent ..."]);
 			this.waiting = true;
 			return;
 		} 
@@ -236,7 +236,7 @@ function OnlineHandler(session) {
 		this.s.ui.surrender.className = "btn btn-danger disabled";
 		this.s.mMyTurn = false;
 		this.s.bEnded = false;
-		this.s.canvas.drawText("Waiting for opponent ..."); // waiting for another init
+		this.s.canvas.drawText(["Waiting for","opponent ..."]); // waiting for another init
 		this.waiting = true;
 		this.s.ui.msgsend.className = "btn btn-default disabled";
 
