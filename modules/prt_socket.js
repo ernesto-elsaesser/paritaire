@@ -97,15 +97,11 @@ function attachSocket(httpServer,sessions,publications) {
 		var s = sessions[data.id];
 		var c = clients[socket.id];
 		
-		// TODO: still good?
-
 		// this if-clause handles the special case when a second player enters a session
-		// before the first has chosen his color - we then disconnect the second player 
-		// right after his (discarded) decision, so that he will reconnect and resend 
-		// his init message, which will then be answered by an init message from the 
-		// server that will assign him the second color
+		// before the first has chosen his color - we then reinit the second player 
+		// right after his (discarded) decision, so that he knows that he is in a full game
 		if(s.player[1].connected || s.player[2].connected) {
-			socket.disconnect();
+			socket.emit("init",s.getState());
 			return;
 		}
 		

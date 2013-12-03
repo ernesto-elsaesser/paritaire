@@ -168,7 +168,8 @@ function OnlineHandler(session) {
 		if(this.reconnecting) {
 
 			this.s.bMyTurn = false;
-			this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
+			if(data.connections == 0) 
+				this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
 			this.s.canvas.drawText(["Waiting for","opponent ..."]);
 			return;
 		} 
