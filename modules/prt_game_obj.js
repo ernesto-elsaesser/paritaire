@@ -312,6 +312,7 @@ Player.prototype.revalidate = function() {
 
 Player.prototype.send = function(msg,data) {
 	
+	if(!this.connected) return;
 	this.socket.emit(msg,data);
 	
 };
