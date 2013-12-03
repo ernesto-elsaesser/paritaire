@@ -434,10 +434,10 @@ function SpectatorDecorator(handler) {
 		this.s.ui.info.innerHTML = "";
 		this.s.bEnded = false;
 		this.s.ui.chat.parentElement.parentElement.style.display = "none";
-		this.s.canvas.drawText("Player disconnected ...");
+		this.s.canvas.drawText(["Player","disconnected ..."]);
 	};
 
-	/* TODO: what should happen in this case?
+	/* TODO: what should happen in this case?*/
 	this.full = function() {
 
 		this.s.ui.chat.parentElement.parentElement.style.display = "block";
@@ -452,9 +452,7 @@ function SpectatorDecorator(handler) {
 
 			this.s.field.draw();
 		}
-	};*/
-
-	this.full = function() {};
+	};
 
 	this.start = function(data) {
 

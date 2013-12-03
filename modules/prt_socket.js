@@ -361,7 +361,7 @@ function validationOver(args) {
 			c.session = s;
 			c.side = 1; 
 
-			//s.broadcast("full");
+			s.broadcast("full");
 			s.player[1].connect(c.socket);
 
 		}
