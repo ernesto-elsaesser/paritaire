@@ -96,7 +96,7 @@ function LocalHandler(session) {
 
 		var msg = "";
 		
-		if(this.s.winner) msg += "           won! [";
+		if(this.s.winner) msg += "        won! [";
 		else msg += "Draw! [";
 		
 		msg += this.s.player[1].points + ":" + this.s.player[2].points + "]";
@@ -105,7 +105,7 @@ function LocalHandler(session) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.14, w*0.27, w*0.20, w*0.20);
+			this.s.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.27, w*0.20, w*0.20);
 		}
 
 	};
@@ -483,7 +483,7 @@ function SpectatorDecorator(handler) {
 		
 		var msg = "";
 		
-		if(this.s.winner) msg += "           won! [";
+		if(this.s.winner) msg += "        won! [";
 		else msg += "Draw! [";
 		
 		msg += this.s.player[1].points + ":" + this.s.player[2].points + "]";
@@ -492,7 +492,7 @@ function SpectatorDecorator(handler) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.14, w*0.27, w*0.20, w*0.20);
+			this.s.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.27, w*0.20, w*0.20);
 		}
 		
 	};
