@@ -54,6 +54,12 @@ body {
 	margin-top: 20px;
 }
 
+.row {
+
+	margin-left: 0;
+	margin-right: 0;
+}
+
 .margin-lr-10 {
 	margin: 0 10px;
 }
