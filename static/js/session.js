@@ -13,6 +13,9 @@ function Session(ui,color1,color2) {
 				yellow: "#c8b439" };
 
 	this.ui = ui;
+
+	this.ui.error.innerHTML = "<b>Error:</b> Browser not supported.";
+
 	this.canvas = createCanvas(this.ui.main);
 	
 	this.ctx = this.canvas.getContext('2d');
@@ -178,6 +181,8 @@ function Session(ui,color1,color2) {
 	});
 	
 	this.socket.emit('init', {id: this.sid});
+
+	this.ui.error.outerHTML = "";
 	
 	this.canvas.drawText("Connecting ...");
 	

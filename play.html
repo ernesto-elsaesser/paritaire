@@ -34,6 +34,13 @@
     </div>
 
     <div class="container">
+
+      <div class="row" id="req-js">
+      <div class="alert alert-danger">
+      <b>Error:</b> This page requires JavaScript! <br/>
+      Please enable it or use a different browser.
+    </div>
+    </div>
     
       <div class="row">
         <div id="play-main" class="col-md-6">
@@ -121,7 +128,8 @@
       wincount: document.getElementById('win-counter'),
       msgtext: document.getElementById('message-text'),
       msgsend: document.getElementById('message-send'),
-      chat: document.getElementById('chat-messages')
+      chat: document.getElementById('chat-messages'),
+      error: document.getElementById("req-js")
   	};
   	
   	var session = new Session(ui,"#1","#2");
