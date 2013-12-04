@@ -54,8 +54,8 @@ body {
 	margin-top: 20px;
 }
 
-.margin-lr-10 {
-	margin: 0 10px;
+.alert {
+	margin-top: 0;
 }
 
 /* index.html */
