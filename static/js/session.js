@@ -45,6 +45,7 @@ function Session(ui,color1,color2) {
 		
 		this.ui.share.className = "btn btn-primary disabled";
 		this.canvas.drawText("Invalid session link!");
+		this.ui.error.outerHTML = "";
 		return;
 	}
 
