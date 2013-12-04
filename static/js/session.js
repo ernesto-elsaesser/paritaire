@@ -14,16 +14,12 @@ function Session(ui,color1,color2) {
 
 	this.ui = ui;
 
-	this.ui.error.innerHTML = "<b>Error:</b> Browser not supported.";
+	this.ui.error.innerHTML = "<b>Error:</b> Browser not supported (no HTML5 canvas element).";
 
 	this.canvas = createCanvas(this.ui.main);
 	
 	this.ctx = this.canvas.getContext('2d');
 	this.ctx.font = Math.floor(this.canvas.width/12) + "px Verdana";
-	
-	// canvas offset, used for mouse click mapping
-	this.offsetX = this.ui.main.offsetLeft;
-	this.offsetY = this.ui.main.offsetTop;
 
 	this.resizeCanvas = function() {
 	
@@ -33,11 +29,12 @@ function Session(ui,color1,color2) {
 		this.ctx.font = Math.floor(w/12) + "px Verdana";
 		
 		this.modeHandler.resize();
-
 		 
 	};
 	
 	window.onresize = this.resizeCanvas.bind(this);
+
+	this.ui.error.innerHTML = "<b>Error:</b> Browser not supported (no socket connection).";
 	
 	// GAME
 	
