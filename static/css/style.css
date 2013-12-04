@@ -58,6 +58,10 @@ body {
 	margin-top: 0;
 }
 
+.margin-lr-10 {
+	margin: 0 10px;
+}
+
 /* index.html */
 
 .intro a {
