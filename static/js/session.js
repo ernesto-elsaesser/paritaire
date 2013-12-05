@@ -240,7 +240,7 @@ function Session(ui,color1,color2) {
 		//var w = 100 / (1 + Math.pow(Math.E, (-0.3 * d)));
 
 		var element = this.ui.ratiocol1;
-		var max = ( 100 * v1 )/( v1 + v2 );
+		var max = Math.floor(( 100 * v1 )/( v1 + v2 ));
 
 		this.ui.wincount.innerHTML = this.player[1].wins + " : " + this.player[2].wins;
 
