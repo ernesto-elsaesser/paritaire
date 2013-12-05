@@ -53,7 +53,7 @@ function attachSocket(httpServer,sessions,publications) {
 						s.player[2].invalidate();
 						s.player[2].send("check");
 					}
-					setTimeout(validationOver,1000,[c,s,publications]);
+					setTimeout(validationOver,3000,[c,s,publications]);
 					
 				}
 
@@ -72,7 +72,7 @@ function attachSocket(httpServer,sessions,publications) {
 
 					s.player[1].invalidate();
 					s.player[1].send("check");
-					setTimeout(validationOver,1000,[c,s]);
+					setTimeout(validationOver,3000,[c,s]);
 
 				}
 			}
@@ -97,15 +97,11 @@ function attachSocket(httpServer,sessions,publications) {
 		var s = sessions[data.id];
 		var c = clients[socket.id];
 		
-		// TODO: still good?
-
 		// this if-clause handles the special case when a second player enters a session
-		// before the first has chosen his color - we then disconnect the second player 
-		// right after his (discarded) decision, so that he will reconnect and resend 
-		// his init message, which will then be answered by an init message from the 
-		// server that will assign him the second color
+		// before the first has chosen his color - we then reinit the second player 
+		// right after his (discarded) decision, so that he knows that he is in a full game
 		if(s.player[1].connected || s.player[2].connected) {
-			socket.disconnect();
+			socket.emit("init",s.getState());
 			return;
 		}
 		
@@ -117,8 +113,6 @@ function attachSocket(httpServer,sessions,publications) {
 	  });
   		
 	  socket.on('start', function (data) {
-		
-	  	debugger;
 
 		var s = sessions[data.id];
 		var c = clients[socket.id];
@@ -246,6 +240,8 @@ function attachSocket(httpServer,sessions,publications) {
 
 	 socket.on('alive', function (data) {
 		  
+	 	debugger;
+
   		var c = clients[socket.id];
   		var s = c.session;
 		
@@ -255,6 +251,8 @@ function attachSocket(httpServer,sessions,publications) {
 	  
 	  socket.on('disconnect', function () {
   
+	  	debugger;
+
 	    var c = clients[socket.id];
   
 	    if(c) {
@@ -267,20 +265,16 @@ function attachSocket(httpServer,sessions,publications) {
 				
 					if(c.side != 0) {
 
-						s.player[c.side].disconnect(); // TODO: why is this sometimes 0?
+						if(s.player[c.side].connected) { // possibly already kicked out
 
-						var other = s.player[(c.side == 1 ? 2 : 1)];
-				
-		        		if(other.connected) { // session was full
-	        
-		          			log("DISCONNECT side " + c.side + " in before full session from " + socket.id);
-		          	  		other.send('otherleft');
-	           
-		        		}
-		        		else log("DISCONNECT side " + c.side + " in now empty session from " + socket.id);
+							s.player[c.side].disconnect(); // TODO: why is this sometimes 0?
+
+		          			log("DISCONNECT side " + c.side + " in online session from " + socket.id);
+		          	  		s.broadcast('playerleft');
+		          	  	}
 
 					}
-					else {
+					else { // spectator
 
 						for(var i in s.spectators) {
 
@@ -293,14 +287,15 @@ function attachSocket(httpServer,sessions,publications) {
 
 						}
 					}
-    
-					
 					
 				}
 				else {
 					
-					log("DISCONNECT from local session from " + socket.id);
-					s.player[1].disconnect();
+					if(s.player[1].connected) { // possibly already kicked out
+						log("DISCONNECT from local session from " + socket.id);
+						s.player[1].disconnect();
+						s.broadcast('playerleft');
+					}
 				}
          
 	      	}
@@ -322,8 +317,9 @@ function validationOver(args) {
 	var c = args[0]; // client
 	var s = args[1]; // session
 
-	s.player[1].check();
-	s.player[2].check();
+	s.player[1].checkDrop();
+	s.player[2].checkDrop();
+
 	c.socket.emit("init",s.getState());
 	var players = s.countCon();
 
@@ -335,10 +331,12 @@ function validationOver(args) {
 			else c.side = 1;
 
 			c.session = s;
-					
-			s.player[c.side].connect(c.socket);
 			
-			s.broadcast("otherjoined",{side: c.side, turn: s.nextTurn});
+			s.player[c.side].connect(c.socket);
+
+			// inform both the new and the waiting player that the session
+			// is full and who's turn it is (important if the game is runnung)
+			s.broadcast("full",{side: c.side, turn: s.nextTurn});
 			
 			var publications = args[2];
 
@@ -358,6 +356,8 @@ function validationOver(args) {
 
 			c.session = s;
 			c.side = 1; 
+
+			s.broadcast("full");
 			s.player[1].connect(c.socket);
 
 		}

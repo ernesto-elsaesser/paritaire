@@ -54,6 +54,10 @@ body {
 	margin-top: 20px;
 }
 
+.alert {
+	margin-top: 0;
+}
+
 .margin-lr-10 {
 	margin: 0 10px;
 }
@@ -87,28 +91,32 @@ body {
 a.list-group-item.active, 
 a.list-group-item.active:hover, 
 a.list-group-item.active:focus {
-	background-color: #eee;
+	background-color: #f5f5f5;
 	border-color: #ddd;
 	color: #333;
+	font-weight: bold;
 }
 
 /* new.html */
 
 #settings-controls {
-	margin-bottom: 40px;
+	margin-bottom: 30px;
 }
 
 #settings-vs {
 	font-size: 22px;
 	font-weight: bold;
 	margin-top: 50px;
+	padding: 0px;
 }
 
-#settings h1 {
-	margin-bottom: 20px;
+#settings-controls .carousel {
+
+	margin-bottom: 10px;
 }
 
 #settings h3 {
+	margin-top: 30px;
 	margin-bottom: 20px;
 }
 

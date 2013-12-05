@@ -34,6 +34,13 @@
     </div>
     
     <div class="container">
+
+	  	<div id="req-js" class="alert alert-danger">
+ 		  <b>Error:</b> This page requires JavaScript! <br/>
+      		Please enable it or use a different browser.
+		</div>
+	  
+	  <script type="text/javascript">document.getElementById("req-js").outerHTML = "";</script>
     
 			<div id="settings" class="well well-lg">
      		<h1 class="center no-top-margin">Settings</h1>
@@ -66,13 +73,13 @@
 					  		<div class="radio">
 									<label>
 			      				<input type="radio" name="online" id="local" value="0" disabled>
-										Adventure (coming soon)
+										Solo (coming soon)
 									</label>
 					  		</div>
 				  		</div>
     	      </div>
 				
-			  		<h3 class="center"> Sides </h3>
+			  		<h3 class="center">Players</h3>
 				
 			  		<div class="col-md-3 col-sm-3 col-xs-5 center">
  			  			<div id="carousel-player-1" class="carousel slide" data-interval="false">
@@ -93,7 +100,7 @@
 		  				</div>
   			  	</div>
 				
-						<div class="col-md-1 col-sm-1 col-xs-2 center" id="settings-vs"> vs. </div>
+						<div class="col-md-1 col-sm-1 col-xs-2 center" id="settings-vs">-vs-</div>
 				
   			  	<div class="col-md-3 col-sm-3 col-xs-5 center">
  			    		<div id="carousel-player-2" class="carousel slide" data-interval="false">
@@ -154,6 +161,17 @@
  			  				$.post("create", postData, callback);
  			  			}
  			  		}
+
+ 			  		var vs = document.getElementById("settings-vs");
+ 			  		var c2 = document.getElementById("carousel-player-2");
+
+ 			  		var adjust = function() {
+ 			  			vs.style.marginTop = (c2.clientHeight / 3) + "px";
+ 			  		};
+
+ 			  		c2.onload = adjust;
+
+ 			  		window.onresize = adjust;
 			  	</script>
  			  	
 		  		<div class="row">

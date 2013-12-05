@@ -13,14 +13,13 @@ function Session(ui,color1,color2) {
 				yellow: "#c8b439" };
 
 	this.ui = ui;
+
+	this.ui.error.innerHTML = "<b>Error:</b> Browser not supported (no HTML5 canvas element).";
+
 	this.canvas = createCanvas(this.ui.main);
 	
 	this.ctx = this.canvas.getContext('2d');
 	this.ctx.font = Math.floor(this.canvas.width/12) + "px Verdana";
-	
-	// canvas offset, used for mouse click mapping
-	this.offsetX = this.ui.main.offsetLeft;
-	this.offsetY = this.ui.main.offsetTop;
 
 	this.resizeCanvas = function() {
 	
@@ -30,11 +29,12 @@ function Session(ui,color1,color2) {
 		this.ctx.font = Math.floor(w/12) + "px Verdana";
 		
 		this.modeHandler.resize();
-
 		 
 	};
 	
 	window.onresize = this.resizeCanvas.bind(this);
+
+	this.ui.error.innerHTML = "<b>Error:</b> Browser not supported (no socket connection).";
 	
 	// GAME
 	
@@ -42,6 +42,7 @@ function Session(ui,color1,color2) {
 		
 		this.ui.share.className = "btn btn-primary disabled";
 		this.canvas.drawText("Invalid session link!");
+		this.ui.error.outerHTML = "";
 		return;
 	}
 
@@ -94,8 +95,8 @@ function Session(ui,color1,color2) {
 				if(data.connections == 2) that.modeHandler = new SpectatorDecorator(that.modeHandler);
 
 				// online specific event handler
-				that.socket.on('otherjoined', that.modeHandler.otherjoined.bind(that.modeHandler));
-				that.socket.on('otherleft', that.modeHandler.otherleft.bind(that.modeHandler));
+				that.socket.on('full', that.modeHandler.full.bind(that.modeHandler));
+				that.socket.on('playerleft', that.modeHandler.playerleft.bind(that.modeHandler));
 				that.socket.on('published', that.modeHandler.published.bind(that.modeHandler));
 				that.socket.on('chat', that.modeHandler.receivedMessage.bind(that.modeHandler));
 
@@ -178,6 +179,8 @@ function Session(ui,color1,color2) {
 	});
 	
 	this.socket.emit('init', {id: this.sid});
+
+	this.ui.error.outerHTML = "";
 	
 	this.canvas.drawText("Connecting ...");
 	

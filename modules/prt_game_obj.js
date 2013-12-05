@@ -77,7 +77,6 @@ Session.prototype.startGame = function() {
 	
 	this.broadcast("start",t);
 
-    this.nextRound = (this.nextRound == 1 ? 2 : 1);
 };
    
 // return codes:
@@ -129,7 +128,7 @@ Session.prototype.turn = function(side,x,y) {
 
 Session.prototype.endRound = function() {
 
-		var winner = null;
+	var winner = null;
 	
 	if(this.player[1].points > this.player[2].points) winner = this.player[1];
 	else if(this.player[2].points > this.player[1].points) winner = this.player[2];
@@ -138,6 +137,8 @@ Session.prototype.endRound = function() {
 	
 	this.nextTurn = 0;
 	this.playing = false;
+
+    this.nextRound = (this.nextRound == 1 ? 2 : 1);
 
 };
    
@@ -186,9 +187,8 @@ Session.prototype.surrender = function(side) {
 
 Session.prototype.broadcast = function(msg,data) {
 
-	this.player[1].send(msg,data);
-	
-   	if(this.online) this.player[2].send(msg,data);
+	if(this.player[1].connected) this.player[1].send(msg,data);
+	if(this.player[2].connected) this.player[2].send(msg,data);
    		
    	for(var i in this.spectators) this.spectators[i].emit(msg,data);
 
@@ -285,17 +285,21 @@ Player.prototype.connect = function(socket) {
 
 Player.prototype.disconnect = function() {
 	
-	this.socket = null;
 	this.connected = false;
 	this.alive = false;
+	this.socket.disconnect();
+	this.socket = null;
 	
 };
 
-Player.prototype.check = function() {
+Player.prototype.checkDrop = function() {
 	
-	if(this.connected && !this.alive)
+	if(this.connected && !this.alive) {
 		this.disconnect();
+		return true;
+	}
 	
+	return false;
 };
 
 Player.prototype.invalidate = function() {
