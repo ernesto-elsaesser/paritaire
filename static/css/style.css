@@ -66,6 +66,7 @@ body {
 
 .intro a {
   font-size: 1.1em;
+  margin-bottom: 10px;
 }
 
 #req-js > .alert {
