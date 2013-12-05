@@ -254,9 +254,9 @@ function Session(ui,color1,color2) {
 		var step = function() {
 
 			if(now == max) return;
-			now += (max < now ? -1 : 1);
+			now += (max < now ? -0.1 : 0.1);
 			element.style.width = now + "%";
-			setTimeout(step,100);
+			setTimeout(step,10);
 
 		};
 
