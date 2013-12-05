@@ -39,8 +39,60 @@
  		  <b>Error:</b> This page requires JavaScript! <br/>
       		Please enable it or use a different browser.
 		</div>
-	  
-	  <script type="text/javascript">document.getElementById("req-js").outerHTML = "";</script>
+
+		<script type="text/javascript">
+
+			document.getElementById("req-js").outerHTML = "";
+
+	  		function validate() {
+	  			
+			alertText = document.getElementById('validation_advice');
+	  			colors = document.getElementsByClassName("active");
+	  			
+	  			if(colors[0].id == colors[1].id) {
+	  				
+	  			alertText.innerHTML = "<strong>Error:</strong> You can not both be " + colors[0].id + "!";
+			//alertText.style.display = "block";
+			$("#validation_advice").removeClass("hide");
+				
+	  			} else {
+	  				
+	  				var postData = { 
+	  							col1: colors[0].id, 
+								col2: colors[1].id, 
+								dim: document.getElementById('settings-dim').value, 
+								online: $('#online').prop('checked')
+							};
+							
+					var callback = function (data, status) {
+				
+						if(status == "success" && data.length) { 
+							
+							window.location.href = "/play?id=" + data;
+						} else {
+					
+							alertText.innerHTML = "<strong>Error:</strong> Invalid session parameters!";
+							$("#validation_advice").removeClass("hide");
+						}
+					};
+							
+	  				$.post("create", postData, callback);
+	  			}
+	  		}
+
+	  		var vs = document.getElementById("settings-vs");
+	  		var c2 = document.getElementById("carousel-player-2");
+
+	  		var adjust = function() {
+	  			vs.style.marginTop = (c2.clientHeight / 3) + "px";
+	  		};
+
+	  		c2.onload = adjust;
+
+	  		window.onresize = adjust;
+
+
+		</script>
     
 			<div id="settings" class="well well-lg">
      		<h1 class="center no-top-margin">Settings</h1>
@@ -124,55 +176,6 @@
 						<div class="center"> <i>(tap to change)</i> </div>
 					
 					</div>
-										
-					<script type="text/javascript">
- 			  		function validate() {
- 			  			
-						alertText = document.getElementById('validation_advice');
- 			  			colors = document.getElementsByClassName("active");
- 			  			
- 			  			if(colors[0].id == colors[1].id) {
- 			  				
- 			  			alertText.innerHTML = "<strong>Error:</strong> You can not both be " + colors[0].id + "!";
-						//alertText.style.display = "block";
-						$("#validation_advice").removeClass("hide");
-							
- 			  			} else {
- 			  				
- 			  				var postData = { 
- 			  							col1: colors[0].id, 
-											col2: colors[1].id, 
-											dim: document.getElementById('settings-dim').value, 
-											online: $('#online').prop('checked')
-										};
-										
-								var callback = function (data, status) {
-							
-									if(status == "success" && data.length) { 
-										
-										window.location.href = "/play?id=" + data;
-									} else {
-								
-										alertText.innerHTML = "<strong>Error:</strong> Invalid session parameters!";
-										$("#validation_advice").removeClass("hide");
-									}
-								};
-										
- 			  				$.post("create", postData, callback);
- 			  			}
- 			  		}
-
- 			  		var vs = document.getElementById("settings-vs");
- 			  		var c2 = document.getElementById("carousel-player-2");
-
- 			  		var adjust = function() {
- 			  			vs.style.marginTop = (c2.clientHeight / 3) + "px";
- 			  		};
-
- 			  		c2.onload = adjust;
-
- 			  		window.onresize = adjust;
-			  	</script>
  			  	
 		  		<div class="row">
 			  			<div class="col-md-12">
