@@ -2,6 +2,7 @@ Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fÃ‚ÂŸr gute Note); am besten mit seinem Template
 - dokumentierende Screenshots
 - "rules" -> "help"?
+- Learn
 
 Notiz: 
         - orange: e18336
