@@ -300,11 +300,13 @@ a.list-group-item.active:focus {
 /* credits.html */
 
 .credits-cat {
+	clear: both;
 	font-weight: bold;
-	width: 250px;
+	float: left;
+	width: 100px;
 }
 
 .credits-links {
 	float: left;
-	width: 250px;
+	width: 100px;
 }
