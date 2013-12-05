@@ -284,6 +284,11 @@ a.list-group-item.active:focus {
 	width: 33%;
 }
 
+#rules-carousel {
+
+	border: 1px solid black;
+}
+
 #rules-image-row {
 	margin-top: 10px;
 }
