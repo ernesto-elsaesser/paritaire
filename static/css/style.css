@@ -299,6 +299,11 @@ a.list-group-item.active:focus {
 
 /* credits.html */
 
+#credits-text {
+
+	margin: 20px 0;
+}
+
 .credits-cat {
 	clear: both;
 	font-weight: bold;
