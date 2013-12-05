@@ -238,8 +238,23 @@ function Session(ui,color1,color2) {
 		var v2 = this.player[2].wins + 2;
 		//var d = this.player[1].wins - this.player[2].wins;
 		//var w = 100 / (1 + Math.pow(Math.E, (-0.3 * d)));
-		this.ui.ratiocol1.style.width = (( 100 * v1 )/( v1 + v2 ) ) + "%";
+
+		var element = this.ui.ratiocol1;
+		var max = ( 100 * v1 )/( v1 + v2 );
+		var now = parseInt(element.style.width.replace("%",""));
+
+		var step = function() {
+
+			if(now == max) return;
+			now += (max < now ? -1 : 1);
+			element.style.width = now + "%";
+			setTimeout(step,5);
+
+		};
+
 		this.ui.wincount.innerHTML = this.player[1].wins + " : " + this.player[2].wins;
+
+		step();
 
 	}
 	
