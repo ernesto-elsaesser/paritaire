@@ -163,15 +163,15 @@
  			  		}
 
  			  		var vs = document.getElementById("settings-vs");
- 			  		var c1 = document.getElementById("carousel-player-1");
+ 			  		var c2 = document.getElementById("carousel-player-2");
 
- 			  		vs.style.marginTop = (c1.clientHeight / 3) + "px";
-
- 			  		window.onresize = function() {
-
- 			  			vs.style.marginTop = (c1.clientHeight / 3) + "px";
-						
+ 			  		var adjust = function() {
+ 			  			vs.style.marginTop = (c2.clientHeight / 3) + "px";
  			  		};
+
+ 			  		c2.onload = adjust;
+
+ 			  		window.onresize = adjust;
 			  	</script>
  			  	
 		  		<div class="row">
