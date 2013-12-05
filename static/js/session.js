@@ -79,7 +79,7 @@ function Session(ui,color1,color2) {
 		// init ratio bar
 		that.ui.ratiocol1.style.backgroundColor = that.colorList[that.player[1].color];
 		that.ui.ratiocol2.style.backgroundColor = that.colorList[that.player[2].color];
-		that.updateRatioBar();
+		that.updateRatioBar(false);
 
 		if(that.bPlaying) {
 			that.player[1].points = data.points[0];
@@ -203,7 +203,7 @@ function Session(ui,color1,color2) {
 		this.ui.info.removeChild(this.ui.info.childNodes[--n]);
 		this.ui.info.removeChild(this.ui.info.childNodes[--n]);
 		
-		this.updateRatioBar();
+		this.updateRatioBar(true);
 		
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
 		
@@ -232,7 +232,7 @@ function Session(ui,color1,color2) {
 	
 	};
 
-	this.updateRatioBar = function() {
+	this.updateRatioBar = function(slide) {
 
 		var v1 = this.player[1].wins + 2;
 		var v2 = this.player[2].wins + 2;
@@ -241,6 +241,14 @@ function Session(ui,color1,color2) {
 
 		var element = this.ui.ratiocol1;
 		var max = ( 100 * v1 )/( v1 + v2 );
+
+		this.ui.wincount.innerHTML = this.player[1].wins + " : " + this.player[2].wins;
+
+		if(!slide) {
+			element.style.width = max + "%";
+			return;
+		}
+
 		var now = parseInt(element.style.width.replace("%",""));
 
 		var step = function() {
@@ -251,8 +259,6 @@ function Session(ui,color1,color2) {
 			setTimeout(step,5);
 
 		};
-
-		this.ui.wincount.innerHTML = this.player[1].wins + " : " + this.player[2].wins;
 
 		step();
 
