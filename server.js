@@ -6,8 +6,8 @@ var querystring = require("querystring");
 var ns = require('node-static');
 
 // custom modules
-var socket = require('./modules/prt_socket');
-var game = require('./modules/prt_game_obj');
+var socket = require('./modules/mod_socket');
+var game = require('./modules/mod_game');
 
 // global variables
 var sessions = {};
@@ -25,7 +25,6 @@ if(fs.existsSync("sessions.dump")) {// try to load old sessions
 			c++;
 			
 		}
-
 
 		log("init: restored " + c + " session(s).");
 	}
