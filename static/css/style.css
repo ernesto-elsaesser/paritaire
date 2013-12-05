@@ -74,7 +74,8 @@ body {
 	margin-bottom: 2em;
 }
 
-.btn-primary {
+.btn-primary,
+.btn-primary:focus {
 	background-color: #999;
 	border-color: #888;
 }

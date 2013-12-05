@@ -256,7 +256,7 @@ function Session(ui,color1,color2) {
 			if(now == max) return;
 			now += (max < now ? -1 : 1);
 			element.style.width = now + "%";
-			setTimeout(step,10);
+			setTimeout(step,25);
 
 		};
 
