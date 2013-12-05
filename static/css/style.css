@@ -303,3 +303,8 @@ a.list-group-item.active:focus {
 	font-weight: bold;
 	width: 250px;
 }
+
+.credits-links {
+	float: left;
+	width: 250px;
+}
