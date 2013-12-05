@@ -296,3 +296,10 @@ a.list-group-item.active:focus {
 #img-404 {
 	width: 100%;
 }
+
+/* credits.html */
+
+.credits-cat {
+	font-weight: bold;
+	width: 250px;
+}
