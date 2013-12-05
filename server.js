@@ -105,7 +105,7 @@ function onRequest(request,response) {
 			count++;
 		}
 		
-		if(count == 0) list = '<a href="#" class="list-group-item">No public sessions.</a>';
+		if(count == 0) list = '<a href="javascript:void(0)" class="list-group-item">No public sessions.</a>';
 		
 		html = html.replace("##",list);
 		
