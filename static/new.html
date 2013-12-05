@@ -81,8 +81,12 @@
 	  		}
 
 	  		var adjust = function() {
-	  			document.getElementById("settings-vs").style.marginTop = (c2.clientHeight / 3) + "px";
+	  			var vs = document.getElementById("settings-vs");
+	  			var c2 = document.getElementById("carousel-player-2");
+	  			if(vs && c2) vs.style.marginTop = (c2.clientHeight / 3) + "px";
 	  		};
+
+	  		window.onresize = adjust;
 
 		</script>
     
@@ -152,7 +156,7 @@
  				  			<!-- Wrapper for slides -->
 	 				  		<a href="#carousel-player-2" data-slide="next">
 	 				  			<div class="carousel-inner">
-	   			    			<div class="item" id="blue"><img src="img/icon_blue.png" onload="adjust()" onresize="adjust()" alt="blue tile"></div>
+	   			    			<div class="item" id="blue"><img src="img/icon_blue.png" onload="adjust()" alt="blue tile"></div>
 	    			  			<div class="item" id="cyan"><img src="img/icon_cyan.png" alt="cyan tile"></div>
 	    			  			<div class="item" id="green"><img src="img/icon_green.png" alt="green tile"></div>
 	    			  			<div class="item" id="yellow"><img src="img/icon_yellow.png" alt="yellow tile"></div>
