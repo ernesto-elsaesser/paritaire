@@ -287,8 +287,11 @@ Player.prototype.disconnect = function() {
 	
 	this.connected = false;
 	this.alive = false;
-	this.socket.disconnect();
-	this.socket = null;
+	
+	if(this.socket) {
+		this.socket.disconnect();
+		this.socket = null;
+	}
 	
 };
 
