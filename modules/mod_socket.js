@@ -1,7 +1,7 @@
 // node.js modules
 var socketio = require('socket.io');
 // custom modules
-var game = require('./prt_game_obj');
+var game = require('./mod_game');
 
 var clients = {};
 
