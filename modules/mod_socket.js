@@ -96,6 +96,9 @@ function attachSocket(httpServer,sessions,publications) {
 		
 		var s = sessions[data.id];
 		var c = clients[socket.id];
+
+		if(!s) return;
+		if(data.side != 1 && data.side != 2) return;
 		
 		// this if-clause handles the special case when a second player enters a session
 		// before the first has chosen his color - we then reinit the second player 
