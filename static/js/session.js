@@ -113,7 +113,7 @@ function Session(ui,color1,color2) {
 
 			// common event handlers
 			that.socket.on('disconnect', that.modeHandler.disconnect.bind(that.modeHandler));
-			
+
 			that.ui.surrender.onclick = that.modeHandler.surrender.bind(that.modeHandler);
 			that.ui.undo.onclick = that.undo.bind(that);
 			that.ui.share.onclick = that.sessionUrl.bind(that);
@@ -173,8 +173,8 @@ function Session(ui,color1,color2) {
 
 	this.socket.on('reconnect', function () {
 
-		this.s.socket.emit('init',{id: this.s.sid});
-		this.modeHandler.reconnecting = true;
+		that.socket.emit('init',{id: that.sid});
+		that.modeHandler.reconnecting = true;
 
 	});
 
