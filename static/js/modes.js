@@ -393,9 +393,6 @@ function SpectatorDecorator(handler) {
 
 	this.init = function(data) {
 
-		this.s.ui.info.innerHTML = "";
-		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
-
 		if(this.reconnecting) {
 
 			if(this.online) {
@@ -439,6 +436,7 @@ function SpectatorDecorator(handler) {
 	this.playerleft = function() {
 
 		this.s.ui.info.innerHTML = "";
+		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
 		this.s.bEnded = false;
 		this.s.ui.chat.parentElement.parentElement.style.display = "none";
 		this.s.canvas.drawText(["Waiting for","player ..."]);
@@ -470,6 +468,10 @@ function SpectatorDecorator(handler) {
 	this.click = function(x,y) {
 
 		this.s.canvas.onclick = null;
+
+		this.s.ui.info.innerHTML = "";
+		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
+
 		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
 		if(this.s.bPlaying) {
 			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
