@@ -140,17 +140,6 @@ function OnlineHandler(session) {
 
 	this.reconnecting = false;
 
-	this.chatIcons = [new Image(), new Image(), new Image()];
-	this.chatIcons[0].src = 'img/highlight.png'; // TODO: own icon?
-	this.chatIcons[0].width = 20;
-	this.chatIcons[0].height = 20;
-	this.chatIcons[1].src = this.s.player[1].icon.src;
-	this.chatIcons[1].width = 20;
-	this.chatIcons[1].height = 20;
-	this.chatIcons[2].src = this.s.player[2].icon.src;
-	this.chatIcons[2].width = 20;
-	this.chatIcons[2].height = 20;
-
 	this.init = function(data) {
 
 
@@ -365,30 +354,17 @@ function OnlineHandler(session) {
 
 	};
 
-	this.receivedMessage = function(data) {
-
-		var tr = document.createElement("tr");
-		var l = tr.insertCell(0);
-		l.appendChild(this.chatIcons[data.side].cloneNode());
-		tr.insertCell(1).innerHTML = data.msg;
-		this.s.ui.chat.firstElementChild.firstElementChild.appendChild(tr);
-		this.s.ui.chat.scrollTop = this.s.ui.chat.scrollHeight;
-
-	};
-
 	this.check = function() {
 		this.s.socket.emit('alive');
 	};
 
 }
 
-function SpectatorDecorator(handler) {
+function SpectatorHandler(session,online) {
 
-	this.h = handler;
-	this.s = handler.s;
+	this.s = session;
 
-	this.online = false;
-
+	this.online = online;
 	this.reconnecting = false;
 
 	this.init = function(data) {
@@ -435,8 +411,6 @@ function SpectatorDecorator(handler) {
 		this.s.ui.undo.style.display = "none";
 		this.s.ui.surrender.style.display = "none";
 
-		if(this.h.published) this.online = true;
-
 		this.s.canvas.drawText(["Session is full.","Click to spectate!"]);
 
 	};
@@ -454,8 +428,6 @@ function SpectatorDecorator(handler) {
 
 		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
-		
-
 		if(this.s.bPlaying) {
 			
 			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
@@ -470,8 +442,6 @@ function SpectatorDecorator(handler) {
 		this.s.ui.info.appendChild(document.createTextNode("\u00A0Next:\u00A0\u00A0"));
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
 
-		this.tmpNext = data.next;
-
 	};
 
 	this.click = function(x,y) { // switch to spectator mode
@@ -482,7 +452,16 @@ function SpectatorDecorator(handler) {
 		
 	};
 
-	this.turn = this.h.turn;
+	this.turn = function(data) {
+
+		// complete redraw of info bar as work around for bug that spectators don't receive
+		// full message in local mode
+		this.s.ui.info.innerHTML = "";
+		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
+		this.s.ui.info.appendChild(document.createTextNode("\u00A0Next:\u00A0\u00A0"));
+		this.s.ui.info.appendChild(this.s.player[data.next].icon);
+
+	};
 
 	this.published = function(data) {}; // only called when a waiting player succesfully publishes a spectated session
 	this.surrender = function() {}; // function dummy, will not be called
@@ -535,9 +514,6 @@ function SpectatorDecorator(handler) {
 
 	};
 
-	this.receivedMessage = function(data) {
-		this.h.receivedMessage(data);
-	};
 }
 
 

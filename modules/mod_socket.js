@@ -58,8 +58,8 @@ function attachSocket(httpServer,sessions,publications) {
 					
 					c.session = s;
 					c.side = 1; 
+					s.broadcast("full",{turn: s.nextTurn}) // inform spectators
 					socket.emit("init",s.getState());
-					s.broadcast("full") // inform spectators
 					s.player[1].connect(socket);
 
 					log(socket.id + " inits to local session " + data.id);
@@ -367,7 +367,7 @@ function validationOver(args) {
 			c.session = s;
 			c.side = 1; 
 
-			s.broadcast("full"); // inform spectators that there is someone to spectate again
+			s.broadcast("full",{turn: s.nextTurn}); // inform spectators that there is someone to spectate again
 			s.player[1].connect(c.socket);
 
 			log(c.socket.id + " inits to local session " + s.id);

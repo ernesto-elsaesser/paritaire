@@ -48,6 +48,8 @@ function Session(ui,color1,color2) {
 
 	this.player = [null,new Player(1,color1),new Player(2,color2)];
 	
+	this.chatIcons = null;
+
 	this.nextStarter = 0; // player that will start the next game
 	
 	 // control flags
@@ -91,24 +93,35 @@ function Session(ui,color1,color2) {
 		if(!that.modeHandler.reconnecting) {
 
 			if(data.online) {
-				that.modeHandler = new OnlineHandler(that);
-				if(data.connections == 2) that.modeHandler = new SpectatorDecorator(that.modeHandler);
+
+				if(data.connections < 2) that.modeHandler = new OnlineHandler(that);
+				else that.modeHandler = new SpectatorHandler(that,true);
 
 				// online specific event handler
 				that.socket.on('full', that.modeHandler.full.bind(that.modeHandler));
 				that.socket.on('playerleft', that.modeHandler.playerleft.bind(that.modeHandler));
 				that.socket.on('published', that.modeHandler.published.bind(that.modeHandler));
-				that.socket.on('chat', that.modeHandler.receivedMessage.bind(that.modeHandler));
 
 				that.ui.publish.onclick = that.publish.bind(that);
 				that.ui.msgsend.onclick = that.modeHandler.sendMessage.bind(that.modeHandler);
 				that.ui.msgtext.onkeyup = function(event) { 
 						if(event.keyCode == 13) session.modeHandler.sendMessage(); 
 					};
+
+				that.chatIcons = [new Image(), new Image(), new Image()];
+				that.chatIcons[0].src = 'img/highlight.png'; // TODO: own icon?
+				that.chatIcons[0].width = 20;
+				that.chatIcons[0].height = 20;
+				that.chatIcons[1].src = that.player[1].icon.src;
+				that.chatIcons[1].width = 20;
+				that.chatIcons[1].height = 20;
+				that.chatIcons[2].src = that.player[2].icon.src;
+				that.chatIcons[2].width = 20;
+				that.chatIcons[2].height = 20;
 			}
 			else {
-				that.modeHandler = new LocalHandler(that);
-				if(data.connections == 1) that.modeHandler = new SpectatorDecorator(that.modeHandler);
+				if(data.connections == 0) that.modeHandler = new LocalHandler(that);
+				else that.modeHandler = new SpectatorHandler(that,false);
 			}
 
 			// common event handlers
@@ -168,9 +181,20 @@ function Session(ui,color1,color2) {
 
 		if(data.next == 0) that.endGame();
 		else that.modeHandler.turn(data);
-		// TODO: info that player if he can't turn
+		// TODO: inform that player if he can't turn
 		
 	});
+
+	this.socket.on('chat', function (data) {
+
+		var tr = document.createElement("tr");
+		var l = tr.insertCell(0);
+		l.appendChild(that.chatIcons[data.side].cloneNode());
+		tr.insertCell(1).innerHTML = data.msg;
+		that.ui.chat.firstElementChild.firstElementChild.appendChild(tr);
+		that.ui.chat.scrollTop = that.ui.chat.scrollHeight;
+
+	};
 
 	this.socket.on('reconnect', function () {
 
