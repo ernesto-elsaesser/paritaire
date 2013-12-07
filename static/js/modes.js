@@ -403,14 +403,14 @@ function SpectatorDecorator(handler) {
 
 				if(data.connections != 2) { // not full online session
 
-					this.s.canvas.drawText(["Player","disconnected ..."]);
+					this.s.canvas.drawText(["Waiting for","player ..."]);
 					return;
 				}
 				else this.s.ui.chat.parentElement.parentElement.style.display = "block";
 			}
 			else if(data.connections == 0) { // empty local session
 
-				this.s.canvas.drawText(["Player","disconnected ..."]);
+				this.s.canvas.drawText(["Waiting for","player ..."]);
 				return;
 			}
 
@@ -436,7 +436,7 @@ function SpectatorDecorator(handler) {
 		this.s.ui.info.innerHTML = "";
 		this.s.bEnded = false;
 		this.s.ui.chat.parentElement.parentElement.style.display = "none";
-		this.s.canvas.drawText(["Player","disconnected ..."]);
+		this.s.canvas.drawText(["Waiting for","player ..."]);
 	};
 
 	this.full = function(data) {
