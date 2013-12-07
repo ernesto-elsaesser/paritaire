@@ -393,6 +393,8 @@ function SpectatorDecorator(handler) {
 
 	this.init = function(data) {
 
+		this.tmpNext = data.turn;s
+
 		if(this.reconnecting) {
 
 			if(this.online) {
@@ -452,7 +454,7 @@ function SpectatorDecorator(handler) {
 		if(this.s.bPlaying) {
 			
 			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
-			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
+			this.s.ui.info.appendChild(this.s.player[this.tmpNext].icon);
 
 			this.s.field.draw();
 		}
@@ -462,6 +464,8 @@ function SpectatorDecorator(handler) {
 
 		this.s.ui.info.appendChild(document.createTextNode("\u00A0Next:\u00A0\u00A0"));
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
+
+		this.tmpNext = data.next;
 
 	};
 
@@ -475,7 +479,7 @@ function SpectatorDecorator(handler) {
 		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
 		if(this.s.bPlaying) {
 			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
-			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
+			this.s.ui.info.appendChild(this.s.player[this.tmpNext].icon);
 			this.s.field.draw();
 		}
 		else this.s.canvas.drawText("Player will start ...");
