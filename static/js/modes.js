@@ -431,6 +431,7 @@ function SpectatorDecorator(handler) {
 		}
 
 		this.s.ui.publish.style.display = "none";
+		this.s.ui.info.innerHTML = "&nbsp;"; // prevent collapsing of info bar
 		this.s.ui.undo.style.display = "none";
 		this.s.ui.surrender.style.display = "none";
 
