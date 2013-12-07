@@ -12,7 +12,7 @@ function PreHandler(session) {
 function LocalHandler(session) {
 
 	this.s = session;
-	
+
 	this.reconnecting = false;
 
 	this.init = function(data) {
@@ -126,7 +126,7 @@ function LocalHandler(session) {
 
 	this.resize = function() {
 
-		if(this.s.bPlaying) this.s.field.draw();
+		if(this.s.bPlaying && !this.s.canvas.textView) this.s.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
@@ -138,7 +138,6 @@ function OnlineHandler(session) {
 	this.s = session;
 
 	this.reconnecting = false;
-	this.waiting = false;
 
 	this.chatIcons = [new Image(), new Image(), new Image()];
 	this.chatIcons[0].src = 'img/highlight.png'; // TODO: own icon?
@@ -153,7 +152,6 @@ function OnlineHandler(session) {
 
 	this.init = function(data) {
 
-		this.waiting = true;
 
 		if(data.published) {
 			this.s.ui.publish.innerHTML = "Published";
@@ -220,7 +218,6 @@ function OnlineHandler(session) {
 			}
 		}
 
-		this.waiting = false;
 	};
 
 	this.playerleft = function() {
@@ -232,7 +229,6 @@ function OnlineHandler(session) {
 		this.s.mMyTurn = false;
 		this.s.bEnded = false;
 		this.s.canvas.drawText(["Waiting for","opponent ..."]); // waiting for another init
-		this.waiting = true;
 
 	};
 
@@ -354,7 +350,7 @@ function OnlineHandler(session) {
 			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
 			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
 		}
-		else if(this.s.bPlaying && !this.waiting) this.s.field.draw();
+		else if(this.s.bPlaying && !this.s.canvas.textView) this.s.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
@@ -386,7 +382,6 @@ function SpectatorDecorator(handler) {
 	this.h = handler;
 	this.s = handler.s;
 
-	this.splash = true;
 	this.online = false;
 
 	this.reconnecting = false;
@@ -408,21 +403,18 @@ function SpectatorDecorator(handler) {
 
 				if(data.connections != 2) { // not full online session
 
-					this.s.canvas.drawText(["Player left.","Reload to join."]);
+					this.s.canvas.drawText(["Player","disconnected ..."]);
 					return;
 				}
 				else this.s.ui.chat.parentElement.parentElement.style.display = "block";
 			}
 			else if(data.connections == 0) { // empty local session
 
-				this.s.canvas.drawText(["Player left.","Reload to play."]);
+				this.s.canvas.drawText(["Player","disconnected ..."]);
 				return;
 			}
 
-			if(this.s.bPlaying) {
-				this.s.field.draw();
-				this.splash = false;
-			}
+			if(this.s.bPlaying) this.s.field.draw();
 			else this.s.canvas.drawText("Player will start ...");
 			this.s.socket.emit("spectate",{id: this.s.sid});
 			
@@ -436,8 +428,6 @@ function SpectatorDecorator(handler) {
 		if(this.h.published) this.online = true;
 
 		this.s.canvas.drawText(["Session is full.","Click to spectate!"]);
-		this.splash = true;
-		
 
 	};
 
@@ -447,7 +437,6 @@ function SpectatorDecorator(handler) {
 		this.s.bEnded = false;
 		this.s.ui.chat.parentElement.parentElement.style.display = "none";
 		this.s.canvas.drawText(["Player","disconnected ..."]);
-		this.splash = true;
 	};
 
 	this.full = function(data) {
@@ -463,7 +452,6 @@ function SpectatorDecorator(handler) {
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
 
 			this.s.field.draw();
-			this.splash = false;
 		}
 	};
 
@@ -478,10 +466,7 @@ function SpectatorDecorator(handler) {
 
 		this.s.canvas.onclick = null;
 		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
-		if(this.s.bPlaying) {
-			this.s.field.draw();
-			this.splash = false;
-		}
+		if(this.s.bPlaying) this.s.field.draw();
 		else this.s.canvas.drawText("Player will start ...");
 		this.s.socket.emit("spectate",{id: this.s.sid});
 		
@@ -525,7 +510,7 @@ function SpectatorDecorator(handler) {
 
 	this.resize = function() {
 
-		if(this.s.bPlaying && !this.splash) this.s.field.draw();
+		if(this.s.bPlaying && !this.s.canvas.textView) this.s.field.draw();
 		else if (this.s.bEnded) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};

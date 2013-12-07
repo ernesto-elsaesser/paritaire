@@ -76,6 +76,9 @@ function Field(refSession,columnNum,rowNum)
 		// draw highlight
 		if(this.highlighted)
 			this.session.ctx.drawImage(this.imgs[3], this.highlighted[0] * side, this.highlighted[1] * side, side, side);
+
+
+		this.session.canvas.textView = false;
 	};
 	
 	return true;
@@ -87,6 +90,8 @@ function createCanvas(container) {
 	
 	canvas.width  = container.clientWidth;
 	canvas.height = canvas.width; // TODO: change for non-square fields
+
+	canvas.textView = false;
 	
 	canvas.drawText = function (text) {
 		
@@ -110,6 +115,8 @@ function createCanvas(container) {
 		if(text[1]) ctx.fillText(text[1],x,this.height * 0.6);
 		
 		this.lastText = text;
+
+		this.textView = true;
 		
 	};
 	
