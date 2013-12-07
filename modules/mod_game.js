@@ -176,6 +176,9 @@ Session.prototype.surrender = function(side) {
 
 	if(!this.playing) return 0;
 
+	this.player[side].points = 0;
+	this.player[(side == 1 ? 2 : 1)].points = 1;
+
 	this.endRound();
 
 	var t = {stones: [],

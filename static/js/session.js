@@ -153,7 +153,7 @@ function Session(ui,color1,color2) {
 		if(data.stones.length == 0) { // surrender turn
 
 			that.player[data.side].points = 0;
-			that.player[(data.side == 1 ? 2 : 1)].points = that.field.xsize * that.field.ysize;
+			that.player[(data.side == 1 ? 2 : 1)].points = 1;
 		}
 		else {
 			that.player[1].points += data.points[0];
