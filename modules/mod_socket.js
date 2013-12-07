@@ -87,11 +87,11 @@ function attachSocket(httpServer,sessions,publications) {
 
 		if(!s) return; 
 
-		log(socket.id + " spectates session " + data.id);
-
 		c.session = s;
 		c.side = 0;
 		s.spectators.push(socket);
+
+		log(socket.id + " spectates session " + data.id);
 
 	});	
 
@@ -319,12 +319,12 @@ function validationOver(args) {
 	if(s.player[1].checkDrop()) log("dropped unresponsive player 1 from session " + s.id);
 	if(s.player[2].checkDrop()) log("dropped unresponsive player 2 from session " + s.id);
 
-	c.socket.emit("init",s.getState());
-	var players = s.countCon();
+	var state = s.getState();
+	c.socket.emit("init",state);
 
 	if(s.online) {
 		
-		if(players == 1) { // second to join
+		if(state.connections == 1) { // second to join
 
 			if(s.player[1].connected) c.side = 2;
 			else c.side = 1;
@@ -350,13 +350,13 @@ function validationOver(args) {
 			}
 			
 		}
-		else if(players == 2) log(c.socket.id + " inits to full online session " + s.id);
+		else if(state.connections == 2) log(c.socket.id + " inits to full online session " + s.id);
 		else log(c.socket.id + " inits to empty online session " + s.id);
 
 	}
 	else {
 
-		if(players == 0) { // empty session, connection was a zombie
+		if(state.connections == 0) { // empty session, connection was a zombie
 
 			c.session = s;
 			c.side = 1; 

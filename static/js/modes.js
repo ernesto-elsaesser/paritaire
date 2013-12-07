@@ -131,6 +131,10 @@ function LocalHandler(session) {
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
+	this.check = function() {
+		this.s.socket.emit('alive');
+	};
+
 }
 
 function OnlineHandler(session) {
@@ -375,6 +379,10 @@ function OnlineHandler(session) {
 
 	};
 
+	this.check = function() {
+		this.s.socket.emit('alive');
+	};
+
 }
 
 function SpectatorDecorator(handler) {
@@ -476,6 +484,7 @@ function SpectatorDecorator(handler) {
 
 	this.published = function(data) {};
 	this.surrender = function() {};
+	this.check = function() {}; // spectators don't emit alive messages
 
 	this.drawWinner = function() {
 		
