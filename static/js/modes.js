@@ -26,7 +26,6 @@ function LocalHandler(session) {
 			this.s.field.draw();
 
 			this.s.ui.info.innerHTML = "";
-			if(this.s.bSpectating) s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
 			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
 
@@ -56,7 +55,6 @@ function LocalHandler(session) {
 
 
 		if(!this.s.bPlaying) this.s.socket.emit('start', {id: this.s.sid});
-				
 		else this.s.socket.emit('turn', {id: this.s.sid, x: x, y: y});
 
 	};
@@ -68,7 +66,6 @@ function LocalHandler(session) {
 
 				this.s.ui.undo.className = "btn btn-primary";
 		}
-		
 
 		this.s.currentSide = data.next;
 		this.s.ui.info.removeChild(this.s.ui.info.childNodes[this.s.ui.info.childNodes.length-1]);
@@ -399,12 +396,6 @@ function SpectatorDecorator(handler) {
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
 
-		if(this.s.bPlaying) {
-			
-			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
-			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
-		}
-
 		if(this.reconnecting) {
 
 			if(this.online) {
@@ -422,7 +413,13 @@ function SpectatorDecorator(handler) {
 				return;
 			}
 
-			if(this.s.bPlaying) this.s.field.draw();
+			if(this.s.bPlaying) {
+			
+				this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
+				this.s.ui.info.appendChild(this.s.player[data.turn].icon);
+
+				this.s.field.draw()
+			}
 			else this.s.canvas.drawText("Player will start ...");
 			this.s.socket.emit("spectate",{id: this.s.sid});
 			
@@ -482,8 +479,8 @@ function SpectatorDecorator(handler) {
 
 	this.turn = this.h.turn;
 
-	this.published = function(data) {};
-	this.surrender = function() {};
+	this.published = function(data) {}; // only called when a waiting player succesfully publishes a spectated session
+	this.surrender = function() {}; // function dummy, will not be called
 	this.check = function() {}; // spectators don't emit alive messages
 
 	this.drawWinner = function() {
