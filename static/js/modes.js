@@ -471,7 +471,11 @@ function SpectatorDecorator(handler) {
 
 		this.s.canvas.onclick = null;
 		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
-		if(this.s.bPlaying) this.s.field.draw();
+		if(this.s.bPlaying) {
+			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
+			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
+			this.s.field.draw();
+		}
 		else this.s.canvas.drawText("Player will start ...");
 		this.s.socket.emit("spectate",{id: this.s.sid});
 		
