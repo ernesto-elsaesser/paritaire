@@ -88,6 +88,10 @@ function attachSocket(httpServer,sessions,publications) {
 			c.side = 0;
 			s.spectators.push(socket);
 
+			var state = s.getState();
+			state .spec = true;
+			socket.emit("init",state);
+
 			log(socket.id + " spectates session " + data.id);
 
 		});	

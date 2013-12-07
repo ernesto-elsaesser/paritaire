@@ -393,9 +393,15 @@ function SpectatorDecorator(handler) {
 
 	this.init = function(data) {
 
-		this.tmpNext = data.turn;
-
 		if(this.reconnecting) {
+
+			if(!data.spec) { // connection problems, server doesn't know that this is a pectating client
+				this.s.socket.emit("spectate",{id: this.s.sid});
+				return;
+			}
+
+			this.s.ui.info.innerHTML = "";
+			this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
 
 			if(this.online) {
 
@@ -420,7 +426,6 @@ function SpectatorDecorator(handler) {
 				this.s.field.draw()
 			}
 			else this.s.canvas.drawText("Player will start ...");
-			this.s.socket.emit("spectate",{id: this.s.sid});
 			
 			return;
 		}
@@ -448,13 +453,12 @@ function SpectatorDecorator(handler) {
 
 		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
-		this.s.ui.info.innerHTML = "";
-		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
+		
 
 		if(this.s.bPlaying) {
 			
 			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
-			this.s.ui.info.appendChild(this.s.player[this.tmpNext].icon);
+			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
 
 			this.s.field.draw();
 		}
@@ -469,21 +473,11 @@ function SpectatorDecorator(handler) {
 
 	};
 
-	this.click = function(x,y) {
+	this.click = function(x,y) { // switch to spectator mode
 
 		this.s.canvas.onclick = null;
-
-		this.s.ui.info.innerHTML = "";
-		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
-
-		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
-		if(this.s.bPlaying) {
-			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
-			this.s.ui.info.appendChild(this.s.player[this.tmpNext].icon);
-			this.s.field.draw();
-		}
-		else this.s.canvas.drawText("Player will start ...");
-		this.s.socket.emit("spectate",{id: this.s.sid});
+		this.reconnecting = true;
+		this.s.socket.emit("spectate",{id: this.s.sid}); // this will trigger a re-initialization
 		
 	};
 
