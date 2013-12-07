@@ -43,14 +43,10 @@ function attachSocket(httpServer,sessions,publications) {
 				} 
 				else { // players present, check connections
 
-					if(s.player[1].connected) {
-						s.player[1].invalidate();
-						s.player[1].send("check");
-					}
-					if(s.player[2].connected) {
-						s.player[2].invalidate();
-						s.player[2].send("check");
-					}
+					s.player[1].invalidate();
+					s.player[2].invalidate();
+					s.broadcast("check");
+					
 					setTimeout(validationOver,3000,[c,s,publications]);
 					
 				}
@@ -72,7 +68,8 @@ function attachSocket(httpServer,sessions,publications) {
 				else { // session full, check connections
 
 					s.player[1].invalidate();
-					s.player[1].send("check");
+					s.broadcast("check");
+
 					setTimeout(validationOver,3000,[c,s]);
 
 				}
@@ -80,206 +77,206 @@ function attachSocket(httpServer,sessions,publications) {
     	
 		});
 
-	socket.on("spectate", function(data) {
+		socket.on("spectate", function(data) {
 
-		var s = sessions[data.id];
-		var c = clients[socket.id];
+			var s = sessions[data.id];
+			var c = clients[socket.id];
 
-		if(!s) return; 
+			if(!s) return; 
 
-		c.session = s;
-		c.side = 0;
-		s.spectators.push(socket);
+			c.session = s;
+			c.side = 0;
+			s.spectators.push(socket);
 
-		log(socket.id + " spectates session " + data.id);
+			log(socket.id + " spectates session " + data.id);
 
-	});	
+		});	
 
-	  socket.on('choose', function (data) {
-		
-		var s = sessions[data.id];
-		var c = clients[socket.id];
-
-		if(!s) return;
-		if(data.side != 1 && data.side != 2) return;
-		
-		// this if-clause handles the special case when a second player enters a session
-		// before the first has chosen his color - we then reinit the second player 
-		// right after his (discarded) decision, so that he knows that he is in a full game
-		if(s.player[1].connected || s.player[2].connected) {
-			socket.emit("init",s.getState());
-			return;
-		}
-		
-		s.player[data.side].connect(socket);
-	    c.session = s;
-		c.side = data.side;
-
-		log(socket.id + " choses side " + data.side + " in session " + data.id);
-		
-	  });
-  		
-	  socket.on('start', function (data) {
-
-		var s = sessions[data.id];
-		var c = clients[socket.id];
-		
-		if(!validSessionState(c,s)) return;
-	
-		if(s.online) {
-		
-			log(socket.id + " starts online session " + data.id);
-			s.startGame(c.side);
-		}
-		else {
+		socket.on('choose', function (data) {
 			
-			log(socket.id + " starts local session " + data.id);
-			s.startGame();
-		}
-		
-	  });
-	  
-	  socket.on('turn', function (data) {
-		  
-		var c = clients[socket.id];
-		var s = sessions[data.id];
-		
-		if(!validSessionState(c,s)) return;
-		
-		s.turn(c.side,data.x,data.y);
-		
-	  });
-	  
-	  socket.on('undo', function (data) {
-		  
-  		var c = clients[socket.id];
-  		var s = sessions[data.id];
-		
-		if(!validSessionState(c,s)) return;
-		
-		s.undo(c.side);
-		
-	  });
+			var s = sessions[data.id];
+			var c = clients[socket.id];
 
-	  socket.on('surrender', function (data) {
-		  
-  		var c = clients[socket.id];
-  		var s = sessions[data.id];
-		
-		if(!validSessionState(c,s)) return;
-		
-		if(s.online) s.surrender(c.side);
-		else s.surrender(data.side);
-
-	  });
-	  
-	  socket.on('publish', function (data) {
-		  
-    	// client object hasn't a session attribute yet
-    	var s = sessions[data.id];
-		
-		if(!s) return;
-		if(!s.online) return;
-		if(s.player[1].connected && s.player[2].connected) return;
-
-		// check if name is already in use
-		for(var i in publications) {
-			if(publications[i].publicName == data.name) {
-				socket.emit("published", {success: false});
-				log(socket.id + " cannot pusblish session " + data.id + " as '" + data.name + "'");
+			if(!s) return;
+			if(data.side != 1 && data.side != 2) return;
+			
+			// this if-clause handles the special case when a second player enters a session
+			// before the first has chosen his color - we then reinit the second player 
+			// right after his (discarded) decision, so that he knows that his session is full by now
+			if(s.player[1].connected || s.player[2].connected) {
+				socket.emit("init",s.getState());
 				return;
 			}
-		}
-
-   		s.publish(data.name);
-   		publications[data.id] = s;
-
-		socket.emit("published", {success: true});
-		log(socket.id + " pusblishs session " + data.id + " as '" + data.name + "'");
 			
-	  });
+			s.player[data.side].connect(socket);
+		    c.session = s;
+			c.side = data.side;
 
-	 socket.on('chat', function (data) {
-		  
-  		var c = clients[socket.id];
-  		var s = sessions[data.id];
-		
-		if(!s) return;
-		if(c.session != s) return;
-		if(data.side != 0 && c.side != data.side) return; // side == 0 -> spectator
-		
-		if(s.online && s.player[1].connected && s.player[2].connected) {
-
-			s.broadcast("chat",{side: data.side, msg: data.msg});
-		}
-
-	  });
-
-	 socket.on('alive', function (data) {
-
-  		var c = clients[socket.id];
-  		var s = c.session;
-		
-		if(s && c.side != 0) s.player[c.side].revalidate();
-
-	  }); 
-	  
-	  socket.on('disconnect', function () {
-  
-	    var c = clients[socket.id];
-  
-	    if(c) {
-     	
-			var s = c.session;
+			log(socket.id + " choses side " + data.side + " in session " + data.id);
 			
-	      	if (s) {
-		  	  	
-				if (s.online) {
+		});
+  		
+		socket.on('start', function (data) {
+
+			var s = sessions[data.id];
+			var c = clients[socket.id];
+			
+			if(!validSessionState(c,s)) return;
+		
+			if(s.online) {
+			
+				log(socket.id + " starts online session " + data.id);
+				s.startGame(c.side);
+			}
+			else {
 				
-					if(c.side != 0) { // player
+				log(socket.id + " starts local session " + data.id);
+				s.startGame();
+			}
+			
+		});
+		  
+		socket.on('turn', function (data) {
+			  
+			var c = clients[socket.id];
+			var s = sessions[data.id];
+			
+			if(!validSessionState(c,s)) return;
+			
+			s.turn(c.side,data.x,data.y);
+			
+		});
+		  
+		socket.on('undo', function (data) {
+			  
+	  		var c = clients[socket.id];
+	  		var s = sessions[data.id];
+			
+			if(!validSessionState(c,s)) return;
+			
+			s.undo(c.side);
+			
+		});
 
-						if(s.player[c.side].connected) { // possibly already kicked out
+		socket.on('surrender', function (data) {
+			  
+	  		var c = clients[socket.id];
+	  		var s = sessions[data.id];
+			
+			if(!validSessionState(c,s)) return;
+			
+			if(s.online) s.surrender(c.side);
+			else s.surrender(data.side);
 
-							s.player[c.side].disconnect(); // TODO: why is this sometimes 0?
+		});
+		  
+		socket.on('publish', function (data) {
+			  
+	    	// client object hasn't a session attribute yet
+	    	var s = sessions[data.id];
+			
+			if(!s) return;
+			if(!s.online) return;
+			if(s.player[1].connected && s.player[2].connected) return;
 
-		          	  		s.broadcast('playerleft');
-							log(socket.id + " (player) disconnects from session " + s.id);
-		          	  	}
+			// check if name is already in use
+			for(var i in publications) {
+				if(publications[i].publicName == data.name) {
+					socket.emit("published", {success: false});
+					log(socket.id + " cannot pusblish session " + data.id + " as '" + data.name + "'");
+					return;
+				}
+			}
 
-					}
-					else { // spectator
+	   		s.publish(data.name);
+	   		publications[data.id] = s;
 
-						for(var i in s.spectators) {
+			socket.emit("published", {success: true});
+			log(socket.id + " pusblishs session " + data.id + " as '" + data.name + "'");
+				
+		});
 
-							if(s.spectators[i].id == socket.id) {
+		socket.on('chat', function (data) {
+			  
+	  		var c = clients[socket.id];
+	  		var s = sessions[data.id];
+			
+			if(!s) return;
+			if(c.session != s) return;
+			if(data.side != 0 && c.side != data.side) return; // side == 0 -> spectator
+			
+			if(s.online && s.player[1].connected && s.player[2].connected) {
 
-								s.spectators.splice(i,1);
-								log(socket.id + " (spectator) disconnects from session " + s.id);
-								break;
-							}
+				s.broadcast("chat",{side: data.side, msg: data.msg});
+			}
+
+		});
+
+		socket.on('alive', function (data) {
+
+	  		var c = clients[socket.id];
+	  		var s = c.session;
+			
+			if(s && c.side != 0) s.player[c.side].revalidate();
+
+		}); 
+		  
+		socket.on('disconnect', function () {
+	  
+		    var c = clients[socket.id];
+	  
+		    if(c) {
+	     	
+				var s = c.session;
+				
+		      	if (s) {
+			  	  	
+					if (s.online) {
+					
+						if(c.side != 0) { // player
+
+							if(s.player[c.side].connected) { // possibly already dropped
+
+								s.player[c.side].disconnect();
+
+			          	  		s.broadcast('playerleft');
+								log(socket.id + " (player) disconnects from session " + s.id);
+			          	  	}
 
 						}
-					}
-					
-				}
-				else {
-					
-					if(s.player[1].connected) { // possibly already kicked out
-						
-						s.player[1].disconnect();
-						s.broadcast('playerleft');
-						log(socket.id + " (player) disconnects from session " + s.id);
-					}
-				}
-         
-	      	}
-	      	else log(socket.id + " (uninitialized) disconnets");
-      
-	      	delete c;
-	    }
-	    else log(socket.id + " (unknown) disconnets");
+						else { // spectator
 
-	  });
+							for(var i in s.spectators) {
+
+								if(s.spectators[i].id == socket.id) {
+
+									s.spectators.splice(i,1);
+									log(socket.id + " (spectator) disconnects from session " + s.id);
+									break;
+								}
+
+							}
+						}
+						
+					}
+					else {
+						
+						if(s.player[1].connected) { // possibly already dropped
+							
+							s.player[1].disconnect();
+							s.broadcast('playerleft'); // inform spectators that there noone to spectate
+							log(socket.id + " (player) disconnects from session " + s.id);
+						}
+					}
+	         
+		      	}
+		      	else log(socket.id + " (uninitialized) disconnets");
+	      
+		      	delete c;
+		    }
+		    else log(socket.id + " (unknown) disconnets");
+
+		});
 	});
 	
 }
@@ -356,12 +353,12 @@ function validationOver(args) {
 	}
 	else {
 
-		if(state.connections == 0) { // empty session, connection was a zombie
+		if(state.connections == 0) { // empty session after dropping player
 
 			c.session = s;
 			c.side = 1; 
 
-			s.broadcast("full");
+			s.broadcast("full"); // inform spectators that there is someone to spectate again
 			s.player[1].connect(c.socket);
 
 			log(c.socket.id + " inits to empty local session " + s.id);

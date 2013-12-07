@@ -195,8 +195,8 @@ Session.prototype.surrender = function(side) {
 
 Session.prototype.broadcast = function(msg,data) {
 
-	if(this.player[1].connected) this.player[1].send(msg,data);
-	if(this.player[2].connected) this.player[2].send(msg,data);
+	if(this.player[1].connected) this.player[1].socket.emit(msg,data);
+	if(this.player[2].connected) this.player[2].socket.emit(msg,data);
    		
    	for(var i in this.spectators) this.spectators[i].emit(msg,data);
 
@@ -318,13 +318,6 @@ Player.prototype.invalidate = function() {
 Player.prototype.revalidate = function() {
 	
 	this.alive = true;
-	
-};
-
-Player.prototype.send = function(msg,data) {
-	
-	if(!this.connected) return;
-	this.socket.emit(msg,data);
 	
 };
 
