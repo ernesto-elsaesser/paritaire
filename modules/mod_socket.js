@@ -337,7 +337,7 @@ function validationOver(args) {
 			s.broadcast("full",{side: c.side, turn: s.nextTurn});
 
 
-			log(c.socket.id + " inits to side " + c.side " in session " + s.id);
+			log(c.socket.id + " inits to side " + c.side + " in session " + s.id);
 			
 			var publications = args[2];
 
