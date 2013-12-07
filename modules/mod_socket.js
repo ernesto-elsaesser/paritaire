@@ -184,8 +184,8 @@ function attachSocket(httpServer,sessions,publications) {
 		// check if name is already in use
 		for(var i in publications) {
 			if(publications[i].publicName == data.name) {
-				log("PUBLISH session " + data.id + " with occupied name from " + socket.id);
 				socket.emit("published", {success: false});
+				log(socket.id + " cannot pusblish session " + data.id + " as '" + data.name + "'");
 				return;
 			}
 		}
@@ -194,7 +194,7 @@ function attachSocket(httpServer,sessions,publications) {
    		publications[data.id] = s;
 
 		socket.emit("published", {success: true});
-		log(socket.id + " pusblishs session " + data.id + " as " + data.name);
+		log(socket.id + " pusblishs session " + data.id + " as '" + data.name + "'");
 			
 	  });
 
@@ -343,7 +343,7 @@ function validationOver(args) {
 
 			if(publications[s.id]) {
 
-				log(" - session unpublished ( name: " + s.publicName + " )");
+				log("session " + s.id + " (published as: '" + s.publicName + "') unpublished");
 				publications[s.id].unpublish();
 				delete publications[s.id];
 			}
