@@ -62,7 +62,7 @@ function attachSocket(httpServer,sessions,publications) {
 					s.broadcast("full") // inform spectators
 					s.player[1].connect(socket);
 
-					log(socket.id + " inits to empty local session " + data.id);
+					log(socket.id + " inits to local session " + data.id);
 					
 				}
 				else { // session full, check connections
@@ -370,7 +370,7 @@ function validationOver(args) {
 			s.broadcast("full"); // inform spectators that there is someone to spectate again
 			s.player[1].connect(c.socket);
 
-			log(c.socket.id + " inits to empty local session " + s.id);
+			log(c.socket.id + " inits to local session " + s.id);
 
 		}
 		else log(c.socket.id + " inits to full local session " + s.id);
