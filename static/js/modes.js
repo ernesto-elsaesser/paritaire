@@ -331,7 +331,7 @@ function OnlineHandler(session) {
 		if(this.s.bMyTurn) {
 			this.s.canvas.drawText([msg,"Click to play!"]);
       	}
-		else this.s.canvas.drawText(msg);
+		else this.s.canvas.drawText([msg,"Opponent begins ..."]);
 
 	};
 
