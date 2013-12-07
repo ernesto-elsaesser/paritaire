@@ -113,8 +113,7 @@ function Session(ui,color1,color2) {
 
 			// common event handlers
 			that.socket.on('disconnect', that.modeHandler.disconnect.bind(that.modeHandler));
-			that.socket.on('reconnect', that.modeHandler.reconnect.bind(that.modeHandler));
-
+			
 			that.ui.surrender.onclick = that.modeHandler.surrender.bind(that.modeHandler);
 			that.ui.undo.onclick = that.undo.bind(that);
 			that.ui.share.onclick = that.sessionUrl.bind(that);
@@ -170,6 +169,13 @@ function Session(ui,color1,color2) {
 		else that.modeHandler.turn(data);
 		// TODO: info that player if he can't turn
 		
+	});
+
+	this.socket.on('reconnect', function () {
+
+		this.s.socket.emit('init',{id: this.s.sid});
+		this.modeHandler.reconnecting = true;
+
 	});
 
 	this.socket.on('check', function () {

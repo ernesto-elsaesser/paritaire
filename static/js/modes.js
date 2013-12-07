@@ -12,6 +12,8 @@ function PreHandler(session) {
 function LocalHandler(session) {
 
 	this.s = session;
+	
+	this.reconnecting = false;
 
 	this.init = function(data) {
 				
@@ -122,12 +124,6 @@ function LocalHandler(session) {
 
 	};
 
-	this.reconnect = function() {
-
-		this.s.socket.emit('init',{id: this.s.sid});
-
-	};
-
 	this.resize = function() {
 
 		if(this.s.bPlaying) this.s.field.draw();
@@ -200,8 +196,6 @@ function OnlineHandler(session) {
 		this.s.ui.publish.className = "btn btn-primary disabled";
 
 		this.s.ui.chat.parentElement.parentElement.style.display = "block";
-
-		this.s.ui.msgsend.className = "btn btn-default";
 
 		this.s.ui.info.appendChild(document.createTextNode("Color:\u00A0\u00A0"));
 		this.s.ui.info.appendChild(this.s.player[this.s.mySide].icon.cloneNode());
@@ -350,16 +344,6 @@ function OnlineHandler(session) {
 
 	};
 
-	this.reconnect = function() {
-
-		var data = {id: this.s.sid};
-		if(this.s.mySide) data.oldside = this.s.mySide;
-		this.s.socket.emit('init',data);
-
-		this.reconnecting = true;
-
-	};
-
 	this.resize = function() {
 
 		if(!this.s.mySide && this.s.bMyTurn) { // choosing color
@@ -405,15 +389,9 @@ function SpectatorDecorator(handler) {
 	this.splash = true;
 	this.online = false;
 
+	this.reconnecting = false;
+
 	this.init = function(data) {
-
-		this.s.ui.publish.style.display = "none";
-		this.s.ui.undo.style.display = "none";
-		this.s.ui.surrender.style.display = "none";
-
-		if(this.h.published) this.online = true;
-
-		this.s.ui.msgsend.className = "btn btn-default";
 
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
@@ -423,6 +401,39 @@ function SpectatorDecorator(handler) {
 			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
 		}
+
+		if(this.reconnecting) {
+
+			if(this.online) {
+
+				if(data.connections != 2) { // not full online session
+
+					this.s.canvas.drawText(["Player left.","Reload to join."]);
+					return;
+				}
+				else this.s.ui.chat.parentElement.parentElement.style.display = "block";
+			}
+			else if(data.connections == 0) { // empty local session
+
+				this.s.canvas.drawText(["Player left.","Reload to play."]);
+				return;
+			}
+
+			if(this.s.bPlaying) {
+				this.s.field.draw();
+				this.splash = false;
+			}
+			else this.s.canvas.drawText("Player will start ...");
+			this.s.socket.emit("spectate",{id: this.s.sid});
+			
+			return;
+		}
+
+		this.s.ui.publish.style.display = "none";
+		this.s.ui.undo.style.display = "none";
+		this.s.ui.surrender.style.display = "none";
+
+		if(this.h.published) this.online = true;
 
 		this.s.canvas.drawText(["Session is full.","Click to spectate!"]);
 		this.splash = true;
@@ -436,12 +447,12 @@ function SpectatorDecorator(handler) {
 		this.s.bEnded = false;
 		this.s.ui.chat.parentElement.parentElement.style.display = "none";
 		this.s.canvas.drawText(["Player","disconnected ..."]);
+		this.splash = true;
 	};
 
-	/* TODO: what should happen in this case?*/
 	this.full = function(data) {
 
-		this.s.ui.chat.parentElement.parentElement.style.display = "block";
+		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
 
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
@@ -452,6 +463,7 @@ function SpectatorDecorator(handler) {
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
 
 			this.s.field.draw();
+			this.splash = false;
 		}
 	};
 
@@ -466,10 +478,12 @@ function SpectatorDecorator(handler) {
 
 		this.s.canvas.onclick = null;
 		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
-		if(this.s.bPlaying) this.s.field.draw();
+		if(this.s.bPlaying) {
+			this.s.field.draw();
+			this.splash = false;
+		}
 		else this.s.canvas.drawText("Player will start ...");
 		this.s.socket.emit("spectate",{id: this.s.sid});
-		this.splash = false;
 		
 	};
 
@@ -506,12 +520,6 @@ function SpectatorDecorator(handler) {
 		this.s.bEnded = false;
   		this.s.canvas.drawText(["Connection","problems ..."]);
 		this.s.socket.socket.reconnect(); // should happen automatically
-
-	};
-
-	this.reconnect = function() {
-
-		this.s.socket.emit('init',{id: this.s.sid});
 
 	};
 
