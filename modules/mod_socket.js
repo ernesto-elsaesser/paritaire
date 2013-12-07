@@ -24,7 +24,7 @@ function attachSocket(httpServer,sessions,publications) {
 			var s = sessions[data.id];
 			
 			if(s == undefined) {
-				log(socket.id + " inits invalid session (" + data.id + ")");
+				log(socket.id + " inits to invalid session (" + data.id + ")");
 				//socket.emit('invalid'); TODO
 				return;
 			}
@@ -38,7 +38,7 @@ function attachSocket(httpServer,sessions,publications) {
 				if(players == 0) { // session empty
 				
 					socket.emit("init",s.getState());
-					log(socket.id + " inits empty online session " + data.id);
+					log(socket.id + " inits to empty online session " + data.id);
 					
 				} 
 				else { // players present, check connections
@@ -65,7 +65,7 @@ function attachSocket(httpServer,sessions,publications) {
 					socket.emit("init",s.getState());
 					s.player[1].connect(socket);
 
-					log(socket.id + " inits empty local session " + data.id);
+					log(socket.id + " inits to empty local session " + data.id);
 					
 				}
 				else { // session full, check connections
@@ -337,7 +337,7 @@ function validationOver(args) {
 			s.broadcast("full",{side: c.side, turn: s.nextTurn});
 
 
-			log(c.socket.id + " inits waiting online session " + s.id + ", assigned side " + c.side);
+			log(c.socket.id + " inits to side " + c.side " in session " + s.id);
 			
 			var publications = args[2];
 
@@ -349,8 +349,8 @@ function validationOver(args) {
 			}
 			
 		}
-		else if(players == 2) log(c.socket.id + " inits full online session " + s.id);
-		else log(c.socket.id + " inits empty online session " + s.id);
+		else if(players == 2) log(c.socket.id + " inits to full online session " + s.id);
+		else log(c.socket.id + " inits to empty online session " + s.id);
 
 	}
 	else {
@@ -363,10 +363,10 @@ function validationOver(args) {
 			s.broadcast("full");
 			s.player[1].connect(c.socket);
 
-			log(c.socket.id + " inits empty local session " + s.id);
+			log(c.socket.id + " inits to empty local session " + s.id);
 
 		}
-		else log(c.socket.id + " inits full local session " + s.id);
+		else log(c.socket.id + " inits to full local session " + s.id);
 
 	}
 
