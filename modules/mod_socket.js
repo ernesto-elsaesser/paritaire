@@ -59,7 +59,7 @@ function attachSocket(httpServer,sessions,publications) {
 					c.session = s;
 					c.side = 1; 
 					socket.emit("init",s.getState());
-					s.broadcast("full") // inform possible reconnected spectators
+					s.broadcast("full") // inform spectators
 					s.player[1].connect(socket);
 
 					log(socket.id + " inits to empty local session " + data.id);
@@ -83,6 +83,11 @@ function attachSocket(httpServer,sessions,publications) {
 			var c = clients[socket.id];
 
 			if(!s) return; 
+
+			if(s.player[1].socket === socket) { // speactator reconnected to local session before player, revoke init
+				s.player[1].socket = null;
+				s.player[1].disconnect();
+			}
 
 			c.session = s;
 			c.side = 0;
