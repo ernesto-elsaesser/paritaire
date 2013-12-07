@@ -194,7 +194,7 @@ function Session(ui,color1,color2) {
 		that.ui.chat.firstElementChild.firstElementChild.appendChild(tr);
 		that.ui.chat.scrollTop = that.ui.chat.scrollHeight;
 
-	};
+	});
 
 	this.socket.on('reconnect', function () {
 
