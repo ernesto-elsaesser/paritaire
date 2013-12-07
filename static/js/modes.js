@@ -16,30 +16,30 @@ function LocalHandler(session) {
 	this.reconnecting = false;
 
 	this.init = function(data) {
-				
-			this.s.ui.publish.style.display = "none";
 
-			this.s.currentSide = data.turn;
-			
-			if(this.s.bPlaying) {
-			
-				this.s.field.draw();
+		this.s.ui.publish.style.display = "none";
 
-				this.s.ui.info.innerHTML = "";
-				if(this.s.bSpectating) s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
-				this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
-				this.s.ui.info.appendChild(this.s.player[data.turn].icon);
-
-				this.s.ui.surrender.className = "btn btn-danger";
+		this.s.currentSide = data.turn;
 		
-			}
-			else {
-			
-				this.s.field.clear();
-				this.s.canvas.drawText("Click to start!");
+		if(this.s.bPlaying) {
 		
-			}
-		};
+			this.s.field.draw();
+
+			this.s.ui.info.innerHTML = "";
+			if(this.s.bSpectating) s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
+			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
+			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
+
+			this.s.ui.surrender.className = "btn btn-danger";
+	
+		}
+		else {
+		
+			this.s.field.clear();
+			this.s.canvas.drawText("Click to start!");
+	
+		}
+	};
 
 	
 	this.start = function(data) {
