@@ -393,7 +393,7 @@ function SpectatorDecorator(handler) {
 
 	this.init = function(data) {
 
-		this.tmpNext = data.turn;s
+		this.tmpNext = data.turn;
 
 		if(this.reconnecting) {
 
