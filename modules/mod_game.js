@@ -61,8 +61,16 @@ function Session(id,proto) {
 
 Session.prototype.validColors = ["blue","green","orange","red","violet","yellow","cyan"];
 
-Session.prototype.startGame = function() {
+// return codes for turn-like events:
+//  1 - success
+//  0 - invlaid turn
+// -1 - invalid connection state
+
+Session.prototype.startGame = function(side) {
 		
+	if(this.playing) return 0;
+	if(this.online && side != this.nextRound) return 0;
+
 	this.logic.init();
 	this.player[1].points = 2;
 	this.player[2].points = 2;
@@ -77,19 +85,16 @@ Session.prototype.startGame = function() {
 	
 	this.broadcast("start",t);
 
+	return 1;
+
 };
    
-// return codes:
-//  1 - success
-//  0 - invlaid turn
-// -1 - invalid connection state
 Session.prototype.turn = function(side,x,y) {
 	   
    	if(!this.playing) return 0;
    
    	if(!this.online) side = this.nextTurn;
 	else if(side != this.nextTurn) return 0;
-	else if(!this.player[1].connected || !this.player[2].connected) return -1; // sends alone message
 	
 	if(isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= this.dim || y >= this.dim) return 0;
 	if(this.field.stones[x][y] != 0) return 0;
@@ -196,13 +201,9 @@ Session.prototype.broadcast = function(msg,data) {
 
 Session.prototype.publish = function(name) {
 
-	if(!this.online) return 0;
-	if(this.player[1].connected && this.player[2].connected) return 0;
-
 	this.publicName = name;
 	this.publicationDate = (new Date()).getTime();
 
-	return 1;
 };
 
 Session.prototype.unpublish = function() {
@@ -287,7 +288,7 @@ Player.prototype.disconnect = function() {
 	
 	this.connected = false;
 	this.alive = false;
-	
+
 	if(this.socket) {
 		this.socket.disconnect();
 		this.socket = null;

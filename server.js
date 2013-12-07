@@ -57,7 +57,7 @@ function onRequest(request,response) {
 			sessions[id] = new game.Session(id,querystring.parse(params)); // create new session from post data
 			if(sessions[id]) {
 				
-				log("created new session (" + id + "): " + params);
+				log("new session " + id + ": " + params);
 				response.writeHead(200, {"Content-Type": "text/plain"});				
 				response.write("" + id);
 				response.end();
@@ -143,8 +143,6 @@ function log(msg) {
 
 function cleanSessions() {
 
-	log("cleanup: checking for expired sessions.");
-
 	var now = (new Date()).getDate();
 
 	for(var s in sessions) {
@@ -158,8 +156,6 @@ function cleanSessions() {
 }
 
 function cleanPublications() {
-
-	log("cleanup: checking for expired publications.");
 
 	var deadline = (new Date()).getTime() - 3600000;
 
