@@ -14,7 +14,7 @@ function attachSocket(httpServer,sessions,publications) {
 
 	socketServer.sockets.on('connection', function (socket) {
 
-		log("new client " + socket.id);
+		log(socket.id + " connects");
 
 		clients[socket.id] = {socket: socket};
 
