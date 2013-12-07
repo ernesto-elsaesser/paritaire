@@ -363,7 +363,7 @@ function validationOver(args) {
 			s.broadcast("full");
 			s.player[1].connect(c.socket);
 
-			else log(c.socket.id + " inits empty local session " + s.id);
+			log(c.socket.id + " inits empty local session " + s.id);
 
 		}
 		else log(c.socket.id + " inits full local session " + s.id);
