@@ -172,6 +172,7 @@ function Session(ui,color1,color2) {
 
 			that.player[data.side].points = 0;
 			that.player[(data.side == 1 ? 2 : 1)].points = that.field.xsize * that.field.ysize;
+			if(data.side != that.mySide) notfy("Opponent surrendered.");
 		}
 		else {
 			that.player[1].points += data.points[0];
