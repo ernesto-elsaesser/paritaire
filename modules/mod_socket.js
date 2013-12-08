@@ -84,7 +84,7 @@ function attachSocket(httpServer,sessions,publications) {
 
 			if(!s) return; 
 
-			if(s.player[1].socket === socket) { // speactator reconnected to local session before player, revoke init
+			if(s.player[1].socket === socket) { // spectator reconnected to local session before player, revoke init
 				s.player[1].socket = null;
 				s.player[1].disconnect();
 			}
@@ -134,13 +134,11 @@ function attachSocket(httpServer,sessions,publications) {
 		
 			if(s.online) {
 			
-				log(socket.id + " starts online session " + data.id);
-				s.startGame(c.side);
+				if(s.startGame(c.side)) log(socket.id + " starts online session " + data.id);
 			}
 			else {
 				
-				log(socket.id + " starts local session " + data.id);
-				s.startGame();
+				if(s.startGame()) log(socket.id + " starts local session " + data.id);
 			}
 			
 		});

@@ -61,15 +61,10 @@ function Session(id,proto) {
 
 Session.prototype.validColors = ["blue","green","orange","red","violet","yellow","cyan"];
 
-// return codes for turn-like events:
-//  1 - success
-//  0 - invlaid turn
-// -1 - invalid connection state
-
 Session.prototype.startGame = function(side) {
 		
-	if(this.playing) return 0;
-	if(this.online && side != this.nextRound) return 0;
+	if(this.playing) return false;
+	if(this.online && side != this.nextRound) return false;
 
 	this.logic.init();
 	this.player[1].points = 2;
@@ -85,22 +80,22 @@ Session.prototype.startGame = function(side) {
 	
 	this.broadcast("start",t);
 
-	return 1;
+	return true;
 
 };
    
 Session.prototype.turn = function(side,x,y) {
 	   
-   	if(!this.playing) return 0;
+   	if(!this.playing) return false;
    
    	if(!this.online) side = this.nextTurn;
-	else if(side != this.nextTurn) return 0;
+	else if(side != this.nextTurn) return false;
 	
-	if(isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= this.dim || y >= this.dim) return 0;
-	if(this.field.stones[x][y] != 0) return 0;
+	if(isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= this.dim || y >= this.dim) return false;
+	if(this.field.stones[x][y] != 0) return false;
 	
 	var stolenStones = this.logic.makeTurn(side,x,y);
-	if(stolenStones == 0) return 0;
+	if(stolenStones == 0) return false;
 
 	// put stone
 	this.field.putStone(side,x,y);
@@ -128,7 +123,7 @@ Session.prototype.turn = function(side,x,y) {
 	
 	this.broadcast("turn",this.lastTurn);
 	
-	return 1;
+	return true;
 };
 
 Session.prototype.endRound = function() {
@@ -149,9 +144,9 @@ Session.prototype.endRound = function() {
    
 Session.prototype.undo = function(side) {
    	
-	if(!this.playing) return 0; 
-	if(!this.lastTurn) return 0;
-	if(this.online && this.lastTurn.side != side) return 0;
+	if(!this.playing) return false; 
+	if(!this.lastTurn) return false;
+	if(this.online && this.lastTurn.side != side) return false;
 	
 	var stones = this.logic.undoTurn(this.lastTurn.stones);
 	
@@ -168,13 +163,13 @@ Session.prototype.undo = function(side) {
 	
 	this.broadcast("turn",t);
 	
-	return 1;
+	return true;
 
 };
 
 Session.prototype.surrender = function(side) {
 
-	if(!this.playing) return 0;
+	if(!this.playing) return false;
 
 	this.player[side].points = 0;
 	this.player[(side == 1 ? 2 : 1)].points = 1;
@@ -189,7 +184,7 @@ Session.prototype.surrender = function(side) {
 	
 	this.broadcast("turn",t);
 	
-	return 1;
+	return true;
 
 };
 
