@@ -150,7 +150,7 @@ function attachSocket(httpServer,sessions,publications) {
 			
 			if(!validSessionState(c,s)) return;
 			
-			s.turn(c.side,data.x,data.y);
+			if(!s.turn(c.side,data.x,data.y)) socket.emit("badturn");
 			
 		});
 		  
