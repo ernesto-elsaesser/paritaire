@@ -91,6 +91,7 @@ function attachSocket(httpServer,sessions,publications) {
 
 			c.session = s;
 			c.side = 0;
+			s.broadcast("spectator");
 			s.spectators.push(socket);
 
 			var state = s.getState();

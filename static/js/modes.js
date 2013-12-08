@@ -235,7 +235,10 @@ function OnlineHandler(session) {
 	this.click = function(x,y) {
 
 
-		if(!this.s.bMyTurn) return;
+		if(!this.s.bMyTurn)	{
+			if(this.s.bPlaying) notify("It's your opponents turn.",2);
+			return;
+		}
 
 		if(!this.s.mySide) {
 			
