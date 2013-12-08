@@ -267,7 +267,6 @@ function OnlineHandler(session) {
 				this.s.ui.undo.className = "btn btn-primary";
 			}
 		}
-		else if(data.side != that.mySide) notfy("Opponent surrendered.");
 
 		this.s.bMyTurn = (data.next == this.s.mySide);
 
