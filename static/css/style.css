@@ -173,10 +173,13 @@ a.list-group-item.active:focus {
 #notification {
 
 	position: absolute;
-	top: 10px;
-	right: 10px;
-	border: 1px solid black;
-	width: 100px;
+	top: 50px;
+	right: 21px;
+	border: 5px solid black;
+	background-color: white;
+	font-weight: bold;
+	padding: 10px;
+	width: 120px;
 	height: 60px;
 	border-radius: 10px;
 	opacity: 0;

@@ -136,7 +136,7 @@ function notify(msg) {
         opacity += 0.05;
         ui.notification.style.opacity = opacity;
 
-        if (Math.abs(opacity - 1.0) >= 0.05) setTimeout(fadein,10);
+        if (Math.abs(opacity - 1.0) >= 0.05) setTimeout(fadein,50);
     }; 
 
     fadeout = function () {
@@ -144,10 +144,10 @@ function notify(msg) {
         opacity -= 0.05;
         ui.notification.style.opacity = opacity;
 
-        if (opacity >= 0.05) setTimeout(fadeout,10);
+        if (opacity >= 0.05) setTimeout(fadeout,50);
     };
 
 	setTimeout(fadein,10);
-	setTimeout(fadeout,5000);
+	setTimeout(fadeout,3000);
 	
 }
