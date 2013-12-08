@@ -126,44 +126,45 @@ function createCanvas(container) {
 	
 }
 
-var fading; // required globals
+var fader; // required globals
 
 function notify(msg,duration) {
 
 
-	if(fading) {
+	if(fader) {
 
 		setTimeout(function() {notify(msg);}, 1000);
 		return;
 	}
 
-	opacity = 0;
+	var opacity = 0;
+	var delay = 3000;
+	if(duration) delay = duration * 1000;
+
+
 	ui.notification.innerHTML = msg;
-
-	fadein = function () {
-
-        opacity += 0.05;
-        ui.notification.style.opacity = opacity;
-
-        if (Math.abs(opacity - 0.9) >= 0.05) setTimeout(fadein,40);
-
-    }; 
 
     fadeout = function () {
 
         opacity -= 0.05;
         ui.notification.style.opacity = opacity;
 
-        if (opacity >= 0.05) fading = setTimeout(fadeout,25);
+        if (opacity >= 0.05) fader = setTimeout(fadeout,25);
         else {
         	ui.notification.style.opacity = 0;
-        	fading = null;
+        	fader = null;
         }
     };
 
-	var out = 5000;
-	if(duration) out = (duration + 1) * 1000
-	fading = setTimeout(fadeout,out);
+    fadein = function () {
+
+        opacity += 0.05;
+        ui.notification.style.opacity = opacity;
+
+        if (Math.abs(opacity - 0.9) >= 0.05) fader = setTimeout(fadein,40);
+        else fader = setTimeout(fadeout,delay);
+
+    }; 
 
 	fadein();
 	
