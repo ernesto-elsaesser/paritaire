@@ -133,12 +133,11 @@ function notify(msg) {
 
 	if(t1 || t2) {
 
-		setTimeout(function() {
-			notify(msg);
-		}, 1000);
-	};
-	
-	opacity = ui.notification.style.opacity;
+		setTimeout(function() {notify(msg);}, 1000);
+		return;
+	}
+
+	opacity = 0;
 	ui.notification.innerHTML = msg;
 
 	fadein = function () {
