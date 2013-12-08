@@ -134,7 +134,10 @@ function Session(ui,color1,color2) {
 			that.ui.undo.onclick = that.undo.bind(that);
 			that.ui.share.onclick = that.sessionUrl.bind(that);
 
-			that.canvas.onclick = that.clickHandler.bind(that);
+			// click handling
+			var oc = that.clickHandler.bind(that);
+			that.canvas.onclick = oc;
+			that.ui.notification.onclick = oc;
 
 		}
 
