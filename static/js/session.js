@@ -133,7 +133,8 @@ function Session(ui,color1,color2) {
 			that.ui.surrender.onclick = that.modeHandler.surrender.bind(that.modeHandler);
 			that.ui.undo.onclick = that.undo.bind(that);
 			that.ui.share.onclick = that.sessionUrl.bind(that);
-			that.canvas.onclick = that.modeHandler.click.bind(that.modeHandler);
+
+			that.canvas.onclick = that.clickHandler.bind(that);
 
 		}
 
