@@ -126,12 +126,12 @@ function createCanvas(container) {
 	
 }
 
-var t1,t2; // required globals
+var fading; // required globals
 
-function notify(msg) {
+function notify(msg,duration) {
 
 
-	if(t1 || t2) {
+	if(fading) {
 
 		setTimeout(function() {notify(msg);}, 1000);
 		return;
@@ -146,7 +146,6 @@ function notify(msg) {
         ui.notification.style.opacity = opacity;
 
         if (Math.abs(opacity - 0.9) >= 0.05) setTimeout(fadein,50);
-        else t1 = null;
 
     }; 
 
@@ -155,14 +154,17 @@ function notify(msg) {
         opacity -= 0.05;
         ui.notification.style.opacity = opacity;
 
-        if (opacity >= 0.05) setTimeout(fadeout,50);
+        if (opacity >= 0.05) fading = setTimeout(fadeout,50);
         else {
         	ui.notification.style.opacity = 0;
-        	t2 = null;
+        	fading = null;
         }
     };
 
-	t1 = setTimeout(fadein,10);
-	t2 = setTimeout(fadeout,5000);
+	var out = 5000;
+	if(duration) out = (duration + 1) * 1000
+	fading = setTimeout(fadeout,out);
+
+	fadein();
 	
 }

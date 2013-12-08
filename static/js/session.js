@@ -18,7 +18,7 @@ function Session(ui,color1,color2) {
 
 	this.canvas = createCanvas(this.ui.main);
 	
-	this.ui.notification.width = (this.canvas.width / 2) - 12;
+	this.ui.notification.maxWidth = (this.canvas.width / 2) - 12;
 
 	this.ctx = this.canvas.getContext('2d');
 	this.ctx.font = Math.floor(this.canvas.width/12) + "px Verdana";
@@ -196,7 +196,13 @@ function Session(ui,color1,color2) {
 		that.ui.chat.firstElementChild.firstElementChild.appendChild(tr);
 		that.ui.chat.scrollTop = that.ui.chat.scrollHeight;
 
-		if(window.innerWidth < 992) notify("New chat message.");
+		if(window.innerWidth < 992 && data.side != that.mySide) notify("New chat message.",3);
+
+	});
+
+	this.socket.on('badturn', function () {
+
+		notify("Invalid turn!",2);
 
 	});
 
