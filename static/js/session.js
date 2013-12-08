@@ -206,7 +206,7 @@ function Session(ui,color1,color2) {
 
 	});
 
-	this.socket.on('badturn', function () {
+	this.socket.on('spectator', function () {
 
 		notify("Spectator joined.",2);
 
