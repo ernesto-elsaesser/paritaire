@@ -266,6 +266,13 @@ function OnlineHandler(session) {
 		}
 
 		this.s.bMyTurn = (data.next == this.s.mySide);
+
+		if(data.side == data.next) {
+
+			if(data.side == this.s.mySide) notify("You can turn again.")
+			else notify("No valid turns. Opponent can turn again.");
+		}
+
 		this.s.ui.info.removeChild(this.s.ui.info.childNodes[this.s.ui.info.childNodes.length-1]);
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
 		

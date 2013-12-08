@@ -119,32 +119,35 @@ function createCanvas(container) {
 		this.textView = true;
 		
 	};
+
 	
 	container.appendChild(canvas);
 	return canvas;
 	
 }
 
-/*
-UNUSED, CODE DEPRECATED
+function notify(msg) {
 
-var fader, faderalpha; // globals for splashText function
+	opacity = 0.0;
+	ui.notification.innerHTML = msg;
 
-function splashText(msg) {
-    
-    faderalpha = 1.0;
-    
-    fader = setInterval(function () {
-            field.draw();
-            ctx.fillStyle = "rgba(220, 150, 100, " + faderalpha + ")";
-            ctx.font = "bold 20pt Arial";
-            ctx.fillText(msg, canv.width/2 - (msg.length), canv.height/2 - 10);
-            faderalpha -= 0.05;
-            if (faderalpha <= 0.0) {
-              clearInterval(fader);
-              field.draw();
-            }
-        }, 50); 
+	fadein = function () {
+
+        opacity += 0.05;
+        ui.notification.style.opacity = opacity;
+
+        if (Math.abs(opacity - 1.0) >= 0.05) setTimeout(fadein,10);
+    }; 
+
+    fadeout = function () {
+
+        opacity -= 0.05;
+        ui.notification.style.opacity = opacity;
+
+        if (opacity >= 0.05) setTimeout(fadeout,10);
+    };
+
+	setTimeout(fadein,10);
+	setTimeout(fadeout,5000);
 	
 }
-*/
