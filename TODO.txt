@@ -1,8 +1,9 @@
 Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fÃ‚ÂŸr gute Note); am besten mit seinem Template
 - dokumentierende Screenshots
-- "rules" -> "help"?
-- Learn
+- info tooltips on new page (for field size and game mode)
+- field size range
+- contact email
 
 Notiz: 
         - orange: e18336
