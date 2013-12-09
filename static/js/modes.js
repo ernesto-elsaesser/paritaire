@@ -14,6 +14,7 @@ function LocalHandler(session) {
 	this.s = session;
 
 	this.reconnecting = false;
+	this.initialized = false;
 
 	this.init = function(data) {
 
@@ -38,6 +39,8 @@ function LocalHandler(session) {
 			this.s.canvas.drawText("Click to start!");
 	
 		}
+
+		this.initialized = true;
 	};
 
 	
@@ -53,7 +56,7 @@ function LocalHandler(session) {
 
 	this.click = function(x,y) {
 
-
+		if(this.initialized) return;
 		if(!this.s.bPlaying) this.s.socket.emit('start', {id: this.s.sid});
 		else this.s.socket.emit('turn', {id: this.s.sid, x: x, y: y});
 
@@ -111,10 +114,11 @@ function LocalHandler(session) {
 
 	this.disconnect = function() {
 
+		this.initialized = false;
+
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.surrender.className = "btn btn-danger disabled";
 		this.s.ui.share.className = "btn btn-primary disabled";
-		this.s.canvas.onclick = null;
 		this.s.bEnded = false;
   		this.s.canvas.drawText(["Connection","problems ..."]);
 		this.s.socket.socket.reconnect(); // should happen automatically
@@ -139,6 +143,7 @@ function OnlineHandler(session) {
 	this.s = session;
 
 	this.reconnecting = false;
+	this.initialized = false;
 
 	this.init = function(data) {
 
@@ -155,6 +160,7 @@ function OnlineHandler(session) {
 			if(data.connections == 0) 
 				this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
 			this.s.canvas.drawText(["Waiting for","opponent ..."]);
+			this.initialized = true;
 			return;
 		} 
 			
@@ -168,6 +174,8 @@ function OnlineHandler(session) {
 
 			this.s.bMyTurn = true;
 		} 
+
+		this.initialized = true;
 				
 		// if there is one other player connected yet, "full" message will follow
 		// if the session is already full, the SpectatorDecorator intercepted the init call
@@ -234,6 +242,7 @@ function OnlineHandler(session) {
 
 	this.click = function(x,y) {
 
+		if(!this.initialized) return;
 
 		if(!this.s.bMyTurn)	{
 			if(this.s.bPlaying) notify("It's your opponents turn.",2);
@@ -327,13 +336,14 @@ function OnlineHandler(session) {
 
 	this.disconnect = function() {
 
+		this.initialized = false;
+
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.publish.innerHTML = "Publish";
 		this.s.ui.publish.className = "btn btn-primary disabled";
 		this.s.ui.surrender.className = "btn btn-danger disabled";
 		this.s.ui.share.className = "btn btn-primary disabled";
 		this.s.ui.chat.parentElement.parentElement.style.display = "none";
-		this.s.canvas.onclick = null;
 		this.s.bEnded = false;
   		this.s.canvas.drawText(["Connection","problems ..."]);
 		this.s.socket.socket.reconnect(); // should happen automatically
