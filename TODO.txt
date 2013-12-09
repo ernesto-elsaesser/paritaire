@@ -1,6 +1,6 @@
 Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fÃ‚ÂŸr gute Note); am besten mit seinem Template
-- info tooltips on new page (for field size and game mode)
+- framework versions in credits
 
 Ernesto:
 - Supportmatrix: auf Devices/Browsern testen
