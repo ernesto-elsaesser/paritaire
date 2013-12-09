@@ -81,8 +81,16 @@ function onRequest(request,response) {
 		var s = sessions[requrl.query["id"]];
 
 		if(s) {
-			html = html.replace("#0",s.player[1].color + "_" + s.player[2].color);
-			html = html.replace("#1",s.player[1].color).replace("#2",s.player[2].color);
+			
+			var c1 = s.player[1].color;
+			var c2 = s.player[2].color;
+			html = html.replace("#1",c1).replace("#2",c2);
+			
+			if(c1[0] > c2[0]) { // change if, in future, we support two colors with same first character
+				c1 = c2;
+				c2 = s.player[1].color;
+			}
+			html = html.replace("#0",c1 + "_" + c2);
 		}
 		
 		response.writeHead(200, {"Content-Type": "text/html"});				

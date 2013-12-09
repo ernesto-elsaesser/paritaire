@@ -1,29 +1,17 @@
 Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fÃ‚ÂŸr gute Note); am besten mit seinem Template
-- dokumentierende Screenshots
 - info tooltips on new page (for field size and game mode)
-- field size range
-- contact email
-
-Notiz: 
-        - orange: e18336
-        - blau: 3d70b7
-        - rot: bd3434
-        - grŸn: 459f28
-        - cyan: 4bc5d0
-        - gelb: c8b439
-        - lila: 843fbd
-
 
 Ernesto:
 - Supportmatrix: auf Devices/Browsern testen
-- IE Metro canvas size
+- IE Metro canvas size: container (this.ui.main) onload -> resize
 - ARCHITEKTURBESCHREIBUNG - 1 Blatt mit Diagramm: Schnittstellen, Komponenten, verwendete Tools ZUR RUNTIME (zB. RWD mit 3 Tools ...)
-    2 kästchen 
-- sanatize chat text?
-- chat: visible notification on top
-
+    2 kästchen
 
 DOKUMENTE:
 anstatt BEDIENUNGSANLEITUNG: Supportmatrix und Screenshots
 ARCHITEKTURBESCHREIBUNG
+
+Future:
+- mail server + contact@ adresse
+-> contact email in credits
