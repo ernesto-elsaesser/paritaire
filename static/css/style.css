@@ -151,6 +151,11 @@ a.list-group-item.active:focus {
 	text-decoration: none;
 }
 
+.popover {
+
+	font-size: 0.65em;	
+}
+
 /* play.html */
 
 #play-main, #play-side {
