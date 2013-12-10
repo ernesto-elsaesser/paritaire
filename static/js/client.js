@@ -20,16 +20,16 @@ function Player(stone,color) {
 	this.icon.height = 30;
 }
 
-function Field(refSession,columnNum,rowNum) 
+function Field(arrPlayer,canvas,columnNum,rowNum) 
 {	
 	
-	this.session = refSession;
+	this.canvas = canvas;
 	this.xsize = columnNum;
 	this.ysize = rowNum;
 	this.future = []; // future turn positions
 	this.highlighted = null;
 	
-	this.imgs = [img0, this.session.player[1].img, this.session.player[2].img, img3];
+	this.imgs = [img0, arrPlayer[1].img, arrPlayer[2].img, img3];
 	
 	this.stones = new Array(this.xsize); // 2 dimensional array representing the field
 	for (var x = 0; x < this.xsize; x++) {
@@ -65,20 +65,20 @@ function Field(refSession,columnNum,rowNum)
 	
 	this.draw = function() {
 		
-		var side = this.session.canvas.width / this.xsize;
+		var side = this.canvas.width / this.xsize;
 		// TODO: non-square field?
 		
 		for (var x = 0; x < this.xsize; x++) {
 			for (var y = 0; y < this.ysize; y++)
-				this.session.ctx.drawImage(this.imgs[this.stones[x][y]], x * side, y * side, side, side);
+				this.canvas.ctx.drawImage(this.imgs[this.stones[x][y]], x * side, y * side, side, side);
 		}
 		
 		// draw highlight
 		if(this.highlighted)
-			this.session.ctx.drawImage(this.imgs[3], this.highlighted[0] * side, this.highlighted[1] * side, side, side);
+			this.canvas.ctx.drawImage(this.imgs[3], this.highlighted[0] * side, this.highlighted[1] * side, side, side);
 
 
-		this.session.canvas.textView = false;
+		this.canvas.textView = false;
 	};
 
 }
@@ -90,7 +90,8 @@ function createCanvas() {
 	
 	canvas.width  = container.clientWidth;
 	canvas.height = canvas.width; // TODO: change for non-square fields
-	canvas.getContext('2d').font = Math.floor(canvas.width/12) + "px Verdana";
+	canvas.ctx = canvas.getContext('2d');
+	canvas.ctx.font = Math.floor(canvas.width/12) + "px Verdana";
 
 	document.getElementById("notification").maxWidth = (canvas.width * 0.66) + "px";
 
@@ -100,22 +101,21 @@ function createCanvas() {
 		
 		if(typeof text == "string") text = [text];
 
-		var ctx = this.getContext("2d");
-		var fontsize = parseInt(ctx.font.substr(0,2));
+		var fontsize = parseInt(this.ctx.font.substr(0,2));
 
-		ctx.textAlign = "center";
+		this.ctx.textAlign = "center";
 		
-		ctx.fillStyle = "#FFF";
-		ctx.fillRect(0,0,this.width,this.height);
+		this.ctx.fillStyle = "#FFF";
+		this.ctx.fillRect(0,0,this.width,this.height);
 
-		ctx.lineWidth = 5;
-		ctx.strokeRect(0,0,this.width,this.height);
-		ctx.lineWidth = 1;
+		this.ctx.lineWidth = 5;
+		this.ctx.strokeRect(0,0,this.width,this.height);
+		this.ctx.lineWidth = 1;
 		
-		ctx.fillStyle = "#000";
+		this.ctx.fillStyle = "#000";
 		var x = (this.width / 2);
-		ctx.fillText(text[0],x,this.height * 0.4);
-		if(text[1]) ctx.fillText(text[1],x,this.height * 0.6);
+		this.ctx.fillText(text[0],x,this.height * 0.4);
+		if(text[1]) this.ctx.fillText(text[1],x,this.height * 0.6);
 		
 		this.lastText = text;
 
@@ -129,7 +129,7 @@ function createCanvas() {
 
 		this.width = w;
 		this.height = w; // TODO: change for non-square fields
-		this.getContext("2d").font = Math.floor(w/12) + "px Verdana";
+		this.ctx.font = Math.floor(w/12) + "px Verdana";
 	};
 
 	canvas.offsetX = function() {

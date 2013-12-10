@@ -82,7 +82,7 @@ function Session(ui,color1,color2) {
 		
 		// init game data
 		that.nextStarter = data.round;
-		that.field = new Field(that,data.dim,data.dim);
+		that.field = new Field(that.player,that.canvas,data.dim,data.dim);
 		that.player[1].wins = data.wins[0];
 		that.player[2].wins = data.wins[1];
 		that.playing = data.playing;
