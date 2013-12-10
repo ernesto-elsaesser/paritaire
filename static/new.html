@@ -189,15 +189,21 @@
     <!-- tooltips -->
     <script type="text/javascript">
     
-    		 $('#tt-field-size').popover({
+    		$('#tt-field-size').popover({
 	  			content: "A bigger field makes your individual games longer and more complex.",
-				placement: "bottom"
-	  		});
+				placement: "bottom",
+				container: "body"
+	  		}).click(function(){
+        		$('#tt-game-mode').popover('hide');
+    		});
 
 	  		$('#tt-game-mode').popover({
 	  			content: "In local mode, both players play on one device. In oline mode, your opponent joins your session with his own device.",
-				placement: "bottom"
-	  		});
+				placement: "bottom",
+				container: "body"
+	  		}).click(function(){
+        		$('#tt-field-size').popover('hide');
+    		});
 
 	  		adjust();
 
