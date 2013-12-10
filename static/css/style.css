@@ -177,16 +177,6 @@ a.list-group-item.active:focus {
 	text-decoration: none;
 }
 
-.popover {
-
-	font-size: 0.65em;	
-}
-
-.popover-content {
-
-	width: 100%;	
-}
-
 /* play.html */
 
 #play-main, #play-side {
