@@ -152,10 +152,10 @@ function Chat(c1,c2,handler) {
 	this.chatIcons[0].src = 'img/highlight.png';
 	this.chatIcons[0].width = 20;
 	this.chatIcons[0].height = 20;
-	this.chatIcons[1].src = 'img/box_' + c1 + '.png';
+	this.chatIcons[1].src = 'img/icon_' + c1 + '.png';
 	this.chatIcons[1].width = 20;
 	this.chatIcons[1].height = 20;
-	this.chatIcons[2].src = 'img/box_' + c2 + '.png';
+	this.chatIcons[2].src = 'img/icon_' + c2 + '.png';
 	this.chatIcons[2].width = 20;
 	this.chatIcons[2].height = 20;
 
@@ -175,7 +175,7 @@ function Chat(c1,c2,handler) {
 	this.sendMessage = function() { 
 
 		var msg = this.text.value;
-		this.value = "";
+		this.text.value = "";
 
 		if (msg == "") return;
 		
