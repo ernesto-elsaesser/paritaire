@@ -1,6 +1,5 @@
 Sophie:
 - Licences Dokumentieren (Punkt aus seiner Excel fÃ‚ÂŸr gute Note); am besten mit seinem Template
-- framework versions in credits
 
 Ernesto:
 - IE Metro canvas size: container (this.ui.main) onload -> resize
