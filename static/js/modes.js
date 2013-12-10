@@ -405,8 +405,6 @@ function OnlineHandler(session) {
 	this.s.socket.on('published', this.published.bind(this));
 	this.s.ui.publish.onclick = this.publish.bind(this);
 
-	
-
 }
 
 function SpectatorHandler(session,online) {
@@ -494,7 +492,7 @@ function SpectatorHandler(session,online) {
 
 	this.click = function(x,y) { // switch to spectator mode
 
-		this.s.canvas.onclick = null;
+		this.s.canvas.onclick = null; // disable input
 		this.s.reconnecting = true; // prevents reconstruction of mode handler (i.e. overwriting of this)
 		this.s.socket.emit("spectate",{id: this.s.sid}); // this will trigger a re-initialization
 		
@@ -561,6 +559,7 @@ function SpectatorHandler(session,online) {
 	this.s.socket.on('full', this.full.bind(this));
 	this.s.socket.on('playerleft', this.playerleft.bind(this));
 	this.s.socket.on('disconnect', this.disconnect.bind(this));
+	// notice that spectators don't respond to check messages
 
 }
 
