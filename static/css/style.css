@@ -177,6 +177,12 @@ a.list-group-item.active:focus {
 	text-decoration: none;
 }
 
+.popover {
+
+	padding-left: 30px;
+}
+
+
 /* play.html */
 
 #play-main, #play-side {
