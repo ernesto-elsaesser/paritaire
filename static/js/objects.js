@@ -245,7 +245,7 @@ function Chat(c1,c2,handler) {
 
 }
 
-var fader; // required global
+var fader; // timeout id, has to be global
 
 function notify(msg,duration) {
 
@@ -257,7 +257,7 @@ function notify(msg,duration) {
 
 	var element = document.getElementById("notification");
 	var opacity = 0;
-	var delay = 3000;
+	var delay = 3000; // by default, message stays for 3 seconds
 	if(duration) delay = duration * 1000;
 
 

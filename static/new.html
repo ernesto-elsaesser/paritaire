@@ -4,17 +4,10 @@
     <meta charset="utf-8">
     <title>New Session</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <!-- Bootstrap CSS-->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"  media="screen">
     <link href="css/style.css" rel="stylesheet" media="screen">
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="../../assets/js/html5shiv.js"></script>
-      <script src="../../assets/js/respond.min.js"></script>
-    <![endif]-->
-    
-    <link rel="shortcut icon" type="image/png" href="img/icon.png">
+	<link rel="shortcut icon" type="image/png" href="img/icon.png">
   </head>
   <body>
     
@@ -46,14 +39,14 @@
 
 	  		function validate() {
 	  			
-			alertText = document.getElementById('validation_advice');
+				alertText = document.getElementById('validation_advice');
 	  			colors = document.getElementsByClassName("active");
 	  			
 	  			if(colors[0].id == colors[1].id) {
 	  				
-	  			alertText.innerHTML = "<strong>Error:</strong> You can not both be " + colors[0].id + "!";
-			//alertText.style.display = "block";
-			$("#validation_advice").removeClass("hide");
+		  			alertText.innerHTML = "<strong>Error:</strong> You can not both be " + colors[0].id + "!";
+					//alertText.style.display = "block";
+					$("#validation_advice").removeClass("hide");
 				
 	  			} else {
 	  				
@@ -191,9 +184,8 @@
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="//code.jquery.com/jquery-2.0.3.min.js" type="text/javascript"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!-- Bootstrap -->
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js" type="text/javascript"></script>
-
     <!-- tooltips -->
     <script type="text/javascript">
     

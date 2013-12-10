@@ -13,7 +13,7 @@ var game = require('./modules/mod_game');
 var sessions = {};
 var publications = {};
 
-if(fs.existsSync("sessions.dump")) {// try to load old sessions
+if(fs.existsSync("sessions.dump")) { // try to load old sessions
 
 		var dump = JSON.parse(String(fs.readFileSync("sessions.dump")));
 		var c = 0;
@@ -49,7 +49,7 @@ function onRequest(request,response) {
 		
 		var params = "";
 		request.on("data", function(data) {
-			params += data; // TODO: 1e6 anti flooding
+			params += data;
 			});
 		request.on("end", function() {
 		
@@ -67,7 +67,6 @@ function onRequest(request,response) {
 				// the session ID remains unused
 				log("invalid session request (" + id + "): " + params);
 				response.writeHead(200, {"Content-Type": "text/plain"});				
-				//response.write(); no content
 				response.end();
 			}
 			response.end();
@@ -174,7 +173,6 @@ function cleanPublications() {
 			log("cleanup: publication '" + publications[id].publicName + "' of ssession " + id + " expired.");
 			publications[id].unpublish();
 			delete publications[id];
-			// TODO: inform publisher?
 		}
 	}
 }
@@ -210,7 +208,3 @@ var server = http.createServer(onRequest);
 socket.attachSocket(server,sessions,publications);
 
 server.listen(80);
-
-// "node debug" is far better
-// shell.createShell(5001,{s: sessions, p: publications, c: socket.clients});
-// log("shell: running on port 5001");

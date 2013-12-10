@@ -62,6 +62,32 @@ body {
 	margin: 0 10px;
 }
 
+/* navbar */
+
+.navbar-header {
+	float: left;
+}
+
+.navbar-collapse {
+	float: right;
+	padding-left: 0;
+	padding-right: 5px;
+	border: 0;
+}
+
+.navbar-collapse ul {
+	margin: 0;
+}
+
+.navbar-collapse li {
+	float: left;
+}
+
+.navbar-collapse li > a {
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
 /* index.html */
 
 .intro a {
@@ -268,32 +294,6 @@ a.list-group-item.active:focus {
 
 	width: 30px;
 
-}
-
-/* navbar */
-
-.navbar-header {
-	float: left;
-}
-
-.navbar-collapse {
-	float: right;
-	padding-left: 0;
-	padding-right: 5px;
-	border: 0;
-}
-
-.navbar-collapse ul {
-	margin: 0;
-}
-
-.navbar-collapse li {
-	float: left;
-}
-
-.navbar-collapse li > a {
-	padding-top: 15px;
-	padding-bottom: 15px;
 }
 
 /* rules.html */
