@@ -108,7 +108,7 @@ function LocalHandler(session) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.27, w*0.20, w*0.20);
+			this.s.canvas.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.27, w*0.20, w*0.20);
 		}
 
 	};
@@ -177,8 +177,8 @@ function OnlineHandler(session) {
 			this.s.canvas.drawText("Choose your color!");
 
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
-			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
+			this.s.canvas.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
+			this.s.canvas.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
 
 			this.responsive = true;
 		} 
@@ -372,8 +372,8 @@ function OnlineHandler(session) {
 
 			var w = this.s.canvas.width;
 		
-			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
-			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
+			this.s.canvas.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
+			this.s.canvas.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
 		}
 		else if(this.s.playing && !this.s.canvas.textView) this.s.field.draw();
 		else if (this.s.endScreen) this.drawWinner();
@@ -524,7 +524,7 @@ function SpectatorHandler(session,online) {
 		
 		if(this.s.winner) {
 			var w = this.s.canvas.width;
-			this.s.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.27, w*0.20, w*0.20);
+			this.s.canvas.ctx.drawImage(this.s.winner.icon, w*0.10, w*0.27, w*0.20, w*0.20);
 		}
 		
 	};
