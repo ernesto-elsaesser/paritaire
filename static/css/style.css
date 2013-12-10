@@ -187,6 +187,12 @@ a.list-group-item.active:focus {
 	width: 170px;
 }
 
+#tt-field-size, #tt-game-mode {
+
+	height: 23px;
+	padding-bottom: 2px;
+}
+
 
 /* play.html */
 
