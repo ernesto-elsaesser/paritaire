@@ -80,16 +80,19 @@ function Field(refSession,columnNum,rowNum)
 
 		this.session.canvas.textView = false;
 	};
-	
-	return true;
+
 }
 
-function createCanvas(container) {
+function createCanvas() {
 
+	var container = document.getElementById('canvas-container');
 	var canvas = document.createElement('canvas');
 	
 	canvas.width  = container.clientWidth;
 	canvas.height = canvas.width; // TODO: change for non-square fields
+	canvas.getContext('2d').font = Math.floor(canvas.width/12) + "px Verdana";
+
+	document.getElementById("notification").maxWidth = (canvas.width * 0.66) + "px";
 
 	canvas.textView = false;
 	
@@ -120,13 +123,130 @@ function createCanvas(container) {
 		
 	};
 
-	
+	canvas.resize = function() {
+
+		var w = container.clientWidth; // TODO: working?
+
+		this.width = w;
+		this.height = w; // TODO: change for non-square fields
+		this.getContext("2d").font = Math.floor(w/12) + "px Verdana";
+	};
+
+	canvas.offsetX = function() {
+		return container.offsetLeft+container.offsetParent.offsetLeft;
+	};
+
+	canvas.offsetY = function() {
+		return container.offsetTop+container.offsetParent.offsetTop+10;
+	};
+
 	container.appendChild(canvas);
+
 	return canvas;
 	
 }
 
-var fader; // required globals
+function Chat(c1,c2,handler) {
+
+	this.chatIcons = [new Image(), new Image(), new Image()];
+	this.chatIcons[0].src = 'img/highlight.png';
+	this.chatIcons[0].width = 20;
+	this.chatIcons[0].height = 20;
+	this.chatIcons[1].src = 'img/box_' + c1 + '.png';
+	this.chatIcons[1].width = 20;
+	this.chatIcons[1].height = 20;
+	this.chatIcons[2].src = 'img/box_' + c2 + '.png';
+	this.chatIcons[2].width = 20;
+	this.chatIcons[2].height = 20;
+
+	this.panel = document.getElementById('chat-panel');
+	this.messages = document.getElementById('chat-messages');
+	this.text = document.getElementById('message-text');
+	this.handler = handler;
+
+	this.show = function() {
+		this.panel.style.display = "block";
+	};
+
+	this.hide = function() {
+		this.panel.style.display = "none";
+	};
+
+	this.sendMessage = function() { 
+
+		var msg = this.text.value;
+		this.value = "";
+
+		if (msg == "") return;
+		
+		this.handler.sendMessage(msg);
+	};
+
+	this.addMessage = function(side,msg) {
+
+		// create dom node in chat panel
+		var tr = document.createElement("tr");
+		var l = tr.insertCell(0);
+		l.appendChild(this.chatIcons[side].cloneNode());
+		tr.insertCell(1).innerHTML = msg;
+		this.messages.firstElementChild.firstElementChild.appendChild(tr);
+		this.messages.scrollTop = this.messages.scrollHeight;
+
+	};
+
+	// event handlers
+	var callback = this.sendMessage.bind(this);
+	document.getElementById('message-send').onclick = callback;
+
+	this.text.onkeyup = function(event) { // send by hitting enter in text field
+			if(event.keyCode == 13) callback();
+		};
+
+}
+
+function RatioBar(arrPlayers) {
+
+	var colorList = {blue: "#3d70b7",
+				cyan: "#4bc5d0",
+				green: "#459f28",
+				orange: "#e18336",
+				red: "#bd3434",
+				violet: "#843fbd",
+				yellow: "#c8b439" };
+
+	this.wincount = document.getElementById('win-counter');
+	this.pl1 = document.getElementById('pl1-ratio');
+
+	// initial update
+	this.wincount.innerHTML = arrPlayers[1].wins + " : " + arrPlayers[2].wins;
+	this.pl1.style.backgroundColor = colorList[arrPlayers[1].color];
+	this.pl1.style.width = ( 100 * (arrPlayers[1].wins + 2))/( arrPlayers[1].wins + arrPlayers[2].wins + 4 ) + "%";
+	document.getElementById('pl2-ratio').style.backgroundColor = colorList[arrPlayers[2].color];
+
+
+	this.update = function(w1,w2) {
+
+		var max = ( 100 * (w1 + 2))/( w1 + w2 + 4 );
+		var now = parseInt(this.pl1.style.width.replace("%",""));
+		var element = this.pl1;
+
+		var step = function() { // closure that stores max,now,element internally
+
+			if(Math.abs(now - max) < 0.1) return;
+			now += (max < now ? -0.1 : 0.1);
+			element.style.width = now + "%";
+			setTimeout(step,10);
+
+		};
+
+		this.wincount.innerHTML = w1 + " : " + w2;
+		step();
+
+	};
+
+}
+
+var fader; // required global
 
 function notify(msg,duration) {
 
@@ -137,21 +257,22 @@ function notify(msg,duration) {
 		return;
 	}
 
+	var element = document.getElementById("notification");
 	var opacity = 0;
 	var delay = 3000;
 	if(duration) delay = duration * 1000;
 
 
-	ui.notification.innerHTML = msg;
+	element.innerHTML = msg;
 
     fadeout = function () {
 
         opacity -= 0.05;
-        ui.notification.style.opacity = opacity;
+        element.style.opacity = opacity;
 
         if (opacity >= 0.05) fader = setTimeout(fadeout,25);
         else {
-        	ui.notification.style.opacity = 0;
+        	element.style.opacity = 0;
         	fader = null;
         }
     };
@@ -159,7 +280,7 @@ function notify(msg,duration) {
     fadein = function () {
 
         opacity += 0.05;
-        ui.notification.style.opacity = opacity;
+        element.style.opacity = opacity;
 
         if (Math.abs(opacity - 0.9) >= 0.05) fader = setTimeout(fadein,40);
         else fader = setTimeout(fadeout,delay);

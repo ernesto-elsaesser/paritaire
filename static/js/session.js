@@ -1,35 +1,22 @@
 function Session(ui,color1,color2) {
 
-	this.modeHandler = new PreHandler(this); // object that handles events for local, online or spectator mode
+	// the modeHandler handles events in game mode specific way
+	// the PreHandler is necessary for canvas resizing before initialization of the session
+	this.modeHandler = new PreHandler(this);
 
-	// GRAPHICS
+	// USER INTERFACE
 
-	this.colorList = {blue: "#3d70b7",
-				cyan: "#4bc5d0",
-				green: "#459f28",
-				orange: "#e18336",
-				red: "#bd3434",
-				violet: "#843fbd",
-				yellow: "#c8b439" };
-
-	this.ui = ui;
+	this.ui = ui; // dom element map
 
 	this.ui.error.innerHTML = "<b>Error:</b> Browser not supported (no HTML5 canvas element).";
 
-	this.canvas = createCanvas(this.ui.main);
-	
-	this.ui.notification.maxWidth = (this.canvas.width * 0.66) + "px";
-
-	this.ctx = this.canvas.getContext('2d');
-	this.ctx.font = Math.floor(this.canvas.width/12) + "px Verdana";
+	this.canvas = createCanvas();
+	this.chat = null; // only in multiplayer games
+	this.ratiobar = null; // initialized later
 
 	this.resizeCanvas = function() {
 	
-		var w = this.ui.main.clientWidth;
-		this.canvas.width = w;
-		this.canvas.height = w; // TODO: change for non-square fields
-		this.ctx.font = Math.floor(w/12) + "px Verdana";
-		
+		this.canvas.resize();
 		this.modeHandler.resize();
 		 
 	};
@@ -40,7 +27,7 @@ function Session(ui,color1,color2) {
 	
 	// GAME
 	
-	if(color1 == "#1") {
+	if(color1 == "#1") { // the server did not replace placeholders with color names
 		
 		this.ui.share.className = "btn btn-primary disabled";
 		this.canvas.drawText("Invalid session link!");
@@ -49,105 +36,98 @@ function Session(ui,color1,color2) {
 	}
 
 	this.player = [null,new Player(1,color1),new Player(2,color2)];
-	
-	this.chatIcons = null;
 
-	this.nextStarter = 0; // player that will start the next game
-	
 	 // control flags
-	this.bPlaying = false;
-	this.bEnded = false;
+	this.playing = false;
+	this.endScreen = false; // important for resize function
+	this.reconnecting = false;
 	
 	this.field = null;
 	this.winner = null;
+	this.nextStarter = 0; // player that will start the next game
 	
 	this.sid = window.location.search.substr(4);
 	
 	// SOCKET
 	
 	this.socket = io.connect("http://paritaire.servegame.com");
-	
+
+	/* game protocol (incoming)
+
+	---------------------------------------------------------------
+	message 		handler					info
+	---------------------------------------------------------------
+	init 			Session + Handler		game state data
+	full			Handler 				enough players to start
+	playerleft 		Handler 				player left
+
+	start 			Session + Handler 		starts game
+	turn 			Session + Handler 		turn data
+	badturn 		Session 				invalid turn request
+
+	published 		Handler 				publication result
+	spectator 		Session 				specatator joined
+	chat 			Handler 				new chat message
+
+	disconnect 		Handler 				connection lost
+	reconnect 		Session 				connection reestablished
+
+	*/
+
 	var that = this;
 	
 	this.socket.on('init', function (data) {
 		
 		that.ui.share.className = "btn btn-primary"; // enable share button
 		
-		// set game data
+		// init game data
 		that.nextStarter = data.round;
 		that.field = new Field(that,data.dim,data.dim);
 		that.player[1].wins = data.wins[0];
 		that.player[2].wins = data.wins[1];
-		that.bPlaying = data.playing;
+		that.playing = data.playing;
 
-		// init ratio bar
-		that.ui.ratiocol1.style.backgroundColor = that.colorList[that.player[1].color];
-		that.ui.ratiocol2.style.backgroundColor = that.colorList[that.player[2].color];
-		that.updateRatioBar(false);
-
-		if(that.bPlaying) {
+		if(that.playing) {
 			that.player[1].points = data.points[0];
 			that.player[2].points = data.points[1];
 			that.field.stones = data.field;
 		}
+
+		that.ratiobar = new RatioBar(that.player);
 		
-		// create and configure mode handlers
-		if(!that.modeHandler.reconnecting) {
+		// construct mode handlers, if not already done
+		if(!that.reconnecting) {
 
 			if(data.online) {
 
-				if(data.connections < 2) that.modeHandler = new OnlineHandler(that);
-				else that.modeHandler = new SpectatorHandler(that,true);
+				if(data.connections < 2) that.modeHandler = new OnlineHandler(that); // online mode
+				else that.modeHandler = new SpectatorHandler(that,true); // online spectator mode
 
-				// online specific event handler
-				that.socket.on('full', that.modeHandler.full.bind(that.modeHandler));
-				that.socket.on('playerleft', that.modeHandler.playerleft.bind(that.modeHandler));
-				that.socket.on('published', that.modeHandler.published.bind(that.modeHandler));
-
-				that.ui.publish.onclick = that.publish.bind(that);
-				that.ui.msgsend.onclick = that.modeHandler.sendMessage.bind(that.modeHandler);
-				that.ui.msgtext.onkeyup = function(event) { 
-						if(event.keyCode == 13) session.modeHandler.sendMessage(); 
-					};
-
-				that.chatIcons = [new Image(), new Image(), new Image()];
-				that.chatIcons[0].src = 'img/highlight.png'; // TODO: own icon?
-				that.chatIcons[0].width = 20;
-				that.chatIcons[0].height = 20;
-				that.chatIcons[1].src = that.player[1].icon.src;
-				that.chatIcons[1].width = 20;
-				that.chatIcons[1].height = 20;
-				that.chatIcons[2].src = that.player[2].icon.src;
-				that.chatIcons[2].width = 20;
-				that.chatIcons[2].height = 20;
+				that.chat = new Chat(that.player[1].color,that.player[2].color, that.modeHandler);
 			}
 			else {
 				if(data.connections == 0) that.modeHandler = new LocalHandler(that);
-				else that.modeHandler = new SpectatorHandler(that,false);
+				else that.modeHandler = new SpectatorHandler(that,false); // local spectator mode
 			}
 
 			// common event handlers
-			that.socket.on('disconnect', that.modeHandler.disconnect.bind(that.modeHandler));
-			that.socket.on('check', that.modeHandler.check.bind(that.modeHandler));
-
-			that.ui.surrender.onclick = that.modeHandler.surrender.bind(that.modeHandler);
 			that.ui.undo.onclick = that.undo.bind(that);
 			that.ui.share.onclick = that.sessionUrl.bind(that);
 
 			// click handling
-			var oc = that.clickHandler.bind(that);
-			that.canvas.onclick = oc;
-			that.ui.notification.onclick = oc;
+			var callback = that.clickHandler.bind(that);
+			that.canvas.onclick = callback;
+			that.ui.notification.onclick = callback;
 
 		}
 
-		that.modeHandler.init(data);
+		that.modeHandler.init(data); // let the modeHandler do it's own initialization
 		
 	  });
 	 
   	this.socket.on('start', function (data) {
 		
-		that.bEnded = false;
+		that.endScreen = false;
 		
   		// change points
   		that.player[1].points = data.points[0];
@@ -161,7 +141,7 @@ function Session(ui,color1,color2) {
 		
 		that.modeHandler.start(data);
 
-		that.bPlaying = true;
+		that.playing = true;
   	
 	});
 	  
@@ -178,27 +158,18 @@ function Session(ui,color1,color2) {
 			that.player[2].points += data.points[1];
 		}
 		
-		
 		// update field	
 		that.field.update(data.stones); 
 		that.field.draw();
 
-
 		if(data.next == 0) that.endGame();
 		else that.modeHandler.turn(data);
-		// TODO: inform that player if he can't turn
 		
 	});
 
 	this.socket.on('chat', function (data) {
 
-		var tr = document.createElement("tr");
-		var l = tr.insertCell(0);
-		l.appendChild(that.chatIcons[data.side].cloneNode());
-		tr.insertCell(1).innerHTML = data.msg;
-		that.ui.chat.firstElementChild.firstElementChild.appendChild(tr);
-		that.ui.chat.scrollTop = that.ui.chat.scrollHeight;
-
+		that.chat.addMessage(data.side,data.msg);
 		if(window.innerWidth < 992 && data.side != that.mySide) notify("New chat message.",2);
 
 	});
@@ -218,11 +189,11 @@ function Session(ui,color1,color2) {
 	this.socket.on('reconnect', function () {
 
 		that.socket.emit('init',{id: that.sid});
-		that.modeHandler.reconnecting = true;
+		that.reconnecting = true;
 
 	});
 	
-	this.socket.emit('init', {id: this.sid});
+	this.socket.emit('init', {id: this.sid}); // this line initiates the communication
 
 	this.ui.error.outerHTML = "";
 	
@@ -232,7 +203,7 @@ function Session(ui,color1,color2) {
 	
 	this.endGame = function() {
 		
-		this.bEnded = true;
+		this.endScreen = true;
 		this.winner = null;
 		
 		if(this.player[1].points > this.player[2].points) this.winner = this.player[1];
@@ -240,14 +211,14 @@ function Session(ui,color1,color2) {
 		
 		if(this.winner) this.winner.wins++;
 		
-		this.bPlaying = false;
+		this.playing = false;
 
 		// remove "Next: O" 
 		var n = this.ui.info.childNodes.length;
 		this.ui.info.removeChild(this.ui.info.childNodes[--n]);
 		this.ui.info.removeChild(this.ui.info.childNodes[--n]);
 		
-		this.updateRatioBar(true);
+		this.ratiobar.update(this.player[1].wins,this.player[2].wins);
 		
 		this.nextStarter = (this.nextStarter == 1 ? 2 : 1);
 		
@@ -263,56 +234,17 @@ function Session(ui,color1,color2) {
 	
 	};
 	
-	this.publish = function() {
-
-		var name = prompt("Choose a name:","");
-		if(name && name != "") this.socket.emit("publish",{id: this.sid, name: name});
-	
-	};
-	
 	this.sessionUrl = function() {
 	
 		prompt("Permanent link to this session:","http://paritaire.servegame.com/play?id=" + this.sid);
 	
 	};
-
-	this.updateRatioBar = function(slide) {
-
-		var v1 = this.player[1].wins + 2;
-		var v2 = this.player[2].wins + 2;
-		//var d = this.player[1].wins - this.player[2].wins;
-		//var w = 100 / (1 + Math.pow(Math.E, (-0.3 * d)));
-
-		var element = this.ui.ratiocol1;
-		var max = ( 100 * v1 )/( v1 + v2 );
-
-		this.ui.wincount.innerHTML = this.player[1].wins + " : " + this.player[2].wins;
-
-		if(!slide) {
-			element.style.width = max + "%";
-			return;
-		}
-
-		var now = parseInt(element.style.width.replace("%",""));
-
-		var step = function() {
-
-			if(Math.abs(now - max) < 0.1) return;
-			now += (max < now ? -0.1 : 0.1);
-			element.style.width = now + "%";
-			setTimeout(step,10);
-
-		};
-
-		step();
-
-	}
 	
 	this.clickHandler = function(event) {
 	
 		// mouse position
-		var mx = event.clientX-this.ui.main.offsetLeft-this.ui.main.offsetParent.offsetLeft+pageXOffset;
-		var my = event.clientY-this.ui.main.offsetTop-this.ui.main.offsetParent.offsetTop-10+pageYOffset;
+		var mx = event.clientX-this.canvas.offsetX()+pageXOffset;
+		var my = event.clientY-this.canvas.offsetY()+pageYOffset;
 		
 		// click inside canvas?
 		if(mx > 0 && mx < this.canvas.clientWidth && my > 0 && my < this.canvas.clientHeight) {

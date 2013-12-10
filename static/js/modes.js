@@ -13,16 +13,16 @@ function LocalHandler(session) {
 
 	this.s = session;
 
-	this.reconnecting = false;
-	this.initialized = false;
+	this.responsive = false;
+	this.currentSide = 0;
 
 	this.init = function(data) {
 
 		this.s.ui.publish.style.display = "none";
 
-		this.s.currentSide = data.turn;
+		this.currentSide = data.turn;
 		
-		if(this.s.bPlaying) {
+		if(this.s.playing) {
 		
 			this.s.field.draw();
 
@@ -40,13 +40,12 @@ function LocalHandler(session) {
 	
 		}
 
-		this.initialized = true;
+		this.responsive = true;
 	};
-
 	
 	this.start = function(data) {
 
-		this.s.currentSide = data.next;
+		this.currentSide = data.next;
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
@@ -56,8 +55,8 @@ function LocalHandler(session) {
 
 	this.click = function(x,y) {
 
-		if(this.initialized) return;
-		if(!this.s.bPlaying) this.s.socket.emit('start', {id: this.s.sid});
+		if(this.responsive) return;
+		if(!this.s.playing) this.s.socket.emit('start', {id: this.s.sid});
 		else this.s.socket.emit('turn', {id: this.s.sid, x: x, y: y});
 
 	};
@@ -70,7 +69,9 @@ function LocalHandler(session) {
 				this.s.ui.undo.className = "btn btn-primary";
 		}
 
-		this.s.currentSide = data.next;
+		if(data.side == data.next) notify("You can turn again.");
+
+		this.currentSide = data.next;
 		this.s.ui.info.removeChild(this.s.ui.info.childNodes[this.s.ui.info.childNodes.length-1]);
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
 		
@@ -78,7 +79,7 @@ function LocalHandler(session) {
 
 	this.surrender = function() {
 	
-		this.s.socket.emit("surrender",{id: this.s.sid, side: this.s.currentSide});
+		this.s.socket.emit("surrender",{id: this.s.sid, side: this.currentSide});
 		this.s.ui.surrender.className = "btn btn-danger disabled";
 	
 	};
@@ -90,7 +91,7 @@ function LocalHandler(session) {
 
 		this.drawWinner();
 
-		this.s.currentSide = this.s.nextStarter;
+		this.currentSide = this.s.nextStarter;
 		
 	};
 
@@ -114,12 +115,12 @@ function LocalHandler(session) {
 
 	this.disconnect = function() {
 
-		this.initialized = false;
-
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.surrender.className = "btn btn-danger disabled";
 		this.s.ui.share.className = "btn btn-primary disabled";
-		this.s.bEnded = false;
+
+		this.responsive = false;
+		this.s.endScreen = false;
   		this.s.canvas.drawText(["Connection","problems ..."]);
 		this.s.socket.socket.reconnect(); // should happen automatically
 
@@ -127,8 +128,8 @@ function LocalHandler(session) {
 
 	this.resize = function() {
 
-		if(this.s.bPlaying && !this.s.canvas.textView) this.s.field.draw();
-		else if (this.s.bEnded) this.drawWinner();
+		if(this.s.playing && !this.s.canvas.textView) this.s.field.draw();
+		else if (this.s.endScreen) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
@@ -136,14 +137,23 @@ function LocalHandler(session) {
 		this.s.socket.emit('alive');
 	};
 
+	// register event handlers
+
+	// game protocol
+	this.s.socket.on('disconnect', this.disconnect.bind(this));
+	this.s.socket.on('check', this.check.bind(this));
+
+	// surrender button
+	this.s.ui.surrender.onclick = this.surrender.bind(this);
+
 }
 
 function OnlineHandler(session) {
 
 	this.s = session;
 
-	this.reconnecting = false;
-	this.initialized = false;
+	this.responsive = false;
+	this.myTurn = false;
 
 	this.init = function(data) {
 
@@ -154,13 +164,11 @@ function OnlineHandler(session) {
 		}
 		else this.s.ui.publish.className = "btn btn-primary";
 
-		if(this.reconnecting) {
+		if(this.s.reconnecting) {
 
-			this.s.bMyTurn = false;
 			if(data.connections == 0) 
 				this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
 			this.s.canvas.drawText(["Waiting for","opponent ..."]);
-			this.initialized = true;
 			return;
 		} 
 			
@@ -172,10 +180,8 @@ function OnlineHandler(session) {
 			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
 			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
 
-			this.s.bMyTurn = true;
+			this.responsive = true;
 		} 
-
-		this.initialized = true;
 				
 		// if there is one other player connected yet, "full" message will follow
 		// if the session is already full, the SpectatorDecorator intercepted the init call
@@ -191,14 +197,14 @@ function OnlineHandler(session) {
 		this.s.ui.publish.innerHTML = "Publish";
 		this.s.ui.publish.className = "btn btn-primary disabled";
 
-		this.s.ui.chat.parentElement.parentElement.style.display = "block";
+		this.s.chat.show();
 
 		this.s.ui.info.appendChild(document.createTextNode("Color:\u00A0\u00A0"));
 		this.s.ui.info.appendChild(this.s.player[this.s.mySide].icon.cloneNode());
 	
-		if(this.s.bPlaying) {
+		if(this.s.playing) {
 			this.s.field.draw();
-			this.s.bMyTurn = (this.s.mySide == data.turn);
+			this.myTurn = (this.s.mySide == data.turn);
 			
 			this.s.ui.info.appendChild(document.createTextNode("\u00A0\u00A0Next:\u00A0\u00A0"));
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
@@ -207,14 +213,16 @@ function OnlineHandler(session) {
 		else {
 
 			if(this.s.mySide == this.s.nextStarter) {
-				this.s.bMyTurn = true;
+				this.myTurn = true;
 				this.s.canvas.drawText("Click to start!");
 			}
 			else {
-				this.s.bMyTurn = false;
+				this.myTurn = false;
 				this.s.canvas.drawText("Opponent begins ...");
 			}
 		}
+
+		this.responsive = true;
 
 	};
 
@@ -223,16 +231,16 @@ function OnlineHandler(session) {
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.publish.className = "btn btn-primary";
 		this.s.ui.surrender.className = "btn btn-danger disabled";
-		this.s.ui.chat.parentElement.parentElement.style.display = "none";
-		this.s.mMyTurn = false;
-		this.s.bEnded = false;
+		this.s.chat.hide();
+		this.responsive = false;
+		this.s.endScreen = false;
 		this.s.canvas.drawText(["Waiting for","opponent ..."]); // waiting for another init
 
 	};
 
 	this.start = function(data) {
 
-		this.s.bMyTurn = (data.next == this.s.mySide);
+		this.myTurn = (data.next == this.s.mySide);
 		this.s.ui.info.appendChild(document.createTextNode("\u00A0\u00A0Next:\u00A0\u00A0"));
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
 		this.s.ui.surrender.className = "btn btn-danger";
@@ -242,24 +250,24 @@ function OnlineHandler(session) {
 
 	this.click = function(x,y) {
 
-		if(!this.initialized) return;
-
-		if(!this.s.bMyTurn)	{
-			if(this.s.bPlaying) notify("It's your opponents turn.",2);
-			return;
-		}
+		if(!this.responsive) return;
 
 		if(!this.s.mySide) {
 			
- 			this.s.bMyTurn = false;
 			this.s.mySide = (x > (this.s.field.xsize / 2) ? 2 : 1);
 			this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
 			this.s.canvas.drawText(["Waiting for","opponent ..."]);
+			this.responsive = false;
 			return;
 		
 		}
 
-		if(!this.s.bPlaying) this.s.socket.emit('start', {id: this.s.sid});
+		if(!this.myTurn)	{
+			if(this.s.playing) notify("It's your opponents turn.",2);
+			return;
+		}
+
+		if(!this.s.playing) this.s.socket.emit('start', {id: this.s.sid});
 		else this.s.socket.emit('turn', {id: this.s.sid, x: x, y: y});
 
 	};
@@ -277,7 +285,7 @@ function OnlineHandler(session) {
 			}
 		}
 
-		this.s.bMyTurn = (data.next == this.s.mySide);
+		this.myTurn = (data.next == this.s.mySide);
 
 		if(data.side == data.next) {
 
@@ -288,6 +296,13 @@ function OnlineHandler(session) {
 		this.s.ui.info.removeChild(this.s.ui.info.childNodes[this.s.ui.info.childNodes.length-1]);
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
 		
+	};
+
+	this.publish = function() {
+
+		var name = prompt("Choose a name:","");
+		if(name && name != "") this.s.socket.emit("publish",{id: this.s.sid, name: name});
+	
 	};
 
 	this.published = function(data) {
@@ -311,7 +326,7 @@ function OnlineHandler(session) {
 		this.s.ui.undo.className = "btn btn-primary disabled";
 		this.s.ui.surrender.className = "btn btn-danger disabled";
 
-		this.s.bMyTurn = (this.s.nextStarter == this.s.mySide);
+		this.myTurn = (this.s.nextStarter == this.s.mySide);
 
 		this.drawWinner();
 		
@@ -327,7 +342,7 @@ function OnlineHandler(session) {
 		
 		msg += this.s.player[this.s.mySide].points + ":" + this.s.player[(this.s.mySide == 1 ? 2 : 1)].points + "]";
 		
-		if(this.s.bMyTurn) {
+		if(this.myTurn) {
 			this.s.canvas.drawText([msg,"Click to play!"]);
       	}
 		else this.s.canvas.drawText([msg,"Opponent begins ..."]);
@@ -336,15 +351,15 @@ function OnlineHandler(session) {
 
 	this.disconnect = function() {
 
-		this.initialized = false;
-
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.publish.innerHTML = "Publish";
 		this.s.ui.publish.className = "btn btn-primary disabled";
 		this.s.ui.surrender.className = "btn btn-danger disabled";
 		this.s.ui.share.className = "btn btn-primary disabled";
-		this.s.ui.chat.parentElement.parentElement.style.display = "none";
-		this.s.bEnded = false;
+		this.s.chat.hide();
+
+		this.responsive = false;
+		this.s.endScreen = false;
   		this.s.canvas.drawText(["Connection","problems ..."]);
 		this.s.socket.socket.reconnect(); // should happen automatically
 
@@ -352,7 +367,7 @@ function OnlineHandler(session) {
 
 	this.resize = function() {
 
-		if(!this.s.mySide && this.s.bMyTurn) { // choosing color
+		if(!this.s.mySide && this.myTurn) { // choosing color
 			this.s.canvas.drawText("Choose your color!");
 
 			var w = this.s.canvas.width;
@@ -360,23 +375,37 @@ function OnlineHandler(session) {
 			this.s.ctx.drawImage(this.s.player[1].icon, w*0.2, w*0.5, w*0.2, w*0.2);
 			this.s.ctx.drawImage(this.s.player[2].icon, w*0.6, w*0.5, w*0.2, w*0.2);
 		}
-		else if(this.s.bPlaying && !this.s.canvas.textView) this.s.field.draw();
-		else if (this.s.bEnded) this.drawWinner();
+		else if(this.s.playing && !this.s.canvas.textView) this.s.field.draw();
+		else if (this.s.endScreen) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
-	this.sendMessage = function() {
+	this.sendMessage = function(msg) {
 
-		var msg = this.s.ui.msgtext.value;
-		if (msg == "") return;
-		this.s.socket.emit('chat',{id: this.s.sid, msg: msg, side: this.s.mySide})
-		this.s.ui.msgtext.value = "";
+		this.s.socket.emit('chat',{id: this.s.sid, msg: msg, side: this.s.mySide});
 
 	};
 
 	this.check = function() {
 		this.s.socket.emit('alive');
 	};
+
+	// register event handlers
+
+	// game protocol
+	this.s.socket.on('full', this.full.bind(this));
+	this.s.socket.on('playerleft', this.playerleft.bind(this));
+	this.s.socket.on('disconnect', this.disconnect.bind(this));
+	this.s.socket.on('check', this.check.bind(this));
+
+	// surrender button
+	this.s.ui.surrender.onclick = this.surrender.bind(this);
+
+	// publishing
+	this.s.socket.on('published', this.published.bind(this));
+	this.s.ui.publish.onclick = this.publish.bind(this);
+
+	
 
 }
 
@@ -385,13 +414,12 @@ function SpectatorHandler(session,online) {
 	this.s = session;
 
 	this.online = online;
-	this.reconnecting = false;
 
 	this.init = function(data) {
 
-		if(this.reconnecting) {
+		if(this.s.reconnecting) {
 
-			if(!data.spec) { // connection problems, server doesn't know that this is a pectating client
+			if(!data.spec) { // connection problems, server doesn't know that this is a spectating client
 				this.s.socket.emit("spectate",{id: this.s.sid});
 				return;
 			}
@@ -406,7 +434,7 @@ function SpectatorHandler(session,online) {
 					this.s.canvas.drawText(["Waiting for","player ..."]);
 					return;
 				}
-				else this.s.ui.chat.parentElement.parentElement.style.display = "block";
+				else this.s.chat.show();
 			}
 			else if(data.connections == 0) { // empty local session
 
@@ -414,7 +442,7 @@ function SpectatorHandler(session,online) {
 				return;
 			}
 
-			if(this.s.bPlaying) {
+			if(this.s.playing) {
 			
 				this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 				this.s.ui.info.appendChild(this.s.player[data.turn].icon);
@@ -439,16 +467,16 @@ function SpectatorHandler(session,online) {
 
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
-		this.s.bEnded = false;
-		this.s.ui.chat.parentElement.parentElement.style.display = "none";
+		this.s.endScreen = false;
+		this.s.chat.hide();
 		this.s.canvas.drawText(["Waiting for","player ..."]);
 	};
 
 	this.full = function(data) {
 
-		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "block";
+		if(this.online) this.s.chat.show();
 
-		if(this.s.bPlaying) {
+		if(this.s.playing) {
 			
 			this.s.ui.info.appendChild(document.createTextNode("Next:\u00A0\u00A0"));
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
@@ -467,7 +495,7 @@ function SpectatorHandler(session,online) {
 	this.click = function(x,y) { // switch to spectator mode
 
 		this.s.canvas.onclick = null;
-		this.reconnecting = true;
+		this.s.reconnecting = true; // prevents reconstruction of mode handler (i.e. overwriting of this)
 		this.s.socket.emit("spectate",{id: this.s.sid}); // this will trigger a re-initialization
 		
 	};
@@ -482,10 +510,6 @@ function SpectatorHandler(session,online) {
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
 
 	};
-
-	this.published = function(data) {}; // only called when a waiting player succesfully publishes a spectated session
-	this.surrender = function() {}; // function dummy, will not be called
-	this.check = function() {}; // spectators don't emit alive messages
 
 	this.drawWinner = function() {
 		
@@ -511,8 +535,8 @@ function SpectatorHandler(session,online) {
 
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.share.className = "btn btn-primary disabled";
-		if(this.online) this.s.ui.chat.parentElement.parentElement.style.display = "none";
-		this.s.bEnded = false;
+		if(this.online) this.s.chat.hide();
+		this.s.endScreen = false;
   		this.s.canvas.drawText(["Connection","problems ..."]);
 		this.s.socket.socket.reconnect(); // should happen automatically
 
@@ -520,19 +544,23 @@ function SpectatorHandler(session,online) {
 
 	this.resize = function() {
 
-		if(this.s.bPlaying && !this.s.canvas.textView) this.s.field.draw();
-		else if (this.s.bEnded) this.drawWinner();
+		if(this.s.playing && !this.s.canvas.textView) this.s.field.draw();
+		else if (this.s.endScreen) this.drawWinner();
 		else this.s.canvas.drawText(this.s.canvas.lastText);
 	};
 
-	this.sendMessage = function() {
+	this.sendMessage = function(msg) {
 
-		var msg = this.s.ui.msgtext.value;
-		if (msg == "") return;
-		this.s.socket.emit('chat',{id: this.s.sid, msg: msg, side: 0})
-		this.s.ui.msgtext.value = "";
+		this.s.socket.emit('chat',{id: this.s.sid, msg: msg, side: 0});
 
 	};
+
+	// register event handlers
+
+	// game protocol
+	this.s.socket.on('full', this.full.bind(this));
+	this.s.socket.on('playerleft', this.playerleft.bind(this));
+	this.s.socket.on('disconnect', this.disconnect.bind(this));
 
 }
 
