@@ -55,7 +55,7 @@ function LocalHandler(session) {
 
 	this.click = function(x,y) {
 
-		if(this.responsive) return;
+		if(!this.responsive) return;
 		if(!this.s.playing) this.s.socket.emit('start', {id: this.s.sid});
 		else this.s.socket.emit('turn', {id: this.s.sid, x: x, y: y});
 
