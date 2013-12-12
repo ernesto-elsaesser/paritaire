@@ -268,7 +268,7 @@ function notify(msg,duration) {
         opacity -= 0.05;
         element.style.opacity = opacity;
 
-        if (opacity >= 0.05) fader = setTimeout(fadeout,25);
+        if (opacity >= 0.05) fader = setTimeout(fadeout,15);
         else {
         	element.style.opacity = 0;
         	fader = null;
@@ -280,7 +280,7 @@ function notify(msg,duration) {
         opacity += 0.05;
         element.style.opacity = opacity;
 
-        if (Math.abs(opacity - 0.9) >= 0.05) fader = setTimeout(fadein,40);
+        if (Math.abs(opacity - 0.9) >= 0.05) fader = setTimeout(fadein,15);
         else fader = setTimeout(fadeout,delay);
 
     }; 
