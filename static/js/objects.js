@@ -240,7 +240,7 @@ function Chat(c1,c2,handler) {
 		l.appendChild(this.chatIcons[side].cloneNode());
 		tr.insertCell(1).innerHTML = msg;
 		this.messages.firstElementChild.appendChild(tr);
-		this.messages.scrollTop = this.messages.scrollHeight;
+		this.frame.contentDocument.body.scrollTop = this.frame.contentDocument.body.scrollHeight;
 
 	};
 
