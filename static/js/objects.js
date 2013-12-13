@@ -217,7 +217,7 @@ function Chat(c1,c2,handler) {
 	
 	this.adjustHeight = function() {
 		if(window.innerWidth > 991)
-			this.frame.style.height = document.getElementById("play-main").clientHeight - 283 + "px";
+			this.frame.style.height = document.getElementById("play-main").clientHeight - 278 + "px";
 		else
 			this.frame.style.height = "120px";
 	};
