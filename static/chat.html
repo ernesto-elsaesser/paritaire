@@ -11,18 +11,18 @@
 	#chat-messages {margin-bottom: 0;}
 	#chat-messages td:first-child {width: 30px;}
 	</style>
-  <script>
-      var t = document.getElementById("chat-messages").firstElementChild;
-     window.addEventListener('message', function (html) {
-       t.innerHTML += html;
-       document.body.scrollTop = document.body.scrollHeight;
-     });
-   </script>
   </head>
   <body>
     <table id="chat-messages" class="table table-condensed">
 		<tbody>
 		</tbody>
 	</table>
+    <script>
+      var t = document.getElementById("chat-messages").firstElementChild;
+     window.addEventListener('message', function (html) {
+       t.innerHTML += html;
+       document.body.scrollTop = document.body.scrollHeight;
+     });
+   </script>
   </body>
 </html>
