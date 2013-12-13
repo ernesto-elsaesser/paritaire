@@ -247,7 +247,10 @@ function Chat(c1,c2,handler) {
 	this.refresh = function() {
 
 		this.frame.src = "chat.html";
-		this.messages = this.frame.contentDocument.getElementById("chat-messages");
+		var ref = this.messages;
+		this.frame.onload = function(){ 
+			ref = this.contentDocument.getElementById("chat-messages"); 
+		};
 	};
 
 	// event handlers
