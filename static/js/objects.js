@@ -207,6 +207,8 @@ function Chat(c1,c2,handler) {
 
 	this.messages = this.frame.contentDocument.getElementById("chat-messages");
 	
+	this.adjustHeight();
+	
 	this.show = function() {
 		this.panel.style.display = "block";
 	};

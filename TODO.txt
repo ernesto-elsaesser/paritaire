@@ -2,3 +2,4 @@
 - encapsulated javascript environment for chat (sandbox?)
 - install/configure mail server
 - contact email address in credits
+- highlight more contrast / whole field
