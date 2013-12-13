@@ -19,8 +19,8 @@
 	</table>
     <script>
       var t = document.getElementById("chat-messages").firstElementChild;
-     window.addEventListener('message', function (html) {
-       t.innerHTML += html;
+     window.addEventListener('message', function (e) {
+       t.innerHTML += e.data;
        document.body.scrollTop = document.body.scrollHeight;
      });
    </script>
