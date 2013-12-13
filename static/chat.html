@@ -12,9 +12,9 @@
 	#chat-messages td:first-child {width: 30px;}
 	</style>
   <script>
-      var t = document.getElementById("chat-messages");
-     window.addEventListener('message', function (tr) {
-       t.firstElementChild.appendChild(tr);
+      var t = document.getElementById("chat-messages").firstElementChild;
+     window.addEventListener('message', function (html) {
+       t.innerHTML += html;
        document.body.scrollTop = document.body.scrollHeight;
      });
    </script>

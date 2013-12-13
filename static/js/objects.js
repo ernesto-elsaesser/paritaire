@@ -232,15 +232,16 @@ function Chat(c1,c2,handler) {
 		this.handler.sendMessage(msg);
 	};
 
-	this.addMessage = function(side,msg) {
+	this.addMessage = function(color,msg) {
 
 		// create dom node in chat panel
-		var tr = document.createElement("tr");
-		var l = tr.insertCell(0);
-		l.appendChild(this.chatIcons[side].cloneNode());
-		tr.insertCell(1).innerHTML = msg;
+		//var tr = document.createElement("tr");
+		//var l = tr.insertCell(0);
+		//l.appendChild(this.chatIcons[side].cloneNode());
+		//tr.insertCell(1).innerHTML = msg;
 		//this.messages.firstElementChild.appendChild(tr);
-		this.frame.contentWindow.postMessage(tr,"*");
+		var html = "<tr><td><img src='img/icon_" + color + ".png'></td><td>" + msg + "</td></tr>";
+		this.frame.contentWindow.postMessage(html,"*");
 
 	};
 
