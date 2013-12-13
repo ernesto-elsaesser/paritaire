@@ -201,10 +201,11 @@ function Chat(c1,c2,handler) {
 	this.chatIcons[2].height = 20;
 
 	this.panel = document.getElementById('chat-panel');
+	this.frame = document.getElementById("chat-iframe");
 	this.text = document.getElementById('message-text');
 	this.handler = handler;
 
-	this.messages = document.getElementById("chat-iframe").contentDocument.getElementById("messages");
+	this.messages = this.frame.contentDocument.getElementById("messages");
 	
 	this.show = function() {
 		this.panel.style.display = "block";
@@ -238,7 +239,7 @@ function Chat(c1,c2,handler) {
 		var l = tr.insertCell(0);
 		l.appendChild(this.chatIcons[side].cloneNode());
 		tr.insertCell(1).innerHTML = msg;
-		this.messages.firstElementChild.firstElementChild.appendChild(tr);
+		this.messages.firstElementChild.appendChild(tr);
 		this.messages.scrollTop = this.messages.scrollHeight;
 
 	};
