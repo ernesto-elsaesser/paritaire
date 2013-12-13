@@ -205,12 +205,23 @@ function Chat(c1,c2,handler) {
 	this.text = document.getElementById('message-text');
 	this.handler = handler;
 
+	this.messages = document.createElement("table");
+	this.messages.className = "table table-condensed";
+	document.getElementById("chat-iframe").appendChild(this.messages);
+	
 	this.show = function() {
 		this.panel.style.display = "block";
 	};
 
 	this.hide = function() {
 		this.panel.style.display = "none";
+	};
+	
+	this.adjustHeight = function(ref) {
+		if(window.innerWidth > 991)
+			this.messages.style.height = ref.parentElement.clientHeight - 283 + "px";
+		else
+			this.messages.style.height = "120px";
 	};
 
 	this.sendMessage = function() { 

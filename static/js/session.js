@@ -18,6 +18,7 @@ function Session(ui,color1,color2) {
 	
 		this.canvas.resize();
 		this.modeHandler.resize();
+		if(this.chat) this.chat.adjustHeight(this.canvas.container);
 		 
 	};
 	
