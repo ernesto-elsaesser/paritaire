@@ -240,7 +240,7 @@ function Chat(c1,c2,handler) {
 		//l.appendChild(this.chatIcons[side].cloneNode());
 		//tr.insertCell(1).innerHTML = msg;
 		//this.messages.firstElementChild.appendChild(tr);
-		var html = "<tr><td><img src='img/icon_" + color + ".png'></td><td>" + msg + "</td></tr>";
+		var html = "<tr><td><img src='img/icon_" + color + ".png' width=30 height=30></td><td>" + msg + "</td></tr>";
 		this.frame.contentWindow.postMessage(html,"*");
 
 	};
