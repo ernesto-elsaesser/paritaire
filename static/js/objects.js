@@ -234,13 +234,7 @@ function Chat(c1,c2,handler) {
 
 	this.addMessage = function(color,msg) {
 
-		// create dom node in chat panel
-		//var tr = document.createElement("tr");
-		//var l = tr.insertCell(0);
-		//l.appendChild(this.chatIcons[side].cloneNode());
-		//tr.insertCell(1).innerHTML = msg;
-		//this.messages.firstElementChild.appendChild(tr);
-		var html = "<tr><td><img src='img/icon_" + color + ".png' width=30 height=30></td><td>" + msg + "</td></tr>";
+		var html = "<tr><td><img src='img/icon_" + color + ".png' width='20' height='20'></td><td>" + msg + "</td></tr>";
 		this.frame.contentWindow.postMessage(html,"*");
 
 	};
@@ -248,10 +242,6 @@ function Chat(c1,c2,handler) {
 	this.refresh = function() {
 
 		this.frame.src = "chat.html";
-		//var that = this;
-		//this.frame.onload = function(){ 
-		//	that.messages = this.contentDocument.getElementById("chat-messages"); 
-		//};
 	};
 
 	// event handlers
