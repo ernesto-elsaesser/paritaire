@@ -284,6 +284,7 @@ a.list-group-item.active:focus {
 
 	float: right;
 	height: 17px;
+	cursor: pointer;
 }
 
 #chat {
