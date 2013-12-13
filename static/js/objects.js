@@ -207,7 +207,7 @@ function Chat(c1,c2,handler) {
 
 	this.messages = document.createElement("table");
 	this.messages.className = "table table-condensed";
-	document.getElementById("chat-iframe").appendChild(this.messages);
+	document.getElementById("chat-iframe").contentDocument.appendChild(this.messages);
 	
 	this.show = function() {
 		this.panel.style.display = "block";
