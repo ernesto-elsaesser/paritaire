@@ -205,7 +205,7 @@ function Chat(c1,c2,handler) {
 	this.text = document.getElementById('message-text');
 	this.handler = handler;
 
-	this.messages = this.frame.contentDocument.getElementById("chat-messages");
+	//this.messages = this.frame.contentDocument.getElementById("chat-messages");
 	
 	this.show = function() {
 		this.panel.style.display = "block";
@@ -239,18 +239,18 @@ function Chat(c1,c2,handler) {
 		var l = tr.insertCell(0);
 		l.appendChild(this.chatIcons[side].cloneNode());
 		tr.insertCell(1).innerHTML = msg;
-		this.messages.firstElementChild.appendChild(tr);
-		this.frame.contentDocument.body.scrollTop = this.frame.contentDocument.body.scrollHeight;
+		//this.messages.firstElementChild.appendChild(tr);
+		this.frame.contentWindow.postMessage(tr,"*");
 
 	};
 
 	this.refresh = function() {
 
 		this.frame.src = "chat.html";
-		var that = this;
-		this.frame.onload = function(){ 
-			that.messages = this.contentDocument.getElementById("chat-messages"); 
-		};
+		//var that = this;
+		//this.frame.onload = function(){ 
+		//	that.messages = this.contentDocument.getElementById("chat-messages"); 
+		//};
 	};
 
 	// event handlers
