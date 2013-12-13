@@ -234,7 +234,7 @@ function Chat(c1,c2,handler) {
 
 	this.addMessage = function(color,msg) {
 
-		var html = "<tr><td><img src='img/icon_" + color + ".png' width='20' height='20'></td><td>" + msg + "</td></tr>";
+		var html = "<td><img src='img/icon_" + color + ".png' width='20' height='20'></td><td>" + msg + "</td>";
 		this.frame.contentWindow.postMessage(html,"*");
 
 	};
