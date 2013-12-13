@@ -205,7 +205,7 @@ function Chat(c1,c2,handler) {
 	this.text = document.getElementById('message-text');
 	this.handler = handler;
 
-	this.messages = this.frame.contentDocument.getElementById("messages");
+	this.messages = this.frame.contentDocument.getElementById("chat-messages");
 	
 	this.show = function() {
 		this.panel.style.display = "block";
@@ -215,11 +215,11 @@ function Chat(c1,c2,handler) {
 		this.panel.style.display = "none";
 	};
 	
-	this.adjustHeight = function(ref) {
+	this.adjustHeight = function() {
 		if(window.innerWidth > 991)
-			this.frame.height = document.getElementById("play-main").clientHeight - 283 + "px";
+			this.frame.style.height = document.getElementById("play-main").clientHeight - 283 + "px";
 		else
-			this.frame.height = "120px";
+			this.frame.style.height = "120px";
 	};
 
 	this.sendMessage = function() { 
