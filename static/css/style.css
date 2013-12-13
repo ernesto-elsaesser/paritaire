@@ -293,17 +293,6 @@ a.list-group-item.active:focus {
 	border: 0;
 }
 
-#chat-messages table {
-
-	margin-bottom: 0;
-}
-
-#chat-messages td:first-child {
-
-	width: 30px;
-
-}
-
 /* rules.html */
 
 #rules-accordion {
