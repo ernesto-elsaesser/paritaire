@@ -20,9 +20,9 @@
     <script>
       var t = document.getElementById("chat-messages").firstElementChild;
      window.addEventListener('message', function (e) {
-       var new = document.createElement("tr");
-       new.innerHTML = e.data;
-       t.appendChild(new);
+       var n = document.createElement("tr");
+       n.innerHTML = e.data;
+       t.appendChild(n);
        document.body.scrollTop = document.body.scrollHeight;
      });
    </script>
