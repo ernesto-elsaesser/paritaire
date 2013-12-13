@@ -205,9 +205,9 @@ function Chat(c1,c2,handler) {
 	this.text = document.getElementById('message-text');
 	this.handler = handler;
 
-	this.messages = this.frame.contentDocument.createElement("table");
+	this.messages = document.createElement("table");
 	this.messages.className = "table table-condensed";
-	this.frame.contentDocument.appendChild(this.messages);
+	this.frame.contentDocument.body.appendChild(this.messages);
 	
 	this.show = function() {
 		this.panel.style.display = "block";
