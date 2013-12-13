@@ -219,9 +219,9 @@ function Chat(c1,c2,handler) {
 	
 	this.adjustHeight = function(ref) {
 		if(window.innerWidth > 991)
-			this.messages.style.height = ref.parentElement.clientHeight - 283 + "px";
+			this.iframe.height = ref.parentElement.clientHeight - 283 + "px";
 		else
-			this.messages.style.height = "120px";
+			this.iframe.height = "120px";
 	};
 
 	this.sendMessage = function() { 

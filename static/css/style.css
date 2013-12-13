@@ -285,11 +285,12 @@ a.list-group-item.active:focus {
 	padding: 5px;
 }
 
-#chat-messages {
+#chat-iframe {
 
 	height: 120px;
-	overflow: auto;
+	width: 100%;
 	margin-bottom: 5px;
+	border: 0;
 }
 
 #chat-messages table {
