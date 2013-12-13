@@ -217,7 +217,7 @@ function Chat(c1,c2,handler) {
 	
 	this.adjustHeight = function() {
 		if(window.innerWidth > 991)
-			this.frame.style.height = document.getElementById("play-main").clientHeight - 278 + "px";
+			this.frame.style.height = document.getElementById("play-main").clientHeight - 268 + "px";
 		else
 			this.frame.style.height = "120px";
 	};
@@ -244,7 +244,13 @@ function Chat(c1,c2,handler) {
 
 	};
 
+	this.refresh = function() {
+
+		this.frame.src = "chat.html";
+	};
+
 	// event handlers
+	document.getElementById('chat-refresh').onclick = this.refresh.bind(this);
 	var callback = this.sendMessage.bind(this);
 	document.getElementById('message-send').onclick = callback;
 

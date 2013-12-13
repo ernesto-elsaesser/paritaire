@@ -280,6 +280,12 @@ a.list-group-item.active:focus {
 	display: none;
 }
 
+#chat-refresh {
+
+	float: right;
+	height: 17px;
+}
+
 #chat {
 
 	padding: 5px;
