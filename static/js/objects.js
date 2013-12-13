@@ -201,13 +201,13 @@ function Chat(c1,c2,handler) {
 	this.chatIcons[2].height = 20;
 
 	this.panel = document.getElementById('chat-panel');
-	this.messages = document.getElementById('chat-messages');
+	this.frame = document.getElementById("chat-iframe");
 	this.text = document.getElementById('message-text');
 	this.handler = handler;
 
-	this.messages = document.createElement("table");
+	this.messages = this.frame.contentDocument.createElement("table");
 	this.messages.className = "table table-condensed";
-	document.getElementById("chat-iframe").contentDocument.appendChild(this.messages);
+	this.frame.contentDocument.appendChild(this.messages);
 	
 	this.show = function() {
 		this.panel.style.display = "block";
