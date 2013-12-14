@@ -1,5 +1,7 @@
-- IE Metro compatibility: canvas resize on windows load?
-- encapsulated javascript environment for chat (sandbox?)
+- IE Metro compatibility: canvas resize on window load?
 - install/configure mail server
 - contact email address in credits
-- highlight more contrast / whole field
+- highlight more contrast / whole field grey
+- index/public dont cache
+- create page session # limit?
+- german localization
