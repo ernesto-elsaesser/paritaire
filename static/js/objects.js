@@ -16,6 +16,7 @@ function Player(stone,color) {
 
 	this.icon = new Image();
 	this.icon.src = 'img/icon_' + this.color + '.png';
+	this.icon.alt = color + " token";
 	this.icon.width = 30;
 	this.icon.height = 30;
 }
