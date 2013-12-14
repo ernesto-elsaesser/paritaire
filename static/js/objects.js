@@ -31,6 +31,8 @@ function createCanvas() {
 	canvas.ctx = canvas.getContext('2d');
 	canvas.ctx.font = Math.floor(canvas.width/12) + "px Verdana";
 
+	canvas.innerHTML = "Paritaire playing field (requires a HTML5-compatible browser)";
+
 	document.getElementById("notification").maxWidth = (canvas.width * 0.66) + "px";
 
 	canvas.textView = false;
