@@ -1,0 +1,7 @@
+# robots.txt for http://paritaire.servegame.com/
+
+User-agent: *
+Disallow: /play
+Disallow: /create
+Disallow: /chat.html
+Disallow: /404.html
