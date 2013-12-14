@@ -55,7 +55,7 @@ function onRequest(request,response) {
 		
 			var id = (new Date()).getTime();
 			sessions[id] = new game.Session(id,querystring.parse(params)); // create new session from post data
-			if(sessions[id]) {
+			if(sessions[id].valid) {
 				
 				log("new session " + id + ": " + params);
 				response.writeHead(200, {"Content-Type": "text/plain"});				
@@ -64,8 +64,8 @@ function onRequest(request,response) {
 			}
 			else { // invalid post data
 				
-				// the session ID remains unused
-				log("invalid session request (" + id + "): " + params);
+				delete sessions[id];
+				log("invalid session request: " + params);
 				response.writeHead(200, {"Content-Type": "text/plain"});				
 				response.end();
 			}

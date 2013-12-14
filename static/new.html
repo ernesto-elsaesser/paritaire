@@ -58,7 +58,7 @@
 	  							col1: colors[0].id, 
 								col2: colors[1].id, 
 								dim: document.getElementById('settings-dim').value, 
-								online: $('#online').prop('checked')
+								mode: $('input[name=mode]:checked').value
 							};
 							
 					var callback = function (data, status) {
@@ -104,19 +104,19 @@
 	 	        	<div id="settings-gametype">
 					  		<div class="radio">
 								<label for="local">
-			      			<input type="radio" name="local" id="local" value="0" checked>
+			      			<input type="radio" name="mode" id="local" value="0" checked>
 									Local (one device)
 								</label>
 					  		</div>
 		 	          <div class="radio">
 					    		<label for="online">
-		             		<input type="radio" name="online" id="online" value="1">
+		             		<input type="radio" name="mode" id="online" value="1">
 		                Online (two devices)
 		              </label>
 				  			</div>
 					  		<div class="radio">
 									<label for="solo">
-			      				<input type="radio" name="solo" id="solo" value="0" disabled>
+			      				<input type="radio" name="mode" id="solo" value="2" disabled>
 										Solo (coming soon)
 									</label>
 					  		</div>
@@ -172,7 +172,7 @@
 		  		<div class="row">
 			  			<div class="col-md-12">
 							<div id="validation_advice" class="alert alert-danger hide no-top-margin"></div>
-			  				<input type="button" value="Ready!" class="btn btn-primary wide no-top-margin" onclick="validate();">
+			  				<input type="button" value="Ready!" class="btn btn-primary wide no-top-margin" onclick="validate()">
   					</div> 
   				</div>
 	  			

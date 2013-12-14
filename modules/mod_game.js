@@ -44,9 +44,9 @@ function Session(id,proto) {
 		if(isNaN(this.dim) || this.dim % 2) return null;
 	
 		// online flag
-		if(proto.online == "true") this.online = true;
-		else if(proto.online == "false") this.online = false;
-		else return null;
+		if(proto.mode == "0") this.online = false;
+		else if(proto.mode == "1") this.online = true;
+		else return null; // TODO: solo mode!
 	
 		this.nextRound = 1;
 		this.nextTurn = 1;
@@ -56,6 +56,8 @@ function Session(id,proto) {
 		this.playing = false;
 		this.publicName = null;
 		this.isUsed();
+
+		this.valid = true; // if not set, proto was invalid
 	}
 }
 
