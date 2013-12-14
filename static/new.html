@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>New Session</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta http-equiv="Language" content="en">
     <meta http-equiv="content-language" content="en">
     <meta name="author" content="Ernesto Els&auml;&szlig;er,Sophie Eichhorn">
     <meta name="description" content="A simple yet entertaining two-player game. Start playing without signup or login.">
@@ -93,7 +92,7 @@
 					<div id="settings-controls" class="row">
 				
 						<div class="col-md-5 col-sm-5 col-xs-12">
-	  			  	<h3 class="center">Field Size&nbsp;<img id="tt-field-size" src="img/tooltip.png" height=24 /></h3>
+	  			  	<h3 class="center">Field Size&nbsp;<img id="tt-field-size" src="img/tooltip.png" alt="Field size info button-icon" height=24 /></h3>
               <div class="center">
 	              <select id="settings-dim">
 	 	              <option value="8" selected>Normal</option>
@@ -101,23 +100,23 @@
 	 	              <option value="12">Huge</option>
 	 	          	</select>
 	 	          </div>
-	 	        	<h3 class="center">Game Mode&nbsp;<img id="tt-game-mode" src="img/tooltip.png" height=24 /></h3>
+	 	        	<h3 class="center">Game Mode&nbsp;<img id="tt-game-mode" src="img/tooltip.png" alt="Game mode info button-icon" height=24 /></h3>
 	 	        	<div id="settings-gametype">
 					  		<div class="radio">
-								<label>
-			      			<input type="radio" name="online" id="local" value="0" checked>
+								<label for="local">
+			      			<input type="radio" name="local" id="local" value="0" checked>
 									Local (one device)
 								</label>
 					  		</div>
 		 	          <div class="radio">
-					    		<label>
+					    		<label for="online">
 		             		<input type="radio" name="online" id="online" value="1">
 		                Online (two devices)
 		              </label>
 				  			</div>
 					  		<div class="radio">
-									<label>
-			      				<input type="radio" name="online" id="local" value="0" disabled>
+									<label for="solo">
+			      				<input type="radio" name="solo" id="solo" value="0" disabled>
 										Solo (coming soon)
 									</label>
 					  		</div>

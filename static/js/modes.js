@@ -300,7 +300,7 @@ function OnlineHandler(session) {
 
 	this.publish = function() {
 
-		var name = prompt("Choose a name:","");
+		var name = prompt("Enter a name for your session:","");
 		if(name && name != "") this.s.socket.emit("publish",{id: this.s.sid, name: name});
 	
 	};
