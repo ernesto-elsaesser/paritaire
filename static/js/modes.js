@@ -476,7 +476,7 @@ function SpectatorHandler(session,online) {
 		this.s.ui.info.innerHTML = "";
 		this.s.ui.info.appendChild(document.createTextNode("[Spectating]\u00A0"));
 		this.s.endScreen = false;
-		this.s.chat.hide();
+		if(this.online) this.s.chat.hide();
 		this.s.canvas.drawText(["Waiting for","player ..."]);
 	};
 
