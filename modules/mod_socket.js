@@ -111,10 +111,16 @@ function attachSocket(httpServer,sessions,publications) {
 			if(data.side != 1 && data.side != 2) return;
 			
 			// this if-clause handles the special case when a second player enters a session
-			// before the first has chosen his color - we then reinit the second player 
-			// right after his (discarded) decision, so that he knows that his session is full by now
+			// before the first has chosen his color, and then receive a second color choice
+			// we handle this as if the second chooser just connected into a full session
 			if(s.player[1].connected || s.player[2].connected) {
-				socket.emit("init",s.getState());
+				
+					s.player[1].invalidate();
+					s.player[2].invalidate();
+					s.broadcast("check");
+					
+					setTimeout(validationOver,3000,[c,s,publications]);
+
 				return;
 			}
 			
