@@ -196,7 +196,7 @@ function OnlineHandler(session) {
 
 	this.full = function(data) {
 
-		this.s.mySide = data.side; // possibly overrides players choice, if opponent chose earlier
+		if(!this.s.mySide) this.s.mySide = data.side;
 	
 		this.s.ui.info.innerHTML = "";
 
