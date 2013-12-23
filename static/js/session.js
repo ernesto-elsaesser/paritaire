@@ -66,19 +66,19 @@ function Session(ui,color1,color2) {
 	---------------------------------------------------------------
 	message 		handler					info
 	---------------------------------------------------------------
-	init 			Session + Handler		game state data
-	full			Handler 				enough players to start
-	playerleft 		Handler 				player left
+	init 			Session + Mode			game state data
+	full			Mode 					enough players to start
+	playerleft 		Mode 					player left
 
-	start 			Session + Handler 		starts game
-	turn 			Session + Handler 		turn data
+	start 			Session + Mode 			starts game
+	turn 			Session + Mode 			turn data
 	badturn 		Session 				invalid turn request
 
-	published 		Handler 				publication result
+	published 		Mode 					publication result
 	spectator 		Session 				specatator joined
-	chat 			Handler 				new chat message
+	chat 			Mode 					new chat message
 
-	disconnect 		Handler 				connection lost
+	disconnect 		Mode 					connection lost
 	reconnect 		Session 				connection reestablished
 
 	*/
@@ -174,13 +174,6 @@ function Session(ui,color1,color2) {
 		if(data.next == 0) that.endGame();
 		else that.modeHandler.turn(data);
 		
-	});
-
-	this.socket.on('chat', function (data) {
-
-		that.chat.addMessage(data.side,data.msg);
-		if(window.innerWidth < 992 && data.side != that.mySide) notify("New chat message.",2);
-
 	});
 
 	this.socket.on('badturn', function () {

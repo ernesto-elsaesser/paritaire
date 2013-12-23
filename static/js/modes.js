@@ -156,6 +156,8 @@ function OnlineHandler(session) {
 	this.s = session;
 
 	this.responsive = false;
+
+	this.side = null;
 	this.myTurn = false;
 
 	this.initialized = false;
@@ -171,7 +173,9 @@ function OnlineHandler(session) {
 		if(this.initialized) {
 
 			if(data.connections == 0) 
-				this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
+				this.s.socket.emit('choose', {id: this.s.sid, side: this.side});
+			else if(data.connections == 1) // undo color choice if opponent was faster
+				this.side = null; 
 			this.s.canvas.drawText(["Waiting for","opponent ..."]);
 			return;
 		} 
@@ -196,7 +200,7 @@ function OnlineHandler(session) {
 
 	this.full = function(data) {
 
-		if(!this.s.mySide) this.s.mySide = data.side;
+		if(!this.side) this.side = data.side;
 	
 		this.s.ui.info.innerHTML = "";
 
@@ -206,11 +210,11 @@ function OnlineHandler(session) {
 		this.s.chat.show();
 
 		this.s.ui.info.appendChild(document.createTextNode("Color:\u00A0\u00A0"));
-		this.s.ui.info.appendChild(this.s.player[this.s.mySide].icon.cloneNode());
+		this.s.ui.info.appendChild(this.s.player[this.side].icon.cloneNode());
 	
 		if(this.s.playing) {
 			this.s.field.draw();
-			this.myTurn = (this.s.mySide == data.turn);
+			this.myTurn = (this.side == data.turn);
 			
 			this.s.ui.info.appendChild(document.createTextNode("\u00A0\u00A0Next:\u00A0\u00A0"));
 			this.s.ui.info.appendChild(this.s.player[data.turn].icon);
@@ -218,7 +222,7 @@ function OnlineHandler(session) {
 		}
 		else {
 
-			if(this.s.mySide == this.s.nextStarter) {
+			if(this.side == this.s.nextStarter) {
 				this.myTurn = true;
 				this.s.canvas.drawText("Click to start!");
 			}
@@ -246,7 +250,7 @@ function OnlineHandler(session) {
 
 	this.start = function(data) {
 
-		this.myTurn = (data.next == this.s.mySide);
+		this.myTurn = (data.next == this.side);
 		this.s.ui.info.appendChild(document.createTextNode("\u00A0\u00A0Next:\u00A0\u00A0"));
 		this.s.ui.info.appendChild(this.s.player[data.next].icon);
 		this.s.ui.surrender.className = "btn btn-danger";
@@ -258,10 +262,10 @@ function OnlineHandler(session) {
 
 		if(!this.responsive) return;
 
-		if(!this.s.mySide) {
+		if(!this.side) {
 			
-			this.s.mySide = (x > (this.s.field.xsize / 2) ? 2 : 1);
-			this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
+			this.side = (x > (this.s.field.xsize / 2) ? 2 : 1);
+			this.s.socket.emit('choose', {id: this.s.sid, side: this.side});
 			this.s.canvas.drawText(["Waiting for","opponent ..."]);
 			this.responsive = false;
 			return;
@@ -283,7 +287,7 @@ function OnlineHandler(session) {
 
 		if(data.stones.length) { // regular turn
 			
-			if(data.side != this.s.mySide) {
+			if(data.side != this.side) {
 				this.s.ui.undo.className = "btn btn-primary disabled";
 			}
 			else if(data.side != 0){ // if not already an undo turn
@@ -291,11 +295,11 @@ function OnlineHandler(session) {
 			}
 		}
 
-		this.myTurn = (data.next == this.s.mySide);
+		this.myTurn = (data.next == this.side);
 
 		if(data.side == data.next) {
 
-			if(data.side == this.s.mySide) notify("You can turn again.")
+			if(data.side == this.side) notify("You can turn again.")
 			else notify("No valid turns. Opponent can turn again.");
 		}
 
@@ -332,7 +336,7 @@ function OnlineHandler(session) {
 		this.s.ui.undo.className = "btn btn-primary disabled";
 		this.s.ui.surrender.className = "btn btn-danger disabled";
 
-		this.myTurn = (this.s.nextStarter == this.s.mySide);
+		this.myTurn = (this.s.nextStarter == this.side);
 
 		this.drawWinner();
 		
@@ -343,10 +347,10 @@ function OnlineHandler(session) {
 		var msg = "";
 		
 		if (!this.s.winner) msg = "Draw! [";
-		else if(this.s.winner.stone == this.s.mySide) msg += "You won! [";
+		else if(this.s.winner.stone == this.side) msg += "You won! [";
 		else msg += "You lost! [";
 		
-		msg += this.s.player[this.s.mySide].points + ":" + this.s.player[(this.s.mySide == 1 ? 2 : 1)].points + "]";
+		msg += this.s.player[this.side].points + ":" + this.s.player[(this.side == 1 ? 2 : 1)].points + "]";
 		
 		if(this.myTurn) {
 			this.s.canvas.drawText([msg,"Click to play!"]);
@@ -373,7 +377,7 @@ function OnlineHandler(session) {
 
 	this.resize = function() {
 
-		if(!this.s.mySide && this.myTurn) { // choosing color
+		if(!this.side && this.myTurn) { // choosing color
 			this.s.canvas.drawText("Choose your color!");
 
 			var w = this.s.canvas.width;
@@ -388,7 +392,14 @@ function OnlineHandler(session) {
 
 	this.sendMessage = function(msg) {
 
-		this.s.socket.emit('chat',{id: this.s.sid, msg: msg, side: this.s.mySide});
+		this.s.socket.emit('chat',{id: this.s.sid, msg: msg, side: this.side});
+
+	};
+
+	this.receiveMessage = function(data) {
+
+		this.s.chat.addMessage(data.side,data.msg);
+		if(window.innerWidth < 992 && data.side != this.side) notify("New chat message.",2);
 
 	};
 
@@ -403,6 +414,7 @@ function OnlineHandler(session) {
 	this.s.socket.on('playerleft', this.playerleft.bind(this));
 	this.s.socket.on('disconnect', this.disconnect.bind(this));
 	this.s.socket.on('check', this.check.bind(this));
+	this.s.socket.on('chat', this.receiveMessage.bind(this));
 
 	// surrender button
 	this.s.ui.surrender.onclick = this.surrender.bind(this);
@@ -562,12 +574,20 @@ function SpectatorHandler(session,online) {
 
 	};
 
+	this.receiveMessage = function(data) {
+
+		this.s.chat.addMessage(data.side,data.msg);
+		if(window.innerWidth < 992 && data.side != this.side) notify("New chat message.",2);
+
+	};
+
 	// register event handlers
 
 	// game protocol
 	this.s.socket.on('full', this.full.bind(this));
 	this.s.socket.on('playerleft', this.playerleft.bind(this));
 	this.s.socket.on('disconnect', this.disconnect.bind(this));
+	this.s.socket.on('chat', this.receiveMessage.bind(this));
 	// notice that spectators don't respond to check messages
 
 }
