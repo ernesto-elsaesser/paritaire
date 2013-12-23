@@ -3,6 +3,7 @@ function Session(ui,color1,color2) {
 	// the modeHandler handles events in game mode specific way
 	// the PreHandler is necessary for canvas resizing before initialization of the session
 	this.modeHandler = new PreHandler(this);
+	this.handlerInitialized = false;
 
 	try { // put everything that could go wrong (no canvas support, socket error) in a try catch
 
@@ -40,7 +41,6 @@ function Session(ui,color1,color2) {
 		 // control flags
 		this.playing = false;
 		this.endScreen = false; // important for resize function
-		this.reconnecting = false;
 		
 		this.field = null;
 		this.winner = null;
@@ -51,7 +51,7 @@ function Session(ui,color1,color2) {
 		// SOCKET
 		
 		this.socket = io.connect("http://paritaire.servegame.com");
-		
+
 
 	}
 	catch(err) {
@@ -106,7 +106,7 @@ function Session(ui,color1,color2) {
 		that.ratiobar = new RatioBar(that.player);
 		
 		// construct mode handlers, if not already done
-		if(!that.reconnecting) {
+		if(!that.handlerInitialized) {
 
 			if(data.online) {
 
@@ -128,6 +128,8 @@ function Session(ui,color1,color2) {
 			var callback = that.clickHandler.bind(that);
 			that.canvas.onclick = callback;
 			that.ui.notification.onclick = callback;
+
+			that.handlerInitialized = true;
 
 		}
 
@@ -199,7 +201,6 @@ function Session(ui,color1,color2) {
 	this.socket.on('reconnect', function () {
 
 		that.socket.emit('init',{id: that.sid});
-		that.reconnecting = true;
 
 	});
 	

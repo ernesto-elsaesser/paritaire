@@ -164,7 +164,7 @@ function OnlineHandler(session) {
 		}
 		else this.s.ui.publish.className = "btn btn-primary";
 
-		if(this.s.reconnecting) {
+		if(this.s.handlerInitialized) {
 
 			if(data.connections == 0) 
 				this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
@@ -190,7 +190,7 @@ function OnlineHandler(session) {
 
 	this.full = function(data) {
 
-		if(!this.s.mySide) this.s.mySide = data.side;
+		this.s.mySide = data.side; // possibly overrides players choice, if opponent chose earlier
 	
 		this.s.ui.info.innerHTML = "";
 
@@ -415,7 +415,7 @@ function SpectatorHandler(session,online) {
 
 	this.init = function(data) {
 
-		if(this.s.reconnecting) {
+		if(this.s.handlerInitialized) { // reinit
 
 			if(!data.spec) { // connection problems, server doesn't know that this is a spectating client
 				this.s.socket.emit("spectate",{id: this.s.sid});
@@ -493,7 +493,6 @@ function SpectatorHandler(session,online) {
 	this.click = function(x,y) { // switch to spectator mode
 
 		this.s.canvas.onclick = null; // disable input
-		this.s.reconnecting = true; // prevents reconstruction of mode handler (i.e. overwriting of this)
 		this.s.socket.emit("spectate",{id: this.s.sid}); // this will trigger a re-initialization
 		
 	};

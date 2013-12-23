@@ -112,14 +112,14 @@ function attachSocket(httpServer,sessions,publications) {
 			
 			// this if-clause handles the special case when a second player enters a session
 			// before the first has chosen his color, and then receive a second color choice
-			// we handle this as if the second chooser just connected into a full session
+			// we handle this as if the second chooser just connected into the session
 			if(s.player[1].connected || s.player[2].connected) {
 				
-					s.player[1].invalidate();
-					s.player[2].invalidate();
-					s.broadcast("check");
-					
-					setTimeout(validationOver,3000,[c,s,publications]);
+				s.player[1].invalidate();
+				s.player[2].invalidate();
+				s.broadcast("check");
+				
+				setTimeout(validationOver,3000,[c,s,publications]);
 
 				return;
 			}
