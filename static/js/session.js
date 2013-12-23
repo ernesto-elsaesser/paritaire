@@ -178,7 +178,7 @@ function Session(ui,color1,color2) {
 
 	this.socket.on('chat', function (data) {
 
-		that.chat.addMessage(that.player[data.side].color,data.msg);
+		that.chat.addMessage(data.side,data.msg);
 		if(window.innerWidth < 992 && data.side != that.mySide) notify("New chat message.",2);
 
 	});

@@ -192,16 +192,9 @@ function RatioBar(arrPlayers) {
 
 function Chat(c1,c2,handler) {
 
-	this.chatIcons = [new Image(), new Image(), new Image()];
-	this.chatIcons[0].src = 'img/highlight.png';
-	this.chatIcons[0].width = 20;
-	this.chatIcons[0].height = 20;
-	this.chatIcons[1].src = 'img/icon_' + c1 + '.png';
-	this.chatIcons[1].width = 20;
-	this.chatIcons[1].height = 20;
-	this.chatIcons[2].src = 'img/icon_' + c2 + '.png';
-	this.chatIcons[2].width = 20;
-	this.chatIcons[2].height = 20;
+	this.icons = ['img/highlight.png',
+				'img/icon_' + c1 + '.png',
+				'img/icon_' + c2 + '.png'];
 
 	this.panel = document.getElementById('chat-panel');
 	this.frame = document.getElementById("chat-iframe");
@@ -235,9 +228,9 @@ function Chat(c1,c2,handler) {
 		this.handler.sendMessage(msg);
 	};
 
-	this.addMessage = function(color,msg) {
+	this.addMessage = function(side,msg) {
 
-		var html = "<td><img src='img/icon_" + color + ".png' width='20' height='20'></td><td>" + msg + "</td>";
+		var html = "<td><img src='" + this.icons[side] + "' width='20' height='20'></td><td>" + msg + "</td>";
 		this.frame.contentWindow.postMessage(html,"*");
 
 	};
