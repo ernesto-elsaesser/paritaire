@@ -4,54 +4,63 @@ function Session(ui,color1,color2) {
 	// the PreHandler is necessary for canvas resizing before initialization of the session
 	this.modeHandler = new PreHandler(this);
 
-	// USER INTERFACE
+	try { // put everything that could go wrong (no canvas support, socket error) in a try catch
 
-	this.ui = ui; // dom element map
 
-	this.ui.error.innerHTML = "<b>Error:</b> Browser not supported (no HTML5 canvas element).";
+		// USER INTERFACE
 
-	this.canvas = createCanvas();
-	this.chat = null; // only in multiplayer games
-	this.ratiobar = null; // initialized later
+		this.ui = ui; // dom element map
 
-	this.resizeCanvas = function() {
-	
-		this.canvas.resize();
-		this.modeHandler.resize();
-		if(this.chat) this.chat.adjustHeight();
-		 
-	};
-	
-	window.onresize = this.resizeCanvas.bind(this);
+		this.canvas = createCanvas();
+		this.chat = null; // only in multiplayer games
+		this.ratiobar = null; // initialized later
 
-	this.ui.error.innerHTML = "<b>Error:</b> Browser not supported (no socket connection).";
-	
-	// GAME
-	
-	if(color1 == "#1") { // the server did not replace placeholders with color names
+		this.resizeCanvas = function() {
 		
-		this.ui.share.className = "btn btn-primary disabled";
-		this.canvas.drawText("Invalid session link!");
-		this.ui.error.outerHTML = "";
-		return;
+			this.canvas.resize();
+			this.modeHandler.resize();
+			if(this.chat) this.chat.adjustHeight();
+			 
+		};
+		
+		window.onresize = this.resizeCanvas.bind(this);
+		
+		// GAME
+		
+		if(color1 == "#1") { // the server did not replace placeholders with color names
+			
+			this.ui.share.className = "btn btn-primary disabled";
+			this.canvas.drawText("Invalid session link!");
+			this.ui.error.outerHTML = "";
+			return;
+		}
+
+		this.player = [null,new Player(1,color1),new Player(2,color2)];
+
+		 // control flags
+		this.playing = false;
+		this.endScreen = false; // important for resize function
+		this.reconnecting = false;
+		
+		this.field = null;
+		this.winner = null;
+		this.nextStarter = 0; // player that will start the next game
+		
+		this.sid = window.location.search.substr(4);
+		
+		// SOCKET
+		
+		this.socket = io.connect("http://paritaire.servegame.com");
+		
+
 	}
+	catch(err) {
 
-	this.player = [null,new Player(1,color1),new Player(2,color2)];
+		this.ui.error.innerHTML = "<b>Error:</b> Browser not supported [" + err.message + "].";
+		this.ui.error.style.display = "block";
+		return;
 
-	 // control flags
-	this.playing = false;
-	this.endScreen = false; // important for resize function
-	this.reconnecting = false;
-	
-	this.field = null;
-	this.winner = null;
-	this.nextStarter = 0; // player that will start the next game
-	
-	this.sid = window.location.search.substr(4);
-	
-	// SOCKET
-	
-	this.socket = io.connect("http://paritaire.servegame.com");
+	}
 
 	/* game protocol (incoming)
 

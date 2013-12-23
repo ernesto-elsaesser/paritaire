@@ -108,7 +108,7 @@ function onRequest(request,response) {
 		
 		for(var id in publications) {
 			if(path == "/" && count == 7) break;
-			list += '<a href="/play?id=' + id + '" class="list-group-item">' + publications[id].publicName + '</a>';
+			list += '<a href="/play?id=' + id + '" class="list-group-item">' + esc(publications[id].publicName) + '</a>';
 			count++;
 		}
 		
@@ -146,6 +146,11 @@ function log(msg) {
 	
 	console.log((new Date()).toISOString() + " " + msg);
 	
+}
+
+function esc(html) {
+
+	return html.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;');
 }
 
 function cleanSessions() {
