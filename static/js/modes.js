@@ -2,6 +2,7 @@
 function PreHandler(session) {
 
 	this.s = session;
+	this.initialized = false;
 
 	this.resize = function() {
 
@@ -15,6 +16,7 @@ function LocalHandler(session) {
 
 	this.responsive = false;
 	this.currentSide = 0;
+	this.initialized = false;
 
 	this.init = function(data) {
 
@@ -41,6 +43,7 @@ function LocalHandler(session) {
 		}
 
 		this.responsive = true;
+		this.initialized = true;
 	};
 	
 	this.start = function(data) {
@@ -155,8 +158,9 @@ function OnlineHandler(session) {
 	this.responsive = false;
 	this.myTurn = false;
 
-	this.init = function(data) {
+	this.initialized = false;
 
+	this.init = function(data) {
 
 		if(data.published) {
 			this.s.ui.publish.innerHTML = "Published";
@@ -164,7 +168,7 @@ function OnlineHandler(session) {
 		}
 		else this.s.ui.publish.className = "btn btn-primary";
 
-		if(this.s.handlerInitialized) {
+		if(this.initialized) {
 
 			if(data.connections == 0) 
 				this.s.socket.emit('choose', {id: this.s.sid, side: this.s.mySide});
@@ -182,6 +186,8 @@ function OnlineHandler(session) {
 
 			this.responsive = true;
 		} 
+
+		this.initialized = true;
 				
 		// if there is one other player connected yet, "full" message will follow
 		// if the session is already full, the SpectatorDecorator intercepted the init call
@@ -413,9 +419,11 @@ function SpectatorHandler(session,online) {
 
 	this.online = online;
 
+	this.initialized = false;
+
 	this.init = function(data) {
 
-		if(this.s.handlerInitialized) { // reinit
+		if(this.initialized) { // reinit
 
 			if(!data.spec) { // connection problems, server doesn't know that this is a spectating client
 				this.s.socket.emit("spectate",{id: this.s.sid});
@@ -458,6 +466,8 @@ function SpectatorHandler(session,online) {
 		this.s.ui.surrender.style.display = "none";
 
 		this.s.canvas.drawText(["Session is full.","Click to spectate!"]);
+
+		this.initialized = true;
 
 	};
 

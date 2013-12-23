@@ -3,7 +3,6 @@ function Session(ui,color1,color2) {
 	// the modeHandler handles events in game mode specific way
 	// the PreHandler is necessary for canvas resizing before initialization of the session
 	this.modeHandler = new PreHandler(this);
-	this.handlerInitialized = false;
 
 	try { // put everything that could go wrong (no canvas support, socket error) in a try catch
 
@@ -106,7 +105,7 @@ function Session(ui,color1,color2) {
 		that.ratiobar = new RatioBar(that.player);
 		
 		// construct mode handlers, if not already done
-		if(!that.handlerInitialized) {
+		if(!that.modeHandler.initialized) {
 
 			if(data.online) {
 
@@ -128,8 +127,6 @@ function Session(ui,color1,color2) {
 			var callback = that.clickHandler.bind(that);
 			that.canvas.onclick = callback;
 			that.ui.notification.onclick = callback;
-
-			that.handlerInitialized = true;
 
 		}
 
