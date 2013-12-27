@@ -94,10 +94,11 @@
 
 	  		var adjust = function() {
 	  			var vs = document.getElementById("settings-vs");
-	  			var c2 = document.getElementById("carousel-player-2");
-	  			if(vs && c2) vs.style.marginTop = (c2.clientHeight / 3) + "px";
+	  			var c1 = document.getElementById("carousel-player-1");
+	  			if(vs && c1) vs.style.marginTop = (c1.clientHeight / 3) + "px";
 	  		};
 
+	  		window.onload = adjust;
 	  		window.onresize = adjust;
 
 		</script>
@@ -167,7 +168,7 @@
  				  			<!-- Wrapper for slides -->
 	 				  		<a href="#carousel-player-2" data-slide="next">
 	 				  			<div class="carousel-inner">
-	   			    			<div class="item" id="blue2"><img src="img/icon_blue.png" onload="adjust()" alt="blue token"></div>
+	   			    			<div class="item" id="blue2"><img src="img/icon_blue.png" alt="blue token"></div>
 	    			  			<div class="item" id="cyan2"><img src="img/icon_cyan.png" alt="cyan token"></div>
 	    			  			<div class="item" id="green2"><img src="img/icon_green.png" alt="green token"></div>
 	    			  			<div class="item" id="yellow2"><img src="img/icon_yellow.png" alt="yellow token"></div>
