@@ -56,19 +56,34 @@
 	  				
 	  				var postData = { 
 	  							col1: colors[0].id, 
-								col2: colors[1].id, 
+								col2: colors[1].id.replace("2",""), // workaround to avoid duplicate ids
 								dim: document.getElementById('settings-dim').value, 
 								mode: $('input[name=mode]:checked')[0].value
 							};
 							
 					var callback = function (data, status) {
 				
-						if(status == "success" && data.length) { 
-							
-							window.location.href = "/play?id=" + data;
-						} else {
-					
-							alertText.innerHTML = "<strong>Error:</strong> Invalid session parameters!";
+						if(status == "success" && data.length) {
+
+							switch(data) {
+
+							case "limit": 
+								alertText.innerHTML = "<strong>Error:</strong> Session limit reached!";
+								$("#validation_advice").removeClass("hide");
+								break;
+							case "invalid":
+								alertText.innerHTML = "<strong>Error:</strong> Invalid session parameters!";
+								$("#validation_advice").removeClass("hide");
+								break;
+							default:
+								window.location.href = "/play?id=" + data; // redirect to play page
+
+							}
+						
+						}
+						else {
+
+							alertText.innerHTML = "<strong>Error:</strong> Connection problems! Please try again.";
 							$("#validation_advice").removeClass("hide");
 						}
 					};
@@ -135,7 +150,7 @@
 	    			  			<div class="item" id="cyan"><img src="img/icon_cyan.png" alt="cyan token"></div>
 	    			  			<div class="item" id="green"><img src="img/icon_green.png" alt="green token"></div>
 	    			  			<div class="item" id="yellow"><img src="img/icon_yellow.png" alt="yellow token"></div>
-	 									<div class="item" id="orange"><img src="img/icon_orange.png" alt="orange token"></div>
+	 							<div class="item" id="orange"><img src="img/icon_orange.png" alt="orange token"></div>
 	    			  			<div class="item" id="red"><img src="img/icon_red.png" alt="red token"></div>
 	    			  			<div class="item" id="violet"><img src="img/icon_violet.png" alt="violet token"></div>
 	    			  		</div>
@@ -152,13 +167,13 @@
  				  			<!-- Wrapper for slides -->
 	 				  		<a href="#carousel-player-2" data-slide="next">
 	 				  			<div class="carousel-inner">
-	   			    			<div class="item" id="blue"><img src="img/icon_blue.png" onload="adjust()" alt="blue token"></div>
-	    			  			<div class="item" id="cyan"><img src="img/icon_cyan.png" alt="cyan token"></div>
-	    			  			<div class="item" id="green"><img src="img/icon_green.png" alt="green token"></div>
-	    			  			<div class="item" id="yellow"><img src="img/icon_yellow.png" alt="yellow token"></div>
-	 									<div class="item" id="orange"><img src="img/icon_orange.png" alt="orange token"></div>
-	    			  			<div class="item active" id="red"><img src="img/icon_red.png" alt="red token"></div>
-	    			  			<div class="item" id="violet"><img src="img/icon_violet.png" alt="violet token"></div>
+	   			    			<div class="item" id="blue2"><img src="img/icon_blue.png" onload="adjust()" alt="blue token"></div>
+	    			  			<div class="item" id="cyan2"><img src="img/icon_cyan.png" alt="cyan token"></div>
+	    			  			<div class="item" id="green2"><img src="img/icon_green.png" alt="green token"></div>
+	    			  			<div class="item" id="yellow2"><img src="img/icon_yellow.png" alt="yellow token"></div>
+	 							<div class="item" id="orange2"><img src="img/icon_orange.png" alt="orange token"></div>
+	    			  			<div class="item active" id="red2"><img src="img/icon_red.png" alt="red token"></div>
+	    			  			<div class="item" id="violet2"><img src="img/icon_violet.png" alt="violet token"></div>
 	    			  		</div>
 	 							</a>
 

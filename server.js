@@ -11,6 +11,7 @@ var game = require('./modules/mod_game');
 
 // global variables
 var sessions = {};
+var sessionLimit = 300; // this value depends on the servers memory capacity
 var publications = {};
 
 if(fs.existsSync("sessions.dump")) { // try to load old sessions
@@ -53,6 +54,15 @@ function onRequest(request,response) {
 			});
 		request.on("end", function() {
 		
+			if(sessions.length > sessionLimit) { // flooding protection
+
+				log("WARNING! More than " + sessionLimit + " sessions! Session creation disabled.");
+				response.writeHead(200, {"Content-Type": "text/plain"});	
+				response.write("limit");					
+				response.end();
+				return;
+			}
+
 			var id = (new Date()).getTime();
 			sessions[id] = new game.Session(id,querystring.parse(params)); // create new session from post data
 			if(sessions[id].valid) {
@@ -66,7 +76,8 @@ function onRequest(request,response) {
 				
 				delete sessions[id];
 				log("invalid session request: " + params);
-				response.writeHead(200, {"Content-Type": "text/plain"});				
+				response.writeHead(200, {"Content-Type": "text/plain"});
+				response.write("invalid");				
 				response.end();
 			}
 			response.end();
@@ -116,7 +127,12 @@ function onRequest(request,response) {
 		
 		html = html.replace("##",list);
 		
-		response.writeHead(200, {"Content-Type": "text/html"});	
+		response.writeHead(200, 
+			"Content-Type": "text/html",
+			"Cache-Control": "no-cache, no-store, must-revalidate",
+			"Pragma": "no-cache",
+			"Expires": "0"
+			});	// headers to avoid caching, which would lead to obsolete public lists
 		response.write(html);
 		response.end();
 		
