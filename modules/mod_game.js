@@ -242,7 +242,7 @@ Session.prototype.getState = function(dumping) {
 	if(dumping) {
 		delete state.connections;
 		state.colors = [this.player[1].color, this.player[2].color];
-		state.expire = this.expirationDate;
+		state.expire = this.expirationMonth;
 		if(this.publicName) {
 			state.pubname = this.publicName;
 			state.pubdate = this.publicationDate;
@@ -258,7 +258,7 @@ Session.prototype.getState = function(dumping) {
 
 Session.prototype.isUsed = function() {
 	this.expirationMonth = (new Date()).getMonth() + 2; // sessions last 2 - 3 month, depending on day of creation
-	this.expirationDate %= 11;
+	this.expirationMonth %= 11;
 };
 
 // ----------------------------------------------------------------------------------------------------
