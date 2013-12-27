@@ -2,8 +2,6 @@
 - install/configure mail server
 - contact email address in credits
 - highlight more contrast / whole field grey
-+ index/public dont cache
-+ create page session # limit?
 - german localization
 + new page fix duplicate ids in carousels (wc3 validation)
 - learn page remove <br/>s in <ul> (wc3 validation)

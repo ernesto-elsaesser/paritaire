@@ -41,7 +41,8 @@ function Session(id,proto) {
 	
 		// is the dimension an even number?
 		this.dim = parseInt(proto.dim);
-		if(isNaN(this.dim) || this.dim % 2) return null;
+		if(isNaN(this.dim) || this.dim % 2 || this.dim > 20) return null; 
+		// 20 being a tolerable max field size that can only be achieved by client side javascript hacking
 	
 		// online flag
 		if(proto.mode == "0") this.online = false;
