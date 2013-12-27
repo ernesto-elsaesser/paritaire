@@ -127,7 +127,7 @@ function onRequest(request,response) {
 		
 		html = html.replace("##",list);
 		
-		response.writeHead(200, 
+		response.writeHead(200, {
 			"Content-Type": "text/html",
 			"Cache-Control": "no-cache, no-store, must-revalidate",
 			"Pragma": "no-cache",
