@@ -11,7 +11,7 @@ function Session(id,proto) {
 		this.playing = proto.playing;
 		this.nextRound = proto.round;
 		this.nextTurn = proto.turn;
-		this.expirationDate = proto.expire;
+		this.expirationMonth = proto.expire;
 		
 		this.player = [null,new Player(1,proto.colors[0],proto.wins[0]), new Player(2,proto.colors[1],proto.wins[1])];
 		
@@ -256,8 +256,8 @@ Session.prototype.getState = function(dumping) {
 };
 
 Session.prototype.isUsed = function() {
-	this.expirationDate = (new Date()).getDate() + 12; // sessions last 12 - 15 days, depending on length of month
-	if(this.expirationDate > 28) this.expirationDate -= 28;
+	this.expirationMonth = (new Date()).getMonth() + 2; // sessions last 2 - 3 month, depending on day of creation
+	this.expirationDate %= 11;
 };
 
 // ----------------------------------------------------------------------------------------------------

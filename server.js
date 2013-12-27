@@ -155,11 +155,11 @@ function esc(html) {
 
 function cleanSessions() {
 
-	var now = (new Date()).getDate();
+	var now = (new Date()).getMonth();
 
 	for(var s in sessions) {
 
-		if(now == sessions[s].expirationDate) {
+		if(now == sessions[s].expirationMonth) {
 
 			log("cleanup: session " + sessions[s].id + " expired.");
 			delete sessions[s];
@@ -205,8 +205,8 @@ function shutdown() {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-setInterval(cleanSessions,86400000); // every 24 hours
-setInterval(cleanPublications,900000); // every 15 minutes
+setInterval(cleanSessions, 5 * 24 * 60 * 60 * 1000); // every 5 days
+setInterval(cleanPublications, 15 * 60 * 1000); // every 15 minutes
 
 var server = http.createServer(onRequest);
 
