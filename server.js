@@ -224,6 +224,8 @@ process.on('SIGTERM', shutdown);
 setInterval(cleanSessions, 5 * 24 * 60 * 60 * 1000); // every 5 days
 setInterval(cleanPublications, 15 * 60 * 1000); // every 15 minutes
 
+process.on('uncaughtException', log);
+
 var server = http.createServer(onRequest);
 
 socket.attachSocket(server,sessions,publications);

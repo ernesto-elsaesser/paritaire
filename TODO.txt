@@ -1,6 +1,5 @@
 - IE Metro compatibility: canvas resize on window load?
 - install/configure mail server
 - contact email address in credits
-- highlight more contrast / whole field grey
 - german localization
 - learn page remove <br/>s in <ul> (wc3 validation)
